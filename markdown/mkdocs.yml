@@ -1,0 +1,103 @@
+site_name: App-WatchHub Documentation
+site_description: Unified project documentation for App-WatchHub, a luxury watch e-commerce app built with Flutter and Firebase.
+site_author: Muhammad Faheem Khan and App-WatchHub Team
+site_url: https://app-watchhub-dev.web.app/
+
+docs_dir: .
+site_dir: ../site
+
+theme:
+  name: material
+  language: en
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    logo: material/watch
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 4
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: INDEX.md
+  - Unified Documentation: UNIFIED_PROJECT_DOCUMENTATION.md
+  - Project Definition:
+      - Project Scope: PROJECT_SCOPE.md
+      - Product Requirements: PRODUCT_REQUIREMENTS.md
+      - Roadmap: ROADMAP.md
+      - Open Questions: OPEN_QUESTIONS.md
+      - Risks: RISKS.md
+  - Architecture and Design:
+      - Architecture: ARCHITECTURE.md
+      - System Design: SYSTEM_DESIGN.md
+      - Database Design: DATABASE_DESIGN.md
+      - API Reference: API_REFERENCE.md
+      - Decisions: DECISIONS.md
+  - Operations and Quality:
+      - Security: SECURITY.md
+      - Configuration: CONFIGURATION.md
+      - Deployment: DEPLOYMENT.md
+      - Testing: TESTING.md
+      - Troubleshooting: TROUBLESHOOTING.md
+  - Governance and Reference:
+      - Documentation Index: DOCUMENTATION_INDEX.md
+      - Dependencies: DEPENDENCIES.md
+      - Style Guide: STYLE_GUIDE.md
+      - Contributing: CONTRIBUTING.md
+      - Changelog: CHANGELOG.md
+      - FAQ: FAQ.md
+      - Glossary: GLOSSARY.md
+      - License: LICENSE.md

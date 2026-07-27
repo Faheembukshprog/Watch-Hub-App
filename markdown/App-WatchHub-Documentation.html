@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>App-WatchHub — Unified Project Documentation</title>
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 16mm 20mm 16mm;
+  }
+
+  :root {
+    --navy: #0b1c30;
+    --navy-deep: #081524;
+    --blue: #1c3d5e;
+    --blue-light: #4a7ba6;
+    --gold: #b8912f;
+    --gold-light: #d9b45c;
+    --gold-pale: #f4ecd8;
+    --ink: #1e2530;
+    --muted: #55606e;
+    --border: #d8cba5;
+    --row-alt: #f7f3e8;
+    --bg-code: #f2f0ea;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: var(--ink);
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, 'Times New Roman', serif;
+    color: var(--navy);
+    font-weight: 700;
+    page-break-after: avoid;
+  }
+
+  /* ---------- Cover / Title Block ---------- */
+  .cover {
+    padding: 10mm 0 8mm 0;
+    border-bottom: 3px solid var(--gold);
+    margin-bottom: 10mm;
+    text-align: center;
+    page-break-after: avoid;
+  }
+
+  .cover .eyebrow {
+    font-family: 'Segoe UI', sans-serif;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 9pt;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 6mm;
+  }
+
+  .cover h1.title {
+    font-size: 34pt;
+    margin: 0;
+    color: var(--navy);
+    letter-spacing: 1px;
+  }
+
+  .cover .subtitle {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: var(--blue-light);
+    font-size: 12.5pt;
+    margin-top: 4mm;
+  }
+
+  .cover .meta {
+    display: flex;
+    justify-content: center;
+    gap: 14mm;
+    margin-top: 8mm;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 9.5pt;
+    color: var(--muted);
+  }
+
+  .cover .meta span.label {
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 7.5pt;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 1mm;
+  }
+
+  .cover .meta .value {
+    color: var(--navy);
+    font-weight: 600;
+    font-size: 10.5pt;
+  }
+
+  /* ---------- Headings ---------- */
+  h1 {
+    font-size: 20pt;
+    margin: 14mm 0 5mm 0;
+    padding-bottom: 2mm;
+    border-bottom: 2px solid var(--navy);
+    position: relative;
+  }
+
+  h1::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: var(--gold);
+    margin-right: 8px;
+    vertical-align: middle;
+    transform: rotate(45deg);
+  }
+
+  h2 {
+    font-size: 14.5pt;
+    color: var(--blue);
+    margin: 9mm 0 3.5mm 0;
+    padding-left: 3mm;
+    border-left: 4px solid var(--gold);
+  }
+
+  h3 {
+    font-size: 11.5pt;
+    color: var(--navy);
+    margin: 6mm 0 2.5mm 0;
+    font-style: italic;
+  }
+
+  h4 {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 10.5pt;
+    color: var(--blue);
+    margin: 4mm 0 2mm 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  p { margin: 2.5mm 0; color: var(--ink); }
+
+  a { color: var(--blue-light); }
+
+  strong { color: var(--navy); }
+
+  /* ---------- Table of Contents ---------- */
+  .toc {
+    background: var(--gold-pale);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6mm 8mm;
+    margin: 8mm 0 10mm 0;
+    page-break-inside: avoid;
+  }
+
+  .toc h2 {
+    margin-top: 0;
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .toc ol {
+    margin: 0;
+    padding-left: 5mm;
+    columns: 1;
+  }
+
+  .toc li {
+    margin-bottom: 2mm;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 10pt;
+  }
+
+  .toc li a {
+    text-decoration: none;
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .toc li a:hover { color: var(--gold); }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 8mm 0;
+  }
+
+  /* ---------- Tables ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4mm 0 6mm 0;
+    font-size: 9pt;
+    page-break-inside: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  th {
+    background: var(--navy);
+    color: #f4ecd8;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    text-align: left;
+    padding: 2.6mm 3.2mm;
+    border: 1px solid var(--navy-deep);
+    font-size: 8.7pt;
+    letter-spacing: 0.3px;
+  }
+
+  td {
+    padding: 2.2mm 3.2mm;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--ink);
+  }
+
+  tr:nth-child(even) td {
+    background: var(--row-alt);
+  }
+
+  tr:nth-child(odd) td {
+    background: #ffffff;
+  }
+
+  tbody tr:hover td { background: var(--gold-pale); }
+
+  /* ---------- Code ---------- */
+  code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    background: var(--bg-code);
+    color: var(--blue);
+    padding: 0.5mm 1.5mm;
+    border-radius: 2px;
+    font-size: 9pt;
+    border: 1px solid #e2ddc9;
+  }
+
+  pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: 3px;
+    padding: 4mm 5mm;
+    overflow-x: auto;
+    margin: 4mm 0 6mm 0;
+    page-break-inside: avoid;
+  }
+
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--navy);
+    font-size: 8.7pt;
+    line-height: 1.5;
+  }
+
+  /* ---------- Lists ---------- */
+  ul, ol {
+    margin: 2.5mm 0 4mm 0;
+    padding-left: 6mm;
+  }
+
+  li { margin-bottom: 1.3mm; }
+
+  /* ---------- Blockquote (used for the intro summary) ---------- */
+  blockquote {
+    margin: 5mm 0;
+    padding: 4mm 6mm;
+    background: var(--gold-pale);
+    border-left: 4px solid var(--gold);
+    font-style: italic;
+    color: var(--blue);
+    border-radius: 0 3px 3px 0;
+  }
+
+  /* ---------- Section wrapper for page-break control ---------- */
+  section {
+    page-break-inside: avoid;
+  }
+
+  .section-block {
+    margin-bottom: 6mm;
+  }
+
+  /* Footer / print page numbers via running content is limited in browsers;
+     we add a simple footer note instead. */
+  .doc-footer {
+    margin-top: 14mm;
+    padding-top: 4mm;
+    border-top: 1px solid var(--border);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 8pt;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--navy);
+    color: var(--gold-light);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 7.5pt;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 1mm 3mm;
+    border-radius: 2px;
+    margin: 0 1mm 1mm 0;
+  }
+
+  @media print {
+    a { color: var(--navy); }
+    .toc { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="eyebrow">Unified Project Documentation</div>
+  <h1 class="title">App&#8209;WatchHub</h1>
+  <div class="subtitle">A Serverless Luxury Watch Commerce Platform</div>
+  <div class="meta">
+    <div>
+      <span class="label">Author</span>
+      <span class="value">App-WatchHub Project Team</span>
+    </div>
+    <div>
+      <span class="label">Date</span>
+      <span class="value">July 16, 2026</span>
+    </div>
+    <div>
+      <span class="label">Status</span>
+      <span class="value">MVP In Progress</span>
+    </div>
+  </div>
+</div>
+
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#project-overview">Project Overview</a></li>
+    <li><a href="#app-description">App Description</a></li>
+    <li><a href="#project-scope">Project Scope</a></li>
+    <li><a href="#what-we-are-building">What We Are Building</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#assumptions-and-open-decisions">Assumptions and Open Decisions</a></li>
+    <li><a href="#success-criteria">Success Criteria</a></li>
+  </ol>
+</div>
+
+<h1 id="project-overview">Project Overview</h1>
+
+<h2>High-Level Summary</h2>
+<p><strong>App-WatchHub</strong> is a premium luxury watch e-commerce application built with a single Flutter codebase and a Firebase-backed serverless architecture. The app provides a digital boutique experience for high-end timepieces, including catalog browsing, search, filtering, product details, cart and wishlist flows, order placement, order tracking, reviews, customer support, feedback reporting, and an admin governance panel.</p>
+<p>The project is designed to prove that a polished, production-style e-commerce experience can be built by a student team within a 30-day timeline while staying on a <strong>$0/month infrastructure budget</strong>. It uses Firebase Authentication, Cloud Firestore, Firebase Hosting, Firebase Analytics, Firebase Crashlytics, Firestore Security Rules, local asset bundles, and local storage instead of a custom backend or paid infrastructure.</p>
+
+<h2>Purpose and Problem Solved</h2>
+<p>Luxury watch buyers expect a fast, quiet, premium digital experience. Traditional e-commerce stacks often introduce latency, operational overhead, cost, and deployment complexity through custom APIs, server provisioning, SQL database management, external media hosting, and paid integrations.</p>
+<p>App-WatchHub solves this by:</p>
+<ul>
+  <li>Delivering a high-fidelity customer boutique using Flutter Web and Android from one codebase.</li>
+  <li>Using Firebase managed services instead of a custom server.</li>
+  <li>Enforcing authorization at the Firestore Security Rules layer.</li>
+  <li>Keeping product media local to reduce latency and avoid cloud storage costs.</li>
+  <li>Providing an admin panel so inventory, orders, reviews, support tickets, feedback, FAQs, and users can be managed without direct database access.</li>
+</ul>
+
+<h2>Target Audience and Users</h2>
+<table>
+  <thead><tr><th>Audience</th><th>Description</th><th>Primary Needs</th></tr></thead>
+  <tbody>
+    <tr><td>Luxury watch collectors</td><td>High-intent customers researching and purchasing premium watches</td><td>Fast browsing, rich product detail, wishlist, cart, order tracking, discreet UX</td></tr>
+    <tr><td>Boutique administrators</td><td>Operations users managing inventory, orders, reviews, support, and feedback</td><td>CRUD tools, dashboards, moderation queues, order status updates</td></tr>
+    <tr><td>Academic reviewers</td><td>Evaluators of the software design, implementation, and documentation</td><td>Clear scope, architecture, testability, traceability, demo readiness</td></tr>
+    <tr><td>Recruiters and hiring managers</td><td>Future technical reviewers of the portfolio project</td><td>Evidence of architectural judgment, security thinking, CI/CD, maintainability</td></tr>
+    <tr><td>Future contributors and AI agents</td><td>Developers extending or maintaining the project</td><td>Clear folder structure, documented decisions, schemas, test strategy</td></tr>
+  </tbody>
+</table>
+
+<h2>Key Business Goals</h2>
+<ul>
+  <li>Launch a working MVP within the locked 30-day window from <strong>July 14, 2026 to August 14, 2026</strong>.</li>
+  <li>Provide a premium watch-shopping experience aligned with luxury horology aesthetics.</li>
+  <li>Support core customer journeys from signup to catalog browsing, cart, checkout, order confirmation, reviews, support, and feedback.</li>
+  <li>Support core admin journeys from login to inventory management, order management, review moderation, support handling, feedback triage, FAQ management, and user oversight.</li>
+  <li>Keep steady-state infrastructure cost at <strong>$0.00/month</strong> using Firebase Spark Free Tier and GitHub Actions.</li>
+  <li>Produce a long-lived portfolio artifact that can be reviewed through both the deployed app and the documentation tree.</li>
+</ul>
+
+<h2>Key Technical Goals</h2>
+<ul>
+  <li>Use a <strong>Serverless Event-Driven Architecture (SEDA)</strong> with no custom API server.</li>
+  <li>Use Firestore real-time streams for catalog, order, and admin updates.</li>
+  <li>Use Firestore Security Rules as the authoritative authorization boundary.</li>
+  <li>Maintain a clean, feature-first Flutter architecture with Riverpod, GoRouter, Freezed, and repository abstractions.</li>
+  <li>Ship to both Web and Android from one codebase.</li>
+  <li>Maintain CI/CD through GitHub Actions with linting, formatting, tests, build, and Firebase Hosting deployment.</li>
+  <li>Meet defined performance, security, accessibility, coverage, and cost constraints.</li>
+</ul>
+
+<h1 id="app-description">App Description</h1>
+
+<h2>Product Description</h2>
+<p>App-WatchHub is a luxury watch marketplace and administration system. Customers browse a curated catalog of watches from brands such as Rolex, Omega, Patek Philippe, Audemars Piguet, Vacheron Constantin, Cartier, IWC, Breitling, Tudor, Panerai, Hublot, and A. Lange &amp; Sohne. They can search and filter the catalog, inspect detailed watch specifications, add products to a wishlist or cart, place non-payment orders, track order status, manage profile and shipping addresses, submit reviews, contact support, browse FAQs, and report issues.</p>
+<p>Admins use a protected dashboard to manage products, inventory, orders, reviews, support tickets, feedback, FAQs, and users. The admin panel is guarded by route-level UX checks and by Firestore Security Rules, with the rules treated as the true security boundary.</p>
+
+<h2>MVP Features</h2>
+<table>
+  <thead><tr><th>Feature Area</th><th>MVP Functionality</th></tr></thead>
+  <tbody>
+    <tr><td>Identity management</td><td>Email/password registration, login, logout, password reset, persisted auth sessions, user profile document creation</td></tr>
+    <tr><td>Catalog discovery</td><td>Real-time product catalog, filters by brand/category/price/availability, product details, local image assets</td></tr>
+    <tr><td>Search</td><td>Client-side search over <code>modelName</code>, <code>brand</code>, and <code>category</code>, debounced at 300ms</td></tr>
+    <tr><td>Product detail</td><td>Images, zoom, specs, description, price, stock, rating summary, reviews section, related product suggestions</td></tr>
+    <tr><td>Cart</td><td>Local cart using Hive, quantity updates, subtotal/tax/total calculation, stock validation, cart clear after order</td></tr>
+    <tr><td>Wishlist</td><td>Local wishlist using Hive, add/remove/toggle, move wishlist item to cart, move cart item to wishlist</td></tr>
+    <tr><td>Checkout and orders</td><td>Non-payment order placement, Firestore order document creation, order confirmation, order history, order tracking</td></tr>
+    <tr><td>User profile</td><td>Full name, read-only email, multiple shipping addresses, default address support, order history</td></tr>
+    <tr><td>Reviews and ratings</td><td>Authenticated review submission, one review per product per user, pending moderation, approved review display</td></tr>
+    <tr><td>Customer support</td><td>Contact support form, support ticket persistence, ticket history, admin response workflow</td></tr>
+    <tr><td>FAQ</td><td>In-app FAQ page backed by Firestore, category grouping, optional keyword filtering</td></tr>
+    <tr><td>Feedback and issue reporting</td><td>Feedback form, bug/suggestion/compliment/complaint categories, optional anonymous submission</td></tr>
+    <tr><td>Admin dashboard</td><td>Stats, inventory CRUD, order status updates, review moderation, support queue, feedback triage, FAQ management, user management</td></tr>
+    <tr><td>Security</td><td>Firebase Auth, Firestore Security Rules, role-based access, no client-trusted authorization</td></tr>
+    <tr><td>Observability</td><td>Firebase Analytics events and Crashlytics exception capture</td></tr>
+    <tr><td>Deployment</td><td>Firebase Hosting for Web, Android APK build for demo, GitHub Actions CI/CD</td></tr>
+  </tbody>
+</table>
+
+<h2>Future-Planned Features</h2>
+<table>
+  <thead><tr><th>Version / Horizon</th><th>Planned Features</th></tr></thead>
+  <tbody>
+    <tr><td>v1.1 polish and security</td><td>Email verification, Google/Apple OAuth, push notifications, custom domain, staging Firebase project, admin custom claims, automated backups where paid tier is accepted</td></tr>
+    <tr><td>v1.2 growth</td><td>Stripe payment integration, multi-currency support, internationalization, cross-device cart sync, Algolia search for larger catalogs, transactional email templates, A/B testing</td></tr>
+    <tr><td>v2.0 enterprise</td><td>Cloud Functions, Firebase Blaze tier, multi-tenant boutique support, app store publication, advanced admin analytics, SSR marketing pages</td></tr>
+  </tbody>
+</table>
+
+<h2>User Interaction Flows</h2>
+
+<h3>Customer Registration and Login</h3>
+<ol>
+  <li>Visitor opens the app.</li>
+  <li>Visitor registers with full name, email, and password.</li>
+  <li>Firebase Auth creates the account.</li>
+  <li>The app creates <code>/users/{uid}</code> with <code>isAdmin: false</code>.</li>
+  <li>User lands on <code>/boutique</code>.</li>
+  <li>On later visits, Firebase Auth restores the session automatically.</li>
+</ol>
+
+<h3>Customer Catalog and Product Discovery</h3>
+<ol>
+  <li>Customer opens the boutique page.</li>
+  <li>App streams <code>/products</code> from Firestore.</li>
+  <li>Customer searches by name, brand, or category.</li>
+  <li>Customer applies filters by brand, category, price tier, or availability.</li>
+  <li>Customer opens a product detail page.</li>
+  <li>Product detail shows image, specs, price, stock, rating summary, reviews, and cart/wishlist actions.</li>
+</ol>
+
+<h3>Cart, Wishlist, and Checkout</h3>
+<ol>
+  <li>Customer adds an in-stock product to the cart.</li>
+  <li>Cart state updates in Riverpod and persists locally in Hive.</li>
+  <li>Customer adjusts quantity, removes items, or moves items to wishlist.</li>
+  <li>Customer starts checkout.</li>
+  <li>App refreshes product stock from Firestore.</li>
+  <li>If stock is valid, customer confirms order.</li>
+  <li>App creates an <code>/orders/{orderId}</code> document with embedded line items.</li>
+  <li>Cart is cleared locally.</li>
+  <li>Customer sees confirmation and can track the order.</li>
+</ol>
+
+<h3>Reviews and Ratings</h3>
+<ol>
+  <li>Authenticated customer opens a product detail page.</li>
+  <li>Customer submits a rating, title, and review body.</li>
+  <li>App writes <code>/reviews/{reviewId}</code> with <code>status: "pending"</code>.</li>
+  <li>Admin reviews the moderation queue.</li>
+  <li>Approved reviews appear publicly on the product detail page.</li>
+</ol>
+
+<h3>Support and Feedback</h3>
+<ol>
+  <li>Customer opens Contact Support or Feedback from navigation.</li>
+  <li>Support submissions create <code>/supportTickets/{ticketId}</code>.</li>
+  <li>Feedback submissions create <code>/feedback/{feedbackId}</code>.</li>
+  <li>Admin views and responds to support tickets.</li>
+  <li>Admin triages feedback and issue reports.</li>
+</ol>
+
+<h3>Admin Governance</h3>
+<ol>
+  <li>Admin logs in with Firebase Auth.</li>
+  <li>App reads <code>/users/{uid}</code> and detects <code>isAdmin: true</code>.</li>
+  <li>GoRouter redirects admin users to <code>/admin</code>.</li>
+  <li>Admin performs inventory, order, review, FAQ, support, feedback, and user management tasks.</li>
+  <li>Firestore Security Rules independently authorize or reject every protected read/write.</li>
+</ol>
+
+<h2>Nonfunctional Requirements</h2>
+<table>
+  <thead><tr><th>Category</th><th>Requirement</th></tr></thead>
+  <tbody>
+    <tr><td>Performance</td><td>Page transitions under 1.5 seconds at the 95th percentile on Chrome desktop</td></tr>
+    <tr><td>Web performance</td><td>First Contentful Paint under 2.0 seconds on Chrome desktop over cable connection</td></tr>
+    <tr><td>Android package size</td><td>Release APK target under 25 MB for modern Android</td></tr>
+    <tr><td>Security</td><td>Zero unauthorized mutations at the data layer; Firestore Rules are mandatory</td></tr>
+    <tr><td>Availability</td><td>Best-effort 99.99% using Firebase managed services and hosting edge</td></tr>
+    <tr><td>Cost</td><td>$0/month at steady state on Firebase Spark Free Tier</td></tr>
+    <tr><td>Maintainability</td><td>Feature-first architecture, documented ADRs, no undocumented TODO/placeholder docs</td></tr>
+    <tr><td>Testability</td><td>Minimum 60% coverage on <code>lib/core/</code> and <code>lib/features/</code></td></tr>
+    <tr><td>Observability</td><td>Crashlytics for uncaught exceptions; Analytics for key product events</td></tr>
+    <tr><td>Compatibility</td><td>Chrome 120+, Safari 17+, Edge 120+, Firefox 121+, Android 10+</td></tr>
+    <tr><td>Accessibility</td><td>WCAG AA contrast targets for body and large text</td></tr>
+    <tr><td>Internationalization</td><td>English (<code>en_US</code>) only for MVP</td></tr>
+  </tbody>
+</table>
+
+<h1 id="project-scope">Project Scope</h1>
+
+<h2>In Scope</h2>
+<p>The MVP includes every feature required by the official App-WatchHub specification and the reconciled project scope.</p>
+<table>
+  <thead><tr><th>ID</th><th>In-Scope Area</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>F-1</td><td>Identity management</td><td>Register, login, logout, password recovery, profile creation/update</td></tr>
+    <tr><td>F-2</td><td>Catalog discovery</td><td>Product catalog, brand/category/price/availability filters, real-time updates</td></tr>
+    <tr><td>F-3</td><td>Product details</td><td>Images, descriptions, specs, prices, zoom, stock and availability</td></tr>
+    <tr><td>F-4</td><td>Cart and wishlist</td><td>Local persisted cart and wishlist, movement between both, totals and stock checks</td></tr>
+    <tr><td>F-5</td><td>User profile and addresses</td><td>Profile, multiple shipping addresses, default address, order history and tracking</td></tr>
+    <tr><td>F-6</td><td>Reviews and ratings</td><td>Customer review submission, approved review display, admin moderation</td></tr>
+    <tr><td>F-7</td><td>Customer support</td><td>Contact form, support tickets, support history, admin response</td></tr>
+    <tr><td>F-8</td><td>Feedback and issue reports</td><td>User feedback and bug reporting with admin triage</td></tr>
+    <tr><td>F-9</td><td>Admin panel</td><td>Product, user, review, order, support, feedback, FAQ, and dashboard management</td></tr>
+    <tr><td>F-10</td><td>Luxury design system</td><td>Dark theme, gold accents, Playfair Display headings, Inter body text</td></tr>
+    <tr><td>F-11</td><td>Role-based routing</td><td>Customer/admin redirects using GoRouter</td></tr>
+    <tr><td>F-12</td><td>Cross-platform delivery</td><td>Flutter Web and Android from one codebase</td></tr>
+    <tr><td>F-13</td><td>Edge security</td><td>Firestore Security Rules as the authoritative authorization layer</td></tr>
+    <tr><td>F-14</td><td>CI/CD</td><td>GitHub Actions verify, test, build, and deploy pipeline</td></tr>
+    <tr><td>F-15</td><td>Telemetry</td><td>Firebase Analytics and Crashlytics</td></tr>
+    <tr><td>F-16</td><td>User documentation</td><td>In-app FAQ and user guide/onboarding support</td></tr>
+    <tr><td>F-17</td><td>Developer documentation</td><td>Markdown documentation tree and developer guide material</td></tr>
+    <tr><td>F-18</td><td>Demonstration video</td><td>5-10 minute app walkthrough for final submission</td></tr>
+  </tbody>
+</table>
+
+<h2>Out of Scope</h2>
+<table>
+  <thead><tr><th>Exclusion</th><th>Rationale</th><th>Revisit Trigger</th></tr></thead>
+  <tbody>
+    <tr><td>Payment gateway integration</td><td>Not required by the official spec; introduces PCI, KYC, webhook, and transaction-fee complexity</td><td>Post-MVP paid pilot</td></tr>
+    <tr><td>Real payment capture</td><td>MVP records non-binding order intent only</td><td>Payment integration phase</td></tr>
+    <tr><td>Push notifications</td><td>Order status is visible in-app; FCM deferred</td><td>v1.1</td></tr>
+    <tr><td>Multi-currency support</td><td>USD-only for MVP; FX data source would add complexity</td><td>v1.2 international expansion</td></tr>
+    <tr><td>Automated refunds</td><td>No payment capture exists in MVP</td><td>Payment integration</td></tr>
+    <tr><td>Cross-device cart/wishlist sync</td><td>Cart and wishlist are intentionally local to reduce Firestore writes</td><td>v1.2</td></tr>
+    <tr><td>OAuth/SSO</td><td>Email/password is sufficient for MVP</td><td>v1.1</td></tr>
+    <tr><td>Multi-language localization</td><td>English-only MVP</td><td>v1.2</td></tr>
+    <tr><td>Server-side rendering</td><td>SEO not required for app shell</td><td>Public marketing site</td></tr>
+    <tr><td>A/B testing</td><td>Growth tooling not needed for academic MVP</td><td>Post-MVP growth phase</td></tr>
+    <tr><td>Custom backend/API server</td><td>Violates architecture and budget constraints</td><td>Not planned for MVP</td></tr>
+    <tr><td>Real-time in-app chat</td><td>Contact form satisfies support requirement</td><td>v1.2</td></tr>
+    <tr><td>Firebase Cloud Functions</td><td>Spark tier excludes Cloud Functions; business logic remains client/rules-driven</td><td>v2.0 / Blaze upgrade</td></tr>
+    <tr><td>Automated Firestore backups</td><td>Requires paid tier; manual backup only for MVP</td><td>Blaze tier acceptance</td></tr>
+    <tr><td>App store publication</td><td>APK build is for demo only</td><td>Post-MVP release phase</td></tr>
+  </tbody>
+</table>
+
+<h2>Constraints</h2>
+<table>
+  <thead><tr><th>ID</th><th>Constraint</th></tr></thead>
+  <tbody>
+    <tr><td>C-1</td><td>Infrastructure cost must remain $0.00/month at steady state</td></tr>
+    <tr><td>C-2</td><td>MVP timeline is 30 calendar days: July 14, 2026 to August 14, 2026</td></tr>
+    <tr><td>C-3</td><td>Team work must be parallelizable across 6 contributors</td></tr>
+    <tr><td>C-4</td><td>Cross-platform delivery must use a single Flutter codebase</td></tr>
+    <tr><td>C-5</td><td>Backend must use Firebase Spark Free Tier; no paid Firebase extensions</td></tr>
+    <tr><td>C-6</td><td>Authorization must be enforced by Firestore Security Rules</td></tr>
+    <tr><td>C-7</td><td>Official App-WatchHub specification features are in scope unless explicitly ADR-deferred</td></tr>
+  </tbody>
+</table>
+
+<h2>Dependencies</h2>
+<table>
+  <thead><tr><th>Dependency</th><th>Role</th></tr></thead>
+  <tbody>
+    <tr><td>Flutter SDK</td><td>Cross-platform Web and Android application framework</td></tr>
+    <tr><td>Firebase Authentication</td><td>Email/password identity and password reset</td></tr>
+    <tr><td>Cloud Firestore</td><td>Primary NoSQL database and real-time stream source</td></tr>
+    <tr><td>Firebase Hosting</td><td>Public web deployment on CDN</td></tr>
+    <tr><td>Firebase Analytics</td><td>Event telemetry</td></tr>
+    <tr><td>Firebase Crashlytics</td><td>Crash reporting</td></tr>
+    <tr><td>GitHub Actions</td><td>CI/CD pipeline</td></tr>
+    <tr><td>Hive CE</td><td>Local cart and wishlist persistence</td></tr>
+    <tr><td>Riverpod</td><td>State management and dependency injection</td></tr>
+    <tr><td>GoRouter</td><td>Declarative routing and route guards</td></tr>
+    <tr><td>Freezed / JsonSerializable</td><td>Immutable models and serialization</td></tr>
+  </tbody>
+</table>
+
+<h1 id="what-we-are-building">What We Are Building</h1>
+
+<h2>Core Product Definition</h2>
+<p>App-WatchHub is a cross-platform luxury watch commerce system made of:</p>
+<ul>
+  <li>A customer-facing Flutter boutique.</li>
+  <li>An admin-facing Flutter governance dashboard.</li>
+  <li>Firebase Authentication for identity.</li>
+  <li>Cloud Firestore for products, users, orders, reviews, support tickets, feedback, and FAQs.</li>
+  <li>Firestore Security Rules for authorization.</li>
+  <li>Hive local storage for transient cart and wishlist state.</li>
+  <li>Firebase Hosting for Web deployment.</li>
+  <li>Android APK output for demonstration.</li>
+  <li>GitHub Actions for continuous integration and deployment.</li>
+</ul>
+<blockquote>The final product is not a generic storefront. It is a focused, premium horology app with a dark, restrained luxury interface and a documented serverless architecture designed for academic review, portfolio review, and future extension.</blockquote>
+
+<h2>Main Components and Modules</h2>
+<table>
+  <thead><tr><th>Module</th><th>Responsibility</th></tr></thead>
+  <tbody>
+    <tr><td><code>core/constants</code></td><td>App constants, asset paths, catalog constants, theme constants</td></tr>
+    <tr><td><code>core/services</code></td><td>Firebase service wrappers, analytics, crash reporting</td></tr>
+    <tr><td><code>core/theme</code></td><td>Dark luxury design system</td></tr>
+    <tr><td><code>core/router</code></td><td>GoRouter route table and guards</td></tr>
+    <tr><td><code>core/utils</code></td><td>Validators, price calculation, formatting helpers</td></tr>
+    <tr><td><code>shared/models</code></td><td>User, product, order, cart, review, support, feedback, FAQ models</td></tr>
+    <tr><td><code>shared/repositories</code></td><td>Repository interfaces for testable data access</td></tr>
+    <tr><td><code>shared/widgets</code></td><td>Reusable UI primitives such as buttons, cards, price tags, loaders</td></tr>
+    <tr><td><code>features/auth</code></td><td>Login, registration, password reset, auth state</td></tr>
+    <tr><td><code>features/catalog</code></td><td>Catalog page, product cards, product detail, filters</td></tr>
+    <tr><td><code>features/search</code></td><td>Search bar and query state</td></tr>
+    <tr><td><code>features/cart</code></td><td>Cart page, checkout page, cart provider</td></tr>
+    <tr><td><code>features/orders</code></td><td>Order history and tracking</td></tr>
+    <tr><td><code>features/reviews</code></td><td>Review submission, display, rating widgets</td></tr>
+    <tr><td><code>features/support</code></td><td>Contact support and ticket history</td></tr>
+    <tr><td><code>features/faq</code></td><td>In-app FAQ page</td></tr>
+    <tr><td><code>features/feedback</code></td><td>Feedback and issue reporting</td></tr>
+    <tr><td><code>features/profile</code></td><td>Profile and address management</td></tr>
+    <tr><td><code>features/admin</code></td><td>Dashboard, inventory, orders, reviews, support, feedback, FAQ, user management</td></tr>
+  </tbody>
+</table>
+
+<h2>High-Level Architecture</h2>
+<p>App-WatchHub uses a <strong>Serverless Event-Driven Architecture</strong>:</p>
+<pre><code>graph TD
+    UI[Flutter Web / Android Client]
+    State[Riverpod State Layer]
+    Domain[Repository Interfaces and Models]
+    Local[Hive Local Storage]
+    Auth[Firebase Authentication]
+    DB[Cloud Firestore]
+    Rules[Firestore Security Rules]
+    Hosting[Firebase Hosting CDN]
+    Analytics[Firebase Analytics]
+    Crash[Firebase Crashlytics]
+    CI[GitHub Actions]
+
+    CI --&gt; Hosting
+    Hosting --&gt; UI
+    UI --&gt; State
+    State --&gt; Domain
+    Domain --&gt; Local
+    Domain --&gt; Auth
+    Domain --&gt; DB
+    DB --&gt; Rules
+    UI --&gt; Analytics
+    UI --&gt; Crash</code></pre>
+<p>The client is considered untrusted. GoRouter guards improve user experience, but every protected operation must also be authorized by Firestore Security Rules.</p>
+
+<h2>Layered Application Design</h2>
+<table>
+  <thead><tr><th>Layer</th><th>Responsibility</th><th>Examples</th></tr></thead>
+  <tbody>
+    <tr><td>Presentation</td><td>Render UI and capture user intent</td><td>Pages, widgets, forms, dialogs</td></tr>
+    <tr><td>State</td><td>Hold UI/application state and orchestrate repository calls</td><td>Riverpod providers, AsyncNotifier state</td></tr>
+    <tr><td>Domain</td><td>Define entities, repository contracts, validators</td><td>Freezed models, abstract repositories</td></tr>
+    <tr><td>Infrastructure</td><td>Implement repositories against concrete storage/services</td><td>Firebase Auth, Firestore repos, Hive stores</td></tr>
+    <tr><td>Core</td><td>Cross-cutting app infrastructure</td><td>Theme, router, constants, analytics, utilities</td></tr>
+  </tbody>
+</table>
+
+<h2>Technology Stack</h2>
+<table>
+  <thead><tr><th>Layer</th><th>Technology</th></tr></thead>
+  <tbody>
+    <tr><td>Language</td><td>Dart</td></tr>
+    <tr><td>UI framework</td><td>Flutter 4.x, Material 3</td></tr>
+    <tr><td>State management</td><td>Riverpod 2.x / AsyncNotifier</td></tr>
+    <tr><td>Routing</td><td>GoRouter</td></tr>
+    <tr><td>Models and serialization</td><td>Freezed, JsonSerializable</td></tr>
+    <tr><td>Authentication</td><td>Firebase Authentication</td></tr>
+    <tr><td>Database</td><td>Cloud Firestore</td></tr>
+    <tr><td>Local persistence</td><td>Hive CE</td></tr>
+    <tr><td>Hosting</td><td>Firebase Hosting</td></tr>
+    <tr><td>Observability</td><td>Firebase Analytics, Firebase Crashlytics</td></tr>
+    <tr><td>CI/CD</td><td>GitHub Actions</td></tr>
+    <tr><td>Testing</td><td>Flutter test, integration_test, Firebase rules unit testing, Mocha for rules tests</td></tr>
+    <tr><td>Styling</td><td>Dark luxury theme, Playfair Display, Inter, gold accents</td></tr>
+  </tbody>
+</table>
+
+<h2>Data Model and Key Entities</h2>
+
+<h3>Firestore Collections</h3>
+<table>
+  <thead><tr><th>Collection</th><th>Purpose</th><th>Access Pattern</th></tr></thead>
+  <tbody>
+    <tr><td><code>/users/{uid}</code></td><td>User profile, email mirror, admin flag, addresses</td><td>Owner read/update limited fields; admin read/update all</td></tr>
+    <tr><td><code>/products/{productId}</code></td><td>Product catalog entries</td><td>Public read; admin write</td></tr>
+    <tr><td><code>/orders/{orderId}</code></td><td>Order header and embedded line items</td><td>Owner/admin read; customer create own; admin status update</td></tr>
+    <tr><td><code>/reviews/{reviewId}</code></td><td>Product reviews and moderation state</td><td>Authenticated create; approved read; admin moderate</td></tr>
+    <tr><td><code>/supportTickets/{ticketId}</code></td><td>Customer support submissions</td><td>Owner/admin read; customer create; admin respond</td></tr>
+    <tr><td><code>/feedback/{feedbackId}</code></td><td>Product feedback and issue reports</td><td>Anyone create; admin read/update/delete</td></tr>
+    <tr><td><code>/faq/{faqId}</code></td><td>In-app FAQ content</td><td>Public read active FAQs; admin CRUD</td></tr>
+  </tbody>
+</table>
+
+<h3>Core Entities</h3>
+<table>
+  <thead><tr><th>Entity</th><th>Important Fields</th></tr></thead>
+  <tbody>
+    <tr><td>User</td><td><code>uid</code>, <code>fullName</code>, <code>email</code>, <code>isAdmin</code>, <code>addresses[]</code>, <code>createdAt</code>, <code>updatedAt</code></td></tr>
+    <tr><td>Address</td><td><code>addressId</code>, <code>label</code>, <code>recipientName</code>, <code>street</code>, <code>city</code>, <code>stateProvince</code>, <code>postalCode</code>, <code>country</code>, <code>phone</code>, <code>isDefault</code></td></tr>
+    <tr><td>Product</td><td><code>productId</code>, <code>modelName</code>, <code>brand</code>, <code>category</code>, <code>price</code>, <code>stockCount</code>, <code>assetPath</code>, <code>specs</code>, <code>createdAt</code>, <code>updatedAt</code></td></tr>
+    <tr><td>Order</td><td><code>orderId</code>, <code>userId</code>, <code>subtotal</code>, <code>tax</code>, <code>totalAmount</code>, <code>orderStatus</code>, <code>createdAt</code>, <code>items[]</code></td></tr>
+    <tr><td>Order item</td><td><code>productId</code>, <code>modelName</code>, <code>quantity</code>, <code>unitPrice</code>, <code>lineTotal</code></td></tr>
+    <tr><td>Review</td><td><code>reviewId</code>, <code>productId</code>, <code>userId</code>, <code>userFullName</code>, <code>rating</code>, <code>title</code>, <code>body</code>, <code>status</code>, moderation fields</td></tr>
+    <tr><td>Support ticket</td><td><code>ticketId</code>, <code>userId</code>, <code>subject</code>, <code>subjectCategory</code>, <code>messageBody</code>, <code>relatedOrderId</code>, <code>status</code>, <code>adminResponse</code></td></tr>
+    <tr><td>Feedback</td><td><code>feedbackId</code>, <code>userId</code>, <code>isAnonymous</code>, <code>category</code>, <code>description</code>, <code>screenshotUrl</code>, <code>relatedProductId</code>, <code>status</code>, triage fields</td></tr>
+    <tr><td>FAQ</td><td><code>faqId</code>, <code>category</code>, <code>question</code>, <code>answer</code>, <code>displayOrder</code>, <code>isActive</code></td></tr>
+  </tbody>
+</table>
+
+<h2>Important Architectural Decisions</h2>
+<table>
+  <thead><tr><th>ADR</th><th>Decision</th></tr></thead>
+  <tbody>
+    <tr><td>ADR-001</td><td>Serverless Event-Driven Architecture instead of custom REST backend</td></tr>
+    <tr><td>ADR-002</td><td>Cloud Firestore instead of SQL for MVP production storage</td></tr>
+    <tr><td>ADR-003</td><td>Local asset bundles instead of Firebase Storage</td></tr>
+    <tr><td>ADR-004</td><td>Riverpod instead of Provider/BLoC</td></tr>
+    <tr><td>ADR-005</td><td>GoRouter instead of direct Navigator 2.0</td></tr>
+    <tr><td>ADR-006</td><td>GitHub Actions for CI/CD</td></tr>
+    <tr><td>ADR-007</td><td>Maintain both academic ERD and production Firestore schema</td></tr>
+    <tr><td>ADR-008</td><td>Cart in Hive local storage instead of Firestore</td></tr>
+    <tr><td>ADR-009</td><td>Dark luxury theme instead of default Material</td></tr>
+    <tr><td>ADR-010</td><td>Payment integration out of scope for MVP</td></tr>
+    <tr><td>ADR-011</td><td>Single Flutter codebase for Web and Android</td></tr>
+    <tr><td>ADR-012</td><td>Firebase Spark Free Tier instead of Blaze</td></tr>
+    <tr><td>ADR-013</td><td>Client-side search instead of Algolia/full-text service</td></tr>
+    <tr><td>ADR-014</td><td>Top-level <code>/reviews</code> collection instead of product subcollections</td></tr>
+    <tr><td>ADR-015</td><td>FAQ in Firestore instead of static JSON</td></tr>
+    <tr><td>ADR-016</td><td>6-contributor team workflow</td></tr>
+  </tbody>
+</table>
+
+<h2>Security Model</h2>
+<p>The security model has three boundaries:</p>
+<table>
+  <thead><tr><th>Boundary</th><th>Trust Level</th><th>Responsibility</th></tr></thead>
+  <tbody>
+    <tr><td>Firebase Hosting CDN</td><td>Network edge</td><td>TLS, CDN serving, built-in Google edge protections</td></tr>
+    <tr><td>Flutter client</td><td>Untrusted</td><td>UI, route guards, client-side validation, optimistic UX</td></tr>
+    <tr><td>Firebase Auth + Firestore Rules</td><td>Authoritative</td><td>Identity token verification and authorization per request</td></tr>
+  </tbody>
+</table>
+<p>Authorization rules include:</p>
+<ul>
+  <li>Users can read/update their own profile but cannot self-promote to admin.</li>
+  <li>Products are public-read and admin-write.</li>
+  <li>Customers can create their own orders only with <code>orderStatus: "Processing"</code>.</li>
+  <li>Customers can read only their own orders.</li>
+  <li>Admins can update only order status, not order totals or line items.</li>
+  <li>Reviews default to <code>pending</code> and require admin approval for public display.</li>
+  <li>Feedback can be submitted anonymously, but only admins can read/triage it.</li>
+  <li>Active FAQs are public-read; FAQ writes are admin-only.</li>
+</ul>
+
+<h2>Testing and Quality Strategy</h2>
+<table>
+  <thead><tr><th>Test Type</th><th>Purpose</th><th>Target</th></tr></thead>
+  <tbody>
+    <tr><td>Unit tests</td><td>Pure business logic, validators, formatters, price calculation</td><td>Fast feedback, high ROI</td></tr>
+    <tr><td>Widget tests</td><td>UI rendering and interaction behavior</td><td>Key customer/admin widgets</td></tr>
+    <tr><td>Integration tests</td><td>End-to-end flows against Firebase Emulator</td><td>Auth, catalog, cart, checkout, admin</td></tr>
+    <tr><td>Security rules tests</td><td>Authorization guarantees</td><td>Positive and negative test for every rule</td></tr>
+    <tr><td>Manual QA</td><td>Demo script validation</td><td>Full customer/admin journey before recording</td></tr>
+  </tbody>
+</table>
+<p>Minimum coverage target: <strong>60% overall coverage on <code>lib/core/</code> and <code>lib/features/</code></strong>.</p>
+
+<h2>Deployment Model</h2>
+<table>
+  <thead><tr><th>Aspect</th><th>Approach</th></tr></thead>
+  <tbody>
+    <tr><td>Environment</td><td>Single MVP environment: <code>app-watchhub-dev</code></td></tr>
+    <tr><td>Web deployment</td><td>Firebase Hosting at <code>https://app-watchhub-dev.web.app</code></td></tr>
+    <tr><td>Android delivery</td><td>Release APK built for demo, not app store publication</td></tr>
+    <tr><td>CI/CD trigger</td><td>Pull requests run verify/test/build; <code>main</code> push deploys</td></tr>
+    <tr><td>Rollback</td><td>Firebase Hosting rollback to previous release</td></tr>
+    <tr><td>Disaster recovery</td><td>Git for rules/indexes; manual Firestore export for MVP</td></tr>
+  </tbody>
+</table>
+
+<h1 id="roadmap">Roadmap</h1>
+
+<h2>MVP Timeline Overview</h2>
+<p>The MVP is planned across four one-week sprints from <strong>July 14, 2026 to August 14, 2026</strong>. The expanded App-WatchHub scope is handled through parallel work across six contributors.</p>
+<table>
+  <thead><tr><th>Phase</th><th>Dates</th><th>Theme</th><th>Exit Goal</th></tr></thead>
+  <tbody>
+    <tr><td>Week 1</td><td>July 14-20, 2026</td><td>Groundwork</td><td>Project skeleton, Firebase, CI/CD, theme, rules, seed data</td></tr>
+    <tr><td>Week 2</td><td>July 21-27, 2026</td><td>Core customer UX</td><td>Auth, catalog, search, filters, product detail, cart, wishlist, profile</td></tr>
+    <tr><td>Week 3</td><td>July 28-August 3, 2026</td><td>Engagement and admin</td><td>Reviews, support, feedback, order tracking, admin dashboard and queues</td></tr>
+    <tr><td>Week 4</td><td>August 4-14, 2026</td><td>Production readiness</td><td>Integration testing, rules hardening, deployment, docs, reports, demo video</td></tr>
+  </tbody>
+</table>
+
+<h2>Phase 1: Groundwork</h2>
+<table>
+  <tbody>
+    <tr><td><strong>Timeframe</strong></td><td>July 14-20, 2026</td></tr>
+    <tr><td><strong>Key deliverables</strong></td><td>GitHub repo, Firebase project, Firebase emulator setup, CI/CD workflow, feature-first Flutter structure, luxury theme, Firestore rules and indexes, seed script</td></tr>
+    <tr><td><strong>Dependencies</strong></td><td>Flutter SDK, Firebase CLI, GitHub repo access, Firebase project access</td></tr>
+    <tr><td><strong>Milestone gate</strong></td><td>Project builds, lint passes, CI green, Firebase project exists, empty shell deploys</td></tr>
+    <tr><td><strong>Descope candidates</strong></td><td>Theme polish can use Material defaults; CI/CD can be manual deploy temporarily</td></tr>
+  </tbody>
+</table>
+
+<h2>Phase 2: Core Customer UX</h2>
+<table>
+  <tbody>
+    <tr><td><strong>Timeframe</strong></td><td>July 21-27, 2026</td></tr>
+    <tr><td><strong>Key deliverables</strong></td><td>Login/register/password reset, boutique catalog, product search, filters, product detail, cart, wishlist, checkout shell, profile and address management</td></tr>
+    <tr><td><strong>Dependencies</strong></td><td>Week 1 skeleton, product schema, Firebase Auth, Firestore products collection, Hive setup</td></tr>
+    <tr><td><strong>Milestone gate</strong></td><td>Customer can register, login, browse catalog, add to cart, and retain cart after restart</td></tr>
+    <tr><td><strong>Descope candidates</strong></td><td>Reduce multi-filter complexity; temporarily ship cart before wishlist if needed</td></tr>
+  </tbody>
+</table>
+
+<h2>Phase 3: Engagement and Admin</h2>
+<table>
+  <tbody>
+    <tr><td><strong>Timeframe</strong></td><td>July 28-August 3, 2026</td></tr>
+    <tr><td><strong>Key deliverables</strong></td><td>Review submission and moderation, support contact form, FAQ page, feedback form, order tracking, admin dashboard, inventory CRUD, admin orders, support queue, feedback triage</td></tr>
+    <tr><td><strong>Dependencies</strong></td><td>Auth roles, admin bootstrap, Firestore rules, product/order/review/support/feedback/FAQ schemas</td></tr>
+    <tr><td><strong>Milestone gate</strong></td><td>Admin can login, update stock, update order status, and security rules tests pass</td></tr>
+    <tr><td><strong>Descope candidates</strong></td><td>Simplify admin stats to basic tables; reduce advanced filtering/sorting in admin queues</td></tr>
+  </tbody>
+</table>
+
+<h2>Phase 4: Production Readiness</h2>
+<table>
+  <tbody>
+    <tr><td><strong>Timeframe</strong></td><td>August 4-14, 2026</td></tr>
+    <tr><td><strong>Key deliverables</strong></td><td>Integration tests, security rules hardening, Firebase Hosting deploy, Android APK, documentation polish, academic status report, feedback form, final report, 5-10 minute demo video</td></tr>
+    <tr><td><strong>Dependencies</strong></td><td>Completed customer/admin flows, CI pipeline, Firebase Hosting, rules test suite</td></tr>
+    <tr><td><strong>Milestone gate</strong></td><td>All success criteria pass, live deploy stable, documentation complete, demo video recorded, final report submitted</td></tr>
+    <tr><td><strong>Descope candidates</strong></td><td>None; final gate is binary</td></tr>
+  </tbody>
+</table>
+
+<h2>Short-Term Goals: Next 1-3 Months</h2>
+<table>
+  <thead><tr><th>Goal</th><th>Deliverables</th></tr></thead>
+  <tbody>
+    <tr><td>Stabilize MVP</td><td>Bug fixes, improved test coverage, security rule refinements, documentation updates</td></tr>
+    <tr><td>Improve authentication</td><td>Email verification and OAuth SSO</td></tr>
+    <tr><td>Improve deployment maturity</td><td>Staging environment, custom domain, release tags, better rollback documentation</td></tr>
+    <tr><td>Improve engagement</td><td>Push notifications for order status, richer review workflows, better support ticket history</td></tr>
+    <tr><td>Improve admin efficiency</td><td>Bulk actions, better table filters, date-range filtering, richer dashboard metrics</td></tr>
+  </tbody>
+</table>
+
+<h2>Long-Term Goals: 6+ Months</h2>
+<table>
+  <thead><tr><th>Goal</th><th>Deliverables</th></tr></thead>
+  <tbody>
+    <tr><td>Enable real commerce</td><td>Stripe payment integration, payment webhooks, refund/cancellation workflow</td></tr>
+    <tr><td>Scale catalog discovery</td><td>Algolia or equivalent search, pagination, server-assisted filtering</td></tr>
+    <tr><td>International expansion</td><td>Multi-currency, localized content, additional locales, RTL evaluation</td></tr>
+    <tr><td>Enterprise operations</td><td>Cloud Functions, Blaze upgrade, automated Firestore backups, audit logs</td></tr>
+    <tr><td>Distribution</td><td>Google Play and App Store publication</td></tr>
+    <tr><td>Multi-boutique platform</td><td>Multi-tenant data model, tenant-scoped admin, boutique-specific catalogs</td></tr>
+  </tbody>
+</table>
+
+<h1 id="assumptions-and-open-decisions">Assumptions and Open Decisions</h1>
+
+<h2>Working Assumptions</h2>
+<table>
+  <thead><tr><th>ID</th><th>Assumption</th></tr></thead>
+  <tbody>
+    <tr><td>A-1</td><td><span class="badge">Assumption</span> MVP catalog size remains under 50 SKUs, so client-side search and filtering are sufficient</td></tr>
+    <tr><td>A-2</td><td><span class="badge">Assumption</span> Demo concurrency remains low enough for Firebase Spark quotas</td></tr>
+    <tr><td>A-3</td><td><span class="badge">Assumption</span> Product images are optimized under 200 KB each</td></tr>
+    <tr><td>A-4</td><td><span class="badge">Assumption</span> Product metadata is entered manually by admins</td></tr>
+    <tr><td>A-5</td><td><span class="badge">Assumption</span> Checkout tax can use a flat rate once the value is decided</td></tr>
+    <tr><td>A-6</td><td><span class="badge">Assumption</span> Users are on modern browsers and Android 10+</td></tr>
+    <tr><td>A-7</td><td><span class="badge">Assumption</span> Demo can be recorded on Web, Android, or both</td></tr>
+    <tr><td>A-8</td><td><span class="badge">Assumption</span> Team members have enough Flutter/Dart baseline knowledge to work in parallel</td></tr>
+    <tr><td>A-9</td><td><span class="badge">Assumption</span> Client-side search remains sub-100ms for MVP catalog size</td></tr>
+    <tr><td>A-10</td><td><span class="badge">Assumption</span> Review volume remains small enough to avoid pagination during MVP</td></tr>
+  </tbody>
+</table>
+
+<h2>Open Decisions</h2>
+<table>
+  <thead><tr><th>ID</th><th>Decision Needed</th><th>Current Recommendation</th></tr></thead>
+  <tbody>
+    <tr><td>Q-1</td><td>Checkout tax rate</td><td><span class="badge">Assumption</span> Use flat 8% tax as a constant unless stakeholder decides otherwise</td></tr>
+    <tr><td>Q-2</td><td>Server-side validation for <code>fullName</code> updates</td><td>Add validation to Firestore update rules</td></tr>
+    <tr><td>Q-4</td><td>Demo video platform</td><td>Record both Web and Android if schedule allows</td></tr>
+    <tr><td>Q-5</td><td>Public repository license</td><td>MIT license, pending academic/IP confirmation</td></tr>
+    <tr><td>Q-7</td><td>Deleted product in active cart</td><td>Block checkout and show unavailable items</td></tr>
+    <tr><td>Q-9</td><td>Expected concurrent demo load</td><td>Treat demo as single-user or small-audience load</td></tr>
+    <tr><td>Q-16</td><td>Offline order placement</td><td>Require online checkout for MVP</td></tr>
+    <tr><td>Q-20</td><td>PII in Crashlytics</td><td>Allow only test data during MVP; revisit before public launch</td></tr>
+  </tbody>
+</table>
+
+<h1 id="success-criteria">Success Criteria</h1>
+<p>The project is considered successful when all of the following are true by <strong>August 14, 2026</strong>:</p>
+<table>
+  <thead><tr><th>Criterion</th><th>Verification</th></tr></thead>
+  <tbody>
+    <tr><td>Public Web app is live</td><td>Firebase Hosting URL returns HTTP 200 and renders the app shell</td></tr>
+    <tr><td>Core customer flows work</td><td>Register, login, browse, search/filter, detail, cart, checkout, order history, tracking</td></tr>
+    <tr><td>Core admin flows work</td><td>Admin login, dashboard, inventory CRUD, order status update, moderation/queues</td></tr>
+    <tr><td>Security rules pass</td><td>Rules test suite rejects unauthorized access and mutations</td></tr>
+    <tr><td>Infrastructure cost remains $0</td><td>Firebase billing and GitHub Actions usage show no paid charges</td></tr>
+    <tr><td>Performance targets are met</td><td>Page transitions and first contentful paint meet defined NFRs</td></tr>
+    <tr><td>CI/CD is green</td><td>Latest GitHub Actions workflow succeeds on <code>main</code></td></tr>
+    <tr><td>Android APK is built</td><td>Release APK exists for demo use</td></tr>
+    <tr><td>Demo video is complete</td><td>5-10 minute walkthrough recorded and available for submission</td></tr>
+    <tr><td>Documentation is complete</td><td>Markdown docs exist, are non-stub, and align with implementation</td></tr>
+    <tr><td>Critical unknowns are resolved</td><td>Requirements-critical <code>UNKNOWN</code> items are either resolved or explicitly documented</td></tr>
+  </tbody>
+</table>
+
+<h2>Reference Source Documents</h2>
+<p>This unified document is based on the project documentation set:</p>
+<ul>
+  <li><code>PROJECT_SCOPE.md</code></li>
+  <li><code>PRODUCT_REQUIREMENTS.md</code></li>
+  <li><code>ROADMAP.md</code></li>
+  <li><code>ARCHITECTURE.md</code></li>
+  <li><code>SYSTEM_DESIGN.md</code></li>
+  <li><code>DATABASE_DESIGN.md</code></li>
+  <li><code>API_REFERENCE.md</code></li>
+  <li><code>SECURITY.md</code></li>
+  <li><code>CONFIGURATION.md</code></li>
+  <li><code>DEPLOYMENT.md</code></li>
+  <li><code>TESTING.md</code></li>
+  <li><code>DECISIONS.md</code></li>
+  <li><code>RISKS.md</code></li>
+  <li><code>OPEN_QUESTIONS.md</code></li>
+  <li><code>DEPENDENCIES.md</code></li>
+  <li><code>STYLE_GUIDE.md</code></li>
+  <li><code>FAQ.md</code></li>
+  <li><code>GLOSSARY.md</code></li>
+  <li><code>TROUBLESHOOTING.md</code></li>
+  <li><code>CONTRIBUTING.md</code></li>
+  <li><code>CHANGELOG.md</code></li>
+  <li><code>LICENSE.md</code></li>
+  <li><code>INDEX.md</code></li>
+</ul>
+
+<div class="doc-footer">App-WatchHub &mdash; Unified Project Documentation &middot; Generated July 16, 2026</div>
+
+</body>
+</html>
