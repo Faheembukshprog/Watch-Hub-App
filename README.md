@@ -1,17 +1,31 @@
-# app_watchhub
+# App-WatchHub
 
-A new Flutter project.
+Flutter luxury watch commerce MVP using Riverpod, GoRouter, Hive CE, Firebase Auth, and Cloud Firestore.
 
-## Getting Started
+## Current Progress
 
-This project is a starting point for a Flutter application.
+| Area | Status | Notes |
+|---|---|---|
+| Catalog | Done | Firestore `products` stream via `watchProductsProvider` |
+| Cart | Done / persistence gap | `CartNotifier` handles cart behavior; Hive write-through is still pending |
+| Routing | Done | `GoRouter` plus `StatefulShellRoute.indexedStack` bottom tabs |
+| Orders | Partial | Checkout creates local order history; Firestore tracking is pending |
+| Wishlist | Partial | Toggle provider exists; persistence/screens are pending |
+| Reviews | Partial | Product detail review UI exists; Firestore moderation is pending |
+| Auth | Partial | Firebase init/auth state exists; real email/password and roles are pending |
+| Support | Partial | Support and FAQ screens exist; ticket persistence is pending |
 
-A few resources to get you started if this is your first Flutter project:
+## Key Docs
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- [Agent guide](AGENTS.md)
+- [Gemini guide](GEMINI.md)
+- [Documentation index](markdown/INDEX.md)
+- [Architecture](markdown/ARCHITECTURE.md)
+- [Testing](markdown/TESTING.md)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Commands
+
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
+flutter test
+```

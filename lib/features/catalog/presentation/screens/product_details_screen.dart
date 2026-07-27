@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/models/product_model.dart';
+import '../providers/catalog_providers.dart';
+import '../providers/wishlist_provider.dart';
+import '../providers/reviews_provider.dart';
+import 'package:app_watchhub/features/cart/presentation/providers/cart_provider.dart';
+import 'package:app_watchhub/shared/models/review_model.dart';
 
 class ProductDetailsScreen extends ConsumerWidget {
   final String id;
@@ -11,6 +17,76 @@ class ProductDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 1. Fetch products list and find our matching product, or fall back to default
+    final productsAsync = ref.watch(watchProductsProvider);
+    
+    return productsAsync.when(
+      data: (products) {
+        final product = products.firstWhere(
+          (p) => p.id == id,
+          orElse: () => ProductModel(
+            id: id,
+            name: 'Speedmaster Professional Moonwatch',
+            brand: 'OMEGA',
+            price: 6800.00,
+            imageUrl: '',
+            description: 'The Speedmaster Professional Moonwatch is one of the world\'s most iconic timepieces. Having been a part of all six lunar missions, the legendary chronograph is an impressive representation of the brand\'s adventurous pioneering spirit.',
+            stockCount: 5,
+          ),
+        );
+
+        return _buildDetailsUI(context, ref, product);
+      },
+      loading: () => const Scaffold(
+        backgroundColor: Color(0xFFF8F9FA),
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF1A237E)),
+        ),
+      ),
+      error: (err, stack) {
+        // Fall back to default product details if there's a Firebase-related or network error
+        final fallbackProduct = ProductModel(
+          id: id,
+          name: 'Speedmaster Professional Moonwatch',
+          brand: 'OMEGA',
+          price: 6800.00,
+          imageUrl: '',
+          description: 'The Speedmaster Professional Moonwatch is one of the world\'s most iconic timepieces. Having been a part of all six lunar missions, the legendary chronograph is an impressive representation of the brand\'s adventurous pioneering spirit.',
+          stockCount: 5,
+        );
+        return _buildDetailsUI(context, ref, fallbackProduct);
+      },
+    );
+  }
+
+  Widget _buildDetailsUI(BuildContext context, WidgetRef ref, ProductModel product) {
+    // Wishlist State integration
+    final wishlist = ref.watch(wishlistProvider);
+    final isInWish = wishlist.any((p) => p.id == product.id);
+
+    // Reviews State integration
+    final allReviewsMap = ref.watch(productReviewsProvider);
+    final reviews = allReviewsMap[product.id] ?? [
+      ReviewModel(
+        id: 'seed-1',
+        userName: 'Charles Vane',
+        rating: 5.0,
+        comment: 'Exquisite timepiece. The finish and craftsmanship are top tier.',
+        date: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      ReviewModel(
+        id: 'seed-2',
+        userName: 'Eleanor Guthrie',
+        rating: 4.5,
+        comment: 'Stunning luxury look, runs extremely accurately.',
+        date: DateTime.now().subtract(const Duration(days: 5)),
+      ),
+    ];
+
+    final averageRating = reviews.isEmpty
+        ? 0.0
+        : reviews.fold<double>(0.0, (sum, r) => sum + r.rating) / reviews.length;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -22,8 +98,25 @@ class ProductDetailsScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite_border, color: Color(0xFF1A237E)),
-            onPressed: () {},
+            icon: Icon(
+              isInWish ? Icons.favorite : Icons.favorite_border,
+              color: const Color(0xFF1A237E),
+            ),
+            onPressed: () {
+              ref.read(wishlistProvider.notifier).toggleWishlist(product);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    isInWish
+                        ? 'Removed ${product.name} from Wishlist'
+                        : 'Added ${product.name} to Wishlist',
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: const Color(0xFF1A237E),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.share_outlined, color: Color(0xFF1A237E)),
@@ -58,12 +151,24 @@ class ProductDetailsScreen extends ConsumerWidget {
                       ),
                       child: Center(
                         child: Hero(
-                          tag: 'watch_image_$id',
-                          child: const Icon(
-                            Icons.watch,
-                            size: 160,
-                            color: Color(0xFF1A237E),
-                          ),
+                          tag: 'watch_image_${product.id}',
+                          child: product.imageUrl.isNotEmpty
+                              ? Image.network(
+                                  product.imageUrl,
+                                  height: 200,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(
+                                    Icons.watch,
+                                    size: 160,
+                                    color: Color(0xFF1A237E),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.watch,
+                                  size: 160,
+                                  color: Color(0xFF1A237E),
+                                ),
                         ),
                       ),
                     ),
@@ -84,9 +189,9 @@ class ProductDetailsScreen extends ConsumerWidget {
                           color: const Color(0xFF1A237E).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
-                          'OMEGA',
-                          style: TextStyle(
+                        child: Text(
+                          product.brand.toUpperCase(),
+                          style: const TextStyle(
                             color: Color(0xFF1A237E),
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -95,7 +200,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        'ID: $id',
+                        'ID: ${product.id}',
                         style: TextStyle(
                           color: Colors.grey.shade600,
                           fontSize: 12,
@@ -107,9 +212,9 @@ class ProductDetailsScreen extends ConsumerWidget {
 
                   const SizedBox(height: 10),
 
-                  const Text(
-                    'Speedmaster Professional Moonwatch',
-                    style: TextStyle(
+                  Text(
+                    product.name,
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF0F172A),
@@ -119,13 +224,43 @@ class ProductDetailsScreen extends ConsumerWidget {
 
                   const SizedBox(height: 12),
 
-                  const Text(
-                    '\$6,800.00',
-                    style: TextStyle(
+                  Text(
+                    '\$${product.price.toStringAsFixed(2)}',
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF1A237E),
                     ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // --- Rating Summary Widget ---
+                  Row(
+                    children: [
+                      Row(
+                        children: List.generate(5, (index) {
+                          return Icon(
+                            index < averageRating.floor()
+                                ? Icons.star
+                                : (index < averageRating
+                                    ? Icons.star_half
+                                    : Icons.star_border),
+                            color: Colors.amber,
+                            size: 20,
+                          );
+                        }),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${averageRating.toStringAsFixed(1)} (${reviews.length} reviews)',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 24),
@@ -186,13 +321,112 @@ class ProductDetailsScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
 
                   Text(
-                    'The Speedmaster Professional Moonwatch is one of the world\'s most iconic timepieces. Having been a part of all six lunar missions, the legendary chronograph is an impressive representation of the brand\'s adventurous pioneering spirit.',
+                    product.description,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade700,
                       height: 1.5,
                     ),
                   ),
+
+                  const SizedBox(height: 24),
+
+                  // --- Reviews & Ratings UI Section ---
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Customer Reviews',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                      TextButton.icon(
+                        icon: const Icon(Icons.rate_review_outlined, size: 16),
+                        label: const Text('Write Review'),
+                        onPressed: () => _showWriteReviewDialog(context, ref, product.id),
+                        style: TextButton.styleFrom(
+                          foregroundColor: const Color(0xFF1A237E),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+
+                  if (reviews.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        'No reviews yet. Be the first to review this timepiece!',
+                        style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                      ),
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: reviews.length,
+                      itemBuilder: (context, index) {
+                        final r = reviews[index];
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade200),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    r.userName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  Text(
+                                    '${r.date.month}/${r.date.day}/${r.date.year}',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade500,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: List.generate(5, (starIdx) {
+                                  return Icon(
+                                    starIdx < r.rating.floor()
+                                        ? Icons.star
+                                        : Icons.star_border,
+                                    color: Colors.amber,
+                                    size: 14,
+                                  );
+                                }),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                r.comment,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey.shade700,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
 
                   const SizedBox(height: 32),
                 ],
@@ -219,11 +453,18 @@ class ProductDetailsScreen extends ConsumerWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {
+                        // Add product to cart via state provider
+                        ref.read(cartProvider.notifier).addToCart(product);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Added $id to Shopping Cart'),
+                            content: Text('Added ${product.name} to Shopping Cart'),
                             behavior: SnackBarBehavior.floating,
                             backgroundColor: const Color(0xFF1A237E),
+                            action: SnackBarAction(
+                              label: 'VIEW CART',
+                              textColor: Colors.white,
+                              onPressed: () {},
+                            ),
                           ),
                         );
                       },
@@ -253,6 +494,101 @@ class ProductDetailsScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showWriteReviewDialog(BuildContext context, WidgetRef ref, String productId) {
+    final nameController = TextEditingController();
+    final commentController = TextEditingController();
+    double selectedRating = 5.0;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Text('Submit Product Review'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Your Name',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        return IconButton(
+                          icon: Icon(
+                            index < selectedRating.floor() ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                            size: 32,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              selectedRating = index + 1.0;
+                            });
+                          },
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: commentController,
+                      maxLines: 4,
+                      decoration: const InputDecoration(
+                        labelText: 'Your Review',
+                        border: OutlineInputBorder(),
+                        alignLabelWithHint: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('CANCEL'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1A237E),
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    final name = nameController.text.trim();
+                    final comment = commentController.text.trim();
+                    if (name.isNotEmpty && comment.isNotEmpty) {
+                      ref.read(productReviewsProvider.notifier).addReview(
+                            productId,
+                            name,
+                            selectedRating,
+                            comment,
+                          );
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Thank you! Review submitted successfully.'),
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Color(0xFF1A237E),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('SUBMIT'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

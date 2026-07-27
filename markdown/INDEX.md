@@ -10,6 +10,21 @@
 
 The project is designed as a polished academic and portfolio-grade MVP delivered within a 30-day timeline while staying on Firebase Spark Free Tier and GitHub Actions free infrastructure.
 
+## Implementation Progress - 2026-07-27
+
+| Area | Status | Link |
+|---|---|---|
+| Catalog | Done | [Architecture status](ARCHITECTURE.md#21-implementation-status-sync---2026-07-27) |
+| Cart | Done / Hive gap | [Testing harness](TESTING.md#11-current-test-harness-notes---2026-07-27) |
+| Routing | Done | [Architecture status](ARCHITECTURE.md#21-implementation-status-sync---2026-07-27) |
+| Orders tracking | Partial | [Roadmap](ROADMAP.md) |
+| Wishlist | Partial | [Open questions](OPEN_QUESTIONS.md) |
+| Reviews | Partial | [Roadmap](ROADMAP.md) |
+| Auth | Partial | [Security](SECURITY.md) |
+| Support | Partial | [Architecture status](ARCHITECTURE.md#21-implementation-status-sync---2026-07-27) |
+
+Progress notes are kept in sync with the root [README](../README.md), [AGENTS](../AGENTS.md), [GEMINI](../GEMINI.md), [ARCHITECTURE](ARCHITECTURE.md), and [TESTING](TESTING.md) files.
+
 !!! info "Start Here"
     The main reference is the [Unified Project Documentation](UNIFIED_PROJECT_DOCUMENTATION.md). It consolidates project scope, product definition, architecture, data model, roadmap, assumptions, and success criteria.
 
@@ -52,13 +67,13 @@ graph TD
 
 | Feature | Status |
 |---|---|
-| Email/password authentication | In scope |
-| Dynamic catalog, search, and filters | In scope |
-| Product detail pages with image zoom and specs | In scope |
-| Cart, wishlist, and order placement | In scope |
+| Email/password authentication | Partial |
+| Dynamic catalog, search, and filters | Done / expanding |
+| Product detail pages with image zoom and specs | Partial |
+| Cart, wishlist, and order placement | Cart done; wishlist/orders partial |
 | Profile, addresses, order history, and tracking | In scope |
-| Reviews and ratings with moderation | In scope |
-| Support contact form and FAQ | In scope |
+| Reviews and ratings with moderation | Partial |
+| Support contact form and FAQ | Screens done; persistence pending |
 | Feedback and issue reporting | In scope |
 | Admin dashboard and CRUD tools | In scope |
 | Payment gateway integration | Out of scope for MVP |
@@ -114,4 +129,3 @@ graph TD
 - [Security](SECURITY.md)
 - [Testing](TESTING.md)
 - [Deployment](DEPLOYMENT.md)
-

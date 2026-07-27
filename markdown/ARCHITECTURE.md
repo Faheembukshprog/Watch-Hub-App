@@ -15,7 +15,7 @@
 | **Version** | 1.0.0 |
 | **Status** | Approved — locked for MVP cycle |
 | **Owner** | Muhammad Faheem Khan (Student ID: 1593766) |
-| **Last Updated** | 2026-07-15 |
+| **Last Updated** | 2026-07-27 |
 | **Related Documents** | [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md), [DEPLOYMENT.md](DEPLOYMENT.md), [SECURITY.md](SECURITY.md), [DATABASE_DESIGN.md](DATABASE_DESIGN.md), [DECISIONS.md](DECISIONS.md), [CONFIGURATION.md](CONFIGURATION.md) |
 
 ---
@@ -63,6 +63,29 @@ The trade-off is that complex business logic that would normally live in a backe
 | **Static Analysis** | **dart_code_metrics** | Custom lint rules enforce folder-import discipline and architectural boundaries. |
 
 The full dependency manifest with version pins and license classifications is in [DEPENDENCIES.md](DEPENDENCIES.md).
+
+### 2.1 Implementation Status Sync - 2026-07-27
+
+| Module | Status | Current implementation | Gap to track |
+|---|---|---|---|
+| Catalog | Done | `watchProductsProvider` streams Firestore `products` through `ProductRepository.watchProducts()` and renders `AsyncValue` states in `CatalogScreen`. | Add richer filters/search if required by final MVP scope. |
+| Cart | Done / persistence gap | `CartNotifier` supports add, quantity update, remove, clear, totals, and checkout conversion to local `OrderModel`. | Hive CE is in the stack, but cart box initialization, hydration, adapter registration, and mutation write-through are not wired yet. |
+| Routing | Done | `GoRouter` uses `StatefulShellRoute.indexedStack` for Catalog, Cart, Orders, and Profile tabs; product details, checkout, FAQ, and support use the root navigator. | Admin role routing still needs real role checks. |
+| Orders tracking | Partial | Checkout adds local order history through `orderHistoryProvider`. | Persist orders to Firestore and stream user/admin tracking documents. |
+| Wishlist | Partial | Product detail can toggle a local `wishlistProvider`. | Add Hive persistence and dedicated wishlist workflow. |
+| Reviews | Partial | Product detail has seeded/local reviews and a local `productReviewsProvider`. | Add authenticated Firestore review submission and moderation states. |
+| Support | Partial | Support and FAQ screens are routed. | Persist support tickets/FAQ data in Firestore and add admin queue. |
+| Auth | Partial | Firebase initialization and auth-state routing are present; login is an anonymous placeholder. | Add email/password screens, user profile creation, and admin/customer role checks. |
+
+#### Hive Persistence Contract
+
+Cart and wishlist should remain local-only to protect Firestore write quota. The expected implementation is:
+
+1. Initialize Hive CE before `runApp`.
+2. Register adapters for cart/product snapshots.
+3. Hydrate cart/wishlist providers from local boxes in `build()`.
+4. Write every add/update/remove/clear mutation back to Hive.
+5. Clear the cart box only after confirmed checkout/order handoff.
 
 ## 3. Component Architecture Diagram
 

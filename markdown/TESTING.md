@@ -15,7 +15,7 @@
 | **Version** | 1.0.0 |
 | **Status** | Approved — locked for MVP cycle |
 | **Owner** | Muhammad Faheem Khan (Student ID: 1593766) |
-| **Last Updated** | 2026-07-15 |
+| **Last Updated** | 2026-07-27 |
 | **Related Documents** | [PRODUCT_REQUIREMENTS.md](PRODUCT_REQUIREMENTS.md), [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md), [SECURITY.md](SECURITY.md), [DEPLOYMENT.md](DEPLOYMENT.md), [CONFIGURATION.md](CONFIGURATION.md) |
 
 ---
@@ -44,6 +44,35 @@ The strategy is anchored on three principles:
 1. **Test behavior, not implementation.** Tests assert what the system does (e.g., "cart total updates when item added"), not how it does it (e.g., " cart provider calls `addToCart` method"). This allows refactoring without rewriting tests.
 2. **Security rules are non-negotiable.** Every rule in [SECURITY.md](SECURITY.md) §4 has at least one positive test (rule allows intended operation) and one negative test (rule rejects unauthorized operation). A rule without tests is a rule we cannot trust.
 3. **Manual QA is scripted.** The demonstration video is a recording of a manual QA pass against a written script. This ensures the video is reproducible and that any regression caught during recording can be filed as a bug with a clear reproduction path.
+
+### 1.1 Current Test Harness Notes - 2026-07-27
+
+Every widget test that reads Riverpod state must be wrapped in `ProviderScope`. Tests that construct the app shell or router must override Firebase-backed providers because Firebase is not initialized in normal unit/widget tests.
+
+```dart
+await tester.pumpWidget(
+  ProviderScope(
+    overrides: [
+      routerProvider.overrideWithValue(mockRouter),
+    ],
+    child: const AppWatchHub(),
+  ),
+);
+```
+
+Current coverage anchors:
+
+| Test | Coverage |
+|---|---|
+| `test/widget_test.dart` | App bootstrap with `ProviderScope` and mocked `routerProvider` |
+| `test/cart_notifier_test.dart` | `CartNotifier` add/update/remove/clear/totals behavior |
+| `test/product_details_test.dart` | Product details, review section, and wishlist toggle smoke coverage |
+
+Mock-provider gaps to close:
+
+- Override catalog/product providers in product detail tests instead of relying on Firestore fallback behavior.
+- Add Hive persistence tests for cart hydration, write-through on mutations, and clear after checkout.
+- Add Firestore-backed order/review/support tests once those repositories are implemented.
 
 ## 2. Test Pyramid
 

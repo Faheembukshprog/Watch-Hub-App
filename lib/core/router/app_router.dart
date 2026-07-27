@@ -11,6 +11,8 @@ import '../../features/catalog/presentation/screens/product_details_screen.dart'
 import '../../features/checkout/presentation/views/checkout_screen.dart';
 import '../../features/orders/presentation/views/order_history_screen.dart';
 import '../../features/profile/presentation/views/profile_screen.dart';
+import '../../features/support/presentation/views/support_screen.dart';
+import '../../features/support/presentation/views/faq_screen.dart';
 
 import 'scaffold_with_nav_bar.dart';
 
@@ -49,6 +51,8 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String checkout = '/checkout';
   static const String admin = '/admin';
+  static const String faq = '/faq';
+  static const String support = '/support';
 }
 
 /// 2. Stream Provider for Auth Changes
@@ -186,6 +190,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.checkout,
         parentNavigatorKey: _rootNavigatorKey, // FIXED: Uses the global key
         builder: (context, state) => const CheckoutScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.faq,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FAQScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.support,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SupportScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
