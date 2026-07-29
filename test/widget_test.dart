@@ -14,7 +14,9 @@ import 'package:app_watchhub/main.dart';
 import 'package:app_watchhub/core/router/app_router.dart';
 
 void main() {
-  testWidgets('App bootstrap initialization smoke test', (WidgetTester tester) async {
+  testWidgets('App bootstrap initialization smoke test', (
+    WidgetTester tester,
+  ) async {
     // 1. Create a minimal mock router for testing bootstrap
     final mockRouter = GoRouter(
       initialLocation: '/',

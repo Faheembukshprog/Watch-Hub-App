@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../cart/presentation/providers/cart_provider.dart';
 import '../../../orders/domain/models/order_model.dart';
 import '../../../orders/presentation/providers/order_history_provider.dart';
@@ -30,23 +31,21 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   void _placeOrder(double totalAmount) {
     if (_formKey.currentState!.validate()) {
-      // 1. Unfocus soft keyboard
       FocusScope.of(context).unfocus();
 
-      // 2. Read current cart items (Fixed provider reference)
       final cartItems = ref.read(cartProvider);
 
-      // 3. Convert CartItems into historical OrderItems snapshot
       final orderItems = cartItems
-          .map((item) => OrderItem(
-                productId: item.product.id,
-                productName: item.product.name,
-                price: item.product.price,
-                quantity: item.quantity,
-              ))
+          .map(
+            (item) => OrderItem(
+              productId: item.product.id,
+              productName: item.product.name,
+              price: item.product.price,
+              quantity: item.quantity,
+            ),
+          )
           .toList();
 
-      // 4. Create the Order object
       final newOrder = OrderModel(
         id: 'ORD-${DateTime.now().millisecondsSinceEpoch}',
         items: orderItems,
@@ -56,31 +55,49 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         paymentMethod: _selectedPaymentMethod,
       );
 
-      // 5. Save to Order History
       ref.read(orderHistoryProvider.notifier).addOrder(newOrder);
 
-      // 6. Show confirmation dialog
+      final theme = Theme.of(context);
+      final isDark = theme.brightness == Brightness.dark;
+
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (dialogContext) => AlertDialog(
-          icon: const Icon(
-            Icons.check_circle_outline,
-            color: Colors.green,
-            size: 60,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text('Order Placed!'),
+          backgroundColor: isDark ? const Color(0xFF181B22) : Colors.white,
+          icon: const Icon(
+            Icons.check_circle_outline_rounded,
+            color: Color(0xFFD4AF37),
+            size: 64,
+          ),
+          title: Text(
+            'Order Placed!',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          ),
           content: Text(
-            'Thank you for your purchase, ${_nameController.text.trim()}.\nOrder ID: ${newOrder.id}\nTotal paid: \$${totalAmount.toStringAsFixed(2)}',
+            'Thank you for your purchase, ${_nameController.text.trim()}.\n\nOrder ID: ${newOrder.id}\nTotal paid: \$${totalAmount.toStringAsFixed(2)}\n\nOur concierge team will contact you shortly.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(height: 1.4),
           ),
           actions: [
-            TextButton(
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD4AF37),
+                foregroundColor: isDark
+                    ? const Color(0xFF0F1115)
+                    : Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               onPressed: () {
-                // Clear cart only when navigating away to prevent UI flash
                 ref.read(cartProvider.notifier).clearCart();
                 Navigator.of(dialogContext).popUntil((route) => route.isFirst);
               },
-              child: const Text('Back to Home'),
+              child: const Text('BACK TO BOUTIQUE'),
             ),
           ],
         ),
@@ -90,16 +107,36 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Fixed provider reference
     final cartItems = ref.watch(cartProvider);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    final totalAmount = cartItems.fold<double>(
+    final subtotal = cartItems.fold<double>(
       0.0,
       (sum, item) => sum + (item.product.price * item.quantity),
     );
+    const shipping = 0.00;
+    final tax = subtotal * 0.08;
+    final totalAmount = subtotal + shipping + tax;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Checkout')),
+      backgroundColor: isDark
+          ? const Color(0xFF0F1115)
+          : const Color(0xFFF8F9FA),
+      appBar: AppBar(
+        title: Text(
+          'CHECKOUT',
+          style: GoogleFonts.outfit(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2.0,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
       body: cartItems.isEmpty
           ? const Center(
               child: Text(
@@ -108,31 +145,39 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               ),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              physics: const BouncingScrollPhysics(),
               child: Form(
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // --- Custom Luxury Stepper Progress Indicator ---
+                    const _CheckoutProgressIndicator(),
+                    const SizedBox(height: 32),
+
+                    // --- Shipping Section ---
                     Text(
-                      'Shipping Information',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      'SHIPPING INFORMATION',
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                        color: const Color(0xFFD4AF37),
+                      ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _nameController,
                       decoration: const InputDecoration(
                         labelText: 'Full Name',
                         prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(),
                       ),
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                              ? 'Please enter your name'
-                              : null,
+                          ? 'Please enter your name'
+                          : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -140,13 +185,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Shipping Address',
                         prefixIcon: Icon(Icons.location_on_outlined),
-                        border: OutlineInputBorder(),
                       ),
                       maxLines: 2,
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                              ? 'Please enter your address'
-                              : null,
+                          ? 'Please enter your address'
+                          : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -155,23 +199,27 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Phone Number',
                         prefixIcon: Icon(Icons.phone_outlined),
-                        border: OutlineInputBorder(),
                       ),
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                              ? 'Please enter your phone number'
-                              : null,
+                          ? 'Please enter your phone number'
+                          : null,
                     ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Payment Method',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 32),
 
-                    // --- NEW FLUTTER 3.32+ RADIOGROUP PATTERN ---
+                    // --- Payment Method ---
+                    Text(
+                      'PAYMENT METHOD',
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                        color: const Color(0xFFD4AF37),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Standard Flutter 3.32+ RadioGroup / custom list tile setup
                     RadioGroup<String>(
                       groupValue: _selectedPaymentMethod,
                       onChanged: (value) {
@@ -179,38 +227,75 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           setState(() => _selectedPaymentMethod = value);
                         }
                       },
-                      child: const Column(
-                        children: [
-                          RadioListTile<String>(
-                            title: Text('Cash on Delivery'),
-                            value: 'Cash on Delivery',
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF181B22)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isDark
+                                ? const Color(0xFF2A2E39)
+                                : const Color(0xFFE2E8F0),
                           ),
-                          RadioListTile<String>(
-                            title: Text('Credit / Debit Card'),
-                            value: 'Card',
-                          ),
-                        ],
+                        ),
+                        child: Column(
+                          children: [
+                            RadioListTile<String>(
+                              title: Text(
+                                'Cash on Delivery',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              value: 'Cash on Delivery',
+                              activeColor: const Color(0xFFD4AF37),
+                            ),
+                            Divider(
+                              height: 1,
+                              color: isDark
+                                  ? const Color(0xFF2A2E39)
+                                  : const Color(0xFFE2E8F0),
+                            ),
+                            RadioListTile<String>(
+                              title: Text(
+                                'Credit / Debit Card',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              value: 'Card',
+                              activeColor: const Color(0xFFD4AF37),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    // ---------------------------------------------
+                    const SizedBox(height: 32),
 
-                    const SizedBox(height: 24),
+                    // --- Order Summary ---
                     Text(
-                      'Order Summary',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      'ORDER SUMMARY',
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                        color: const Color(0xFFD4AF37),
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     Card(
+                      color: isDark ? const Color(0xFF181B22) : Colors.white,
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
                             ...cartItems.map(
                               (item) => Padding(
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0,
+                                  vertical: 6.0,
                                 ),
                                 child: Row(
                                   mainAxisAlignment:
@@ -219,35 +304,114 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                     Expanded(
                                       child: Text(
                                         '${item.product.name} (x${item.quantity})',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     Text(
-                                      '\$${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                                      '\$${(item.product.price * item.quantity).toStringAsFixed(0)}',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                             ),
-                            const Divider(),
+                            const Divider(height: 24),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  'Total',
+                                Text(
+                                  'Subtotal',
                                   style: TextStyle(
+                                    color: isDark
+                                        ? const Color(0xFFA0A5B5)
+                                        : const Color(0xFF64748B),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                Text(
+                                  '\$${subtotal.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Express Shipping',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? const Color(0xFFA0A5B5)
+                                        : const Color(0xFF64748B),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const Text(
+                                  'FREE',
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Estimated Tax (8%)',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? const Color(0xFFA0A5B5)
+                                        : const Color(0xFF64748B),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                Text(
+                                  '\$${tax.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Total',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF0F172A),
                                   ),
                                 ),
                                 Text(
                                   '\$${totalAmount.toStringAsFixed(2)}',
-                                  style: TextStyle(
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary,
+                                    color: const Color(0xFFD4AF37),
                                   ),
                                 ),
                               ],
@@ -256,21 +420,145 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () => _placeOrder(totalAmount),
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD4AF37),
+                          foregroundColor: isDark
+                              ? const Color(0xFF0F1115)
+                              : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        child: const Text('Confirm & Place Order'),
+                        child: Text(
+                          'CONFIRM & PLACE ORDER',
+                          style: GoogleFonts.outfit(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
+    );
+  }
+}
+
+class _CheckoutProgressIndicator extends StatelessWidget {
+  const _CheckoutProgressIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildStep(
+          stepNumber: '1',
+          label: 'Bag',
+          isCompleted: true,
+          isActive: false,
+          isDark: isDark,
+        ),
+        _buildLine(isCompleted: true),
+        _buildStep(
+          stepNumber: '2',
+          label: 'Shipping',
+          isCompleted: false,
+          isActive: true,
+          isDark: isDark,
+        ),
+        _buildLine(isCompleted: false),
+        _buildStep(
+          stepNumber: '3',
+          label: 'Review',
+          isCompleted: false,
+          isActive: false,
+          isDark: isDark,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStep({
+    required String stepNumber,
+    required String label,
+    required bool isCompleted,
+    required bool isActive,
+    required bool isDark,
+  }) {
+    Color circleColor = isDark ? const Color(0xFF181B22) : Colors.white;
+    Color borderCol = isDark
+        ? const Color(0xFF2A2E39)
+        : const Color(0xFFE2E8F0);
+    Color textCol = isDark ? const Color(0xFFA0A5B5) : const Color(0xFF64748B);
+
+    if (isCompleted) {
+      circleColor = const Color(0xFFD4AF37).withValues(alpha: 0.15);
+      borderCol = const Color(0xFFD4AF37);
+      textCol = const Color(0xFFD4AF37);
+    } else if (isActive) {
+      circleColor = const Color(0xFFD4AF37);
+      borderCol = const Color(0xFFD4AF37);
+      textCol = const Color(0xFFD4AF37);
+    }
+
+    return Column(
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: circleColor,
+            shape: BoxShape.circle,
+            border: Border.all(color: borderCol, width: 2),
+          ),
+          child: Center(
+            child: isCompleted
+                ? const Icon(
+                    Icons.check_rounded,
+                    size: 16,
+                    color: Color(0xFFD4AF37),
+                  )
+                : Text(
+                    stepNumber,
+                    style: GoogleFonts.outfit(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isActive ? Colors.black87 : textCol,
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: GoogleFonts.outfit(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+            color: textCol,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLine({required bool isCompleted}) {
+    return Container(
+      width: 48,
+      height: 2,
+      margin: const EdgeInsets.only(bottom: 18),
+      color: isCompleted
+          ? const Color(0xFFD4AF37)
+          : Colors.grey.withValues(alpha: 0.3),
     );
   }
 }

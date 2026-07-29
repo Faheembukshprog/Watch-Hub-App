@@ -12,8 +12,7 @@ part of 'wishlist_provider.dart';
 @ProviderFor(Wishlist)
 final wishlistProvider = WishlistProvider._();
 
-final class WishlistProvider
-    extends $NotifierProvider<Wishlist, List<ProductModel>> {
+final class WishlistProvider extends $NotifierProvider<Wishlist, List<String>> {
   WishlistProvider._()
     : super(
         from: null,
@@ -33,27 +32,27 @@ final class WishlistProvider
   Wishlist create() => Wishlist();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(List<ProductModel> value) {
+  Override overrideWithValue(List<String> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<List<ProductModel>>(value),
+      providerOverride: $SyncValueProvider<List<String>>(value),
     );
   }
 }
 
-String _$wishlistHash() => r'740dd9df7a758c3ef9422d46bc92dbc853ce44fe';
+String _$wishlistHash() => r'ebc9dd7cd98063f079392e8457a776dc3f2025db';
 
-abstract class _$Wishlist extends $Notifier<List<ProductModel>> {
-  List<ProductModel> build();
+abstract class _$Wishlist extends $Notifier<List<String>> {
+  List<String> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<List<ProductModel>, List<ProductModel>>;
+    final ref = this.ref as $Ref<List<String>, List<String>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<List<ProductModel>, List<ProductModel>>,
-              List<ProductModel>,
+              AnyNotifier<List<String>, List<String>>,
+              List<String>,
               Object?,
               Object?
             >;

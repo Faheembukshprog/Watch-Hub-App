@@ -4,10 +4,7 @@ import 'package:go_router/go_router.dart';
 /// Navigation shell wrapper that displays a persistent [NavigationBar]
 /// across all top-level tab branches.
 class ScaffoldWithNavBar extends StatelessWidget {
-  const ScaffoldWithNavBar({
-    required this.navigationShell,
-    super.key,
-  });
+  const ScaffoldWithNavBar({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
 

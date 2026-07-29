@@ -7,7 +7,7 @@ import '../../domain/models/product_model.dart';
 final watchProductsProvider = StreamProvider<List<ProductModel>>((ref) {
   // Grab the repository instance we just created
   final repository = ref.watch(productRepositoryProvider);
-  
+
   // Return the active Firestore stream
   return repository.watchProducts();
 });

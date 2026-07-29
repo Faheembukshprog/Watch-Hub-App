@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,20 +12,23 @@ import '../../features/orders/presentation/views/order_history_screen.dart';
 import '../../features/profile/presentation/views/profile_screen.dart';
 import '../../features/support/presentation/views/support_screen.dart';
 import '../../features/support/presentation/views/faq_screen.dart';
-
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/wishlist/presentation/views/wishlist_screen.dart';
 import 'scaffold_with_nav_bar.dart';
 
-// FIXED: Define a root navigator key for full-screen routes
+// Providers Import
+import 'package:app_watchhub/shared/providers/firebase_provider.dart';
+
+// Define a root navigator key for full-screen routes
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
-/// 0. Converts a Stream into a Listenable for GoRouter.
+/// Converts a Stream into a Listenable for GoRouter.
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners(); // Sync initial state
     _subscription = stream.asBroadcastStream().listen(
       (_) => notifyListeners(),
-      // FIXED: Changed '__' to '_' for modern Dart unused variable lint
-      onError: (Object _, StackTrace _) {}, 
+      onError: (Object _, StackTrace _) {},
     );
   }
 
@@ -39,12 +41,12 @@ class GoRouterRefreshStream extends ChangeNotifier {
   }
 }
 
-/// 1. Route Path Constants
+/// Route Path Constants
 class AppRoutes {
   AppRoutes._();
   static const String splash = '/';
   static const String login = '/login';
-  static const String catalog = '/catalog'; 
+  static const String catalog = '/catalog';
   static const String productDetails = '/product/:id';
   static const String cart = '/cart';
   static const String orders = '/orders';
@@ -53,28 +55,24 @@ class AppRoutes {
   static const String admin = '/admin';
   static const String faq = '/faq';
   static const String support = '/support';
+  static const String wishlist = '/wishlist';
 }
 
-/// 2. Stream Provider for Auth Changes
-final authStateProvider = StreamProvider<User?>((ref) {
-  return FirebaseAuth.instance.authStateChanges();
-});
-
-/// 3. Centralized GoRouter Engine Provider
+/// Centralized GoRouter Engine Provider
 final routerProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = GoRouterRefreshStream(
-    FirebaseAuth.instance.authStateChanges(),
+    ref.watch(firebaseAuthProvider).authStateChanges(),
   );
 
   ref.onDispose(refreshNotifier.dispose);
 
   return GoRouter(
     initialLocation: AppRoutes.splash,
-    navigatorKey: _rootNavigatorKey, // FIXED: Added root key to GoRouter
+    navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: true,
     refreshListenable: refreshNotifier,
 
-    /// 4. Security Gatekeeper Redirect Logic
+    /// Security Gatekeeper Redirect Logic
     redirect: (context, state) {
       final authState = ref.read(authStateProvider);
 
@@ -100,7 +98,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // If logged in, don't let them go to splash/login, send to catalog
       if (isGoingToLogin || isGoingToSplash) {
-        return AppRoutes.catalog; 
+        return AppRoutes.catalog;
       }
 
       if (isGoingToAdmin && isLoggedIn) {
@@ -118,15 +116,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) => const LoginScreenPlaceholder(),
+        builder: (context, state) => const LoginScreen(),
       ),
-      
+
       // --- ADMIN ROUTE ---
       GoRoute(
         path: AppRoutes.admin,
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Admin Control Panel')),
-        ),
+        builder: (context, state) =>
+            const Scaffold(body: Center(child: Text('Admin Control Panel'))),
       ),
 
       // --- MAIN APP WITH BOTTOM NAVIGATION (StatefulShellRoute) ---
@@ -180,7 +177,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       // --- PUSHED FULL-SCREEN ROUTES (Covers Bottom Nav) ---
       GoRoute(
         path: AppRoutes.productDetails,
-        parentNavigatorKey: _rootNavigatorKey, // FIXED: Uses the global key
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final productId = state.pathParameters['id'] ?? '';
           return ProductDetailsScreen(id: productId);
@@ -188,7 +185,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.checkout,
-        parentNavigatorKey: _rootNavigatorKey, // FIXED: Uses the global key
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const CheckoutScreen(),
       ),
       GoRoute(
@@ -201,14 +198,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SupportScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.wishlist,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const WishlistScreen(),
+      ),
     ],
     errorBuilder: (context, state) => Scaffold(
       body: Center(child: Text('Route routing error: ${state.error}')),
     ),
   );
 });
-
-// --- TEMPORARY UI PLACEHOLDERS ---
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -220,26 +220,10 @@ class SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.watch, size: 80, color: Color(0xFF1A237E)),
+            Icon(Icons.watch, size: 80, color: Color(0xFFD4AF37)),
             SizedBox(height: 24),
-            CircularProgressIndicator(color: Color(0xFF1A237E)),
+            CircularProgressIndicator(color: Color(0xFFD4AF37)),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class LoginScreenPlaceholder extends StatelessWidget {
-  const LoginScreenPlaceholder({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => FirebaseAuth.instance.signInAnonymously(),
-          child: const Text('Simulate Firebase Anonymous Sign-In'),
         ),
       ),
     );

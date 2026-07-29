@@ -70,25 +70,28 @@ void main() {
       expect(notifier.totalItemCount, 3);
     });
 
-    test('updateQuantity modifies item quantity or removes if quantity <= 0', () {
-      final notifier = container.read(cartProvider.notifier);
+    test(
+      'updateQuantity modifies item quantity or removes if quantity <= 0',
+      () {
+        final notifier = container.read(cartProvider.notifier);
 
-      notifier.addToCart(testProduct1);
-      notifier.addToCart(testProduct2);
+        notifier.addToCart(testProduct1);
+        notifier.addToCart(testProduct2);
 
-      // Update quantity of product 1 to 5
-      notifier.updateQuantity('watch-001', 5);
-      var cart = container.read(cartProvider);
-      expect(cart[0].quantity, 5);
-      expect(notifier.totalAmount, (5400.00 * 5) + 9500.00);
+        // Update quantity of product 1 to 5
+        notifier.updateQuantity('watch-001', 5);
+        var cart = container.read(cartProvider);
+        expect(cart[0].quantity, 5);
+        expect(notifier.totalAmount, (5400.00 * 5) + 9500.00);
 
-      // Update quantity of product 2 to 0 (should remove it)
-      notifier.updateQuantity('watch-002', 0);
-      cart = container.read(cartProvider);
-      expect(cart, hasLength(1));
-      expect(cart[0].product.id, 'watch-001');
-      expect(notifier.totalAmount, 5400.00 * 5);
-    });
+        // Update quantity of product 2 to 0 (should remove it)
+        notifier.updateQuantity('watch-002', 0);
+        cart = container.read(cartProvider);
+        expect(cart, hasLength(1));
+        expect(cart[0].product.id, 'watch-001');
+        expect(notifier.totalAmount, 5400.00 * 5);
+      },
+    );
 
     test('removeFromCart completely deletes item from cart', () {
       final notifier = container.read(cartProvider.notifier);

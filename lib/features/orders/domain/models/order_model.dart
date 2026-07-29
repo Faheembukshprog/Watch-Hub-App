@@ -14,11 +14,11 @@ class OrderItem {
   });
 
   Map<String, dynamic> toMap() => {
-        'productId': productId,
-        'productName': productName,
-        'price': price,
-        'quantity': quantity,
-      };
+    'productId': productId,
+    'productName': productName,
+    'price': price,
+    'quantity': quantity,
+  };
 
   factory OrderItem.fromMap(Map<String, dynamic> map) {
     return OrderItem(
@@ -50,14 +50,14 @@ class OrderModel {
   });
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'items': items.map((x) => x.toMap()).toList(),
-        'totalAmount': totalAmount,
-        'orderDate': orderDate.toIso8601String(),
-        'shippingAddress': shippingAddress,
-        'paymentMethod': paymentMethod,
-        'status': status.name,
-      };
+    'id': id,
+    'items': items.map((x) => x.toMap()).toList(),
+    'totalAmount': totalAmount,
+    'orderDate': orderDate.toIso8601String(),
+    'shippingAddress': shippingAddress,
+    'paymentMethod': paymentMethod,
+    'status': status.name,
+  };
 
   factory OrderModel.fromMap(Map<String, dynamic> map) {
     return OrderModel(

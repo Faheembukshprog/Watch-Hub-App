@@ -5,10 +5,8 @@ part 'faq_model.g.dart';
 
 @freezed
 abstract class FAQModel with _$FAQModel {
-  const factory FAQModel({
-    required String question,
-    required String answer,
-  }) = _FAQModel;
+  const factory FAQModel({required String question, required String answer}) =
+      _FAQModel;
 
   factory FAQModel.fromJson(Map<String, dynamic> json) =>
       _$FAQModelFromJson(json);
