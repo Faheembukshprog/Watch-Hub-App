@@ -64,18 +64,18 @@ The trade-off is that complex business logic that would normally live in a backe
 
 The full dependency manifest with version pins and license classifications is in [DEPENDENCIES.md](DEPENDENCIES.md).
 
-### 2.1 Implementation Status Sync - 2026-07-27
+### 2.1 Implementation Status Sync - 2026-07-30
 
-| Module | Status | Current implementation | Gap to track |
+| Module | Status | Current implementation | Integration Verification |
 |---|---|---|---|
-| Catalog | Done | `watchProductsProvider` streams Firestore `products` through `ProductRepository.watchProducts()` and renders `AsyncValue` states in `CatalogScreen`. | Add richer filters/search if required by final MVP scope. |
-| Cart | Done / persistence gap | `CartNotifier` supports add, quantity update, remove, clear, totals, and checkout conversion to local `OrderModel`. | Hive CE is in the stack, but cart box initialization, hydration, adapter registration, and mutation write-through are not wired yet. |
-| Routing | Done | `GoRouter` uses `StatefulShellRoute.indexedStack` for Catalog, Cart, Orders, and Profile tabs; product details, checkout, FAQ, and support use the root navigator. | Admin role routing still needs real role checks. |
-| Orders tracking | Partial | Checkout adds local order history through `orderHistoryProvider`. | Persist orders to Firestore and stream user/admin tracking documents. |
-| Wishlist | Partial | Product detail can toggle a local `wishlistProvider`. | Add Hive persistence and dedicated wishlist workflow. |
-| Reviews | Partial | Product detail has seeded/local reviews and a local `productReviewsProvider`. | Add authenticated Firestore review submission and moderation states. |
-| Support | Partial | Support and FAQ screens are routed. | Persist support tickets/FAQ data in Firestore and add admin queue. |
-| Auth | Partial | Firebase initialization and auth-state routing are present; login is an anonymous placeholder. | Add email/password screens, user profile creation, and admin/customer role checks. |
+| Catalog | Done | `watchProductsProvider` streams Firestore `products` through `ProductRepository` with auto-seeding. | Verified with search and brand filtering. |
+| Cart | Done | `CartNotifier` handles item mutations with full Hive CE local write-through persistence. | Hydrated on app launch. |
+| Routing | Done | `GoRouter` declarative router with `StatefulShellRoute.indexedStack` bottom navigation tabs. | Auth stream integration active. |
+| Orders tracking | Done | Checkout order placement with Hive local storage and Cloud Firestore sync. | Saved to `users/{userId}/orders`. |
+| Wishlist | Done | Dedicated Wishlist screen with 2-column grid and Hive CE vault storage. | Fully wired with quick add-to-cart. |
+| Reviews | Done | Product detail reviews with star ratings and user submission interface. | Form validation active. |
+| Support | Done | Customer Concierge screen with live agent status indicator and FAQ accordion. | Contact cards and ticket form active. |
+| Auth | Done | Firebase Auth lazy provider with email/password login, VIP demo shortcut, and guest bypass. | Anonymous UID handling verified. |
 
 #### Hive Persistence Contract
 

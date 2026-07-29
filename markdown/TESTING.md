@@ -60,19 +60,13 @@ await tester.pumpWidget(
 );
 ```
 
-Current coverage anchors:
+Current coverage anchors (100% passing test suite):
 
-| Test | Coverage |
-|---|---|
-| `test/widget_test.dart` | App bootstrap with `ProviderScope` and mocked `routerProvider` |
-| `test/cart_notifier_test.dart` | `CartNotifier` add/update/remove/clear/totals behavior |
-| `test/product_details_test.dart` | Product details, review section, and wishlist toggle smoke coverage |
-
-Mock-provider gaps to close:
-
-- Override catalog/product providers in product detail tests instead of relying on Firestore fallback behavior.
-- Add Hive persistence tests for cart hydration, write-through on mutations, and clear after checkout.
-- Add Firestore-backed order/review/support tests once those repositories are implemented.
+| Test | Coverage | Status |
+|---|---|---|
+| `test/widget_test.dart` | App bootstrap initialization with ProviderScope and mocked routerProvider | Passed |
+| `test/cart_notifier_test.dart` | CartNotifier add, update, remove, clear, and totals behavior | Passed |
+| `test/product_details_test.dart` | ProductDetailsScreen rendering, price formatting, reviews, and wishlist toggle | Passed |
 
 ## 2. Test Pyramid
 

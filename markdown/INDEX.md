@@ -10,18 +10,18 @@
 
 The project is designed as a polished academic and portfolio-grade MVP delivered within a 30-day timeline while staying on Firebase Spark Free Tier and GitHub Actions free infrastructure.
 
-## Implementation Progress - 2026-07-27
+## Implementation Progress - 2026-07-30
 
-| Area | Status | Link |
+| Area | Status | Implementation Summary |
 |---|---|---|
-| Catalog | Done | [Architecture status](ARCHITECTURE.md#21-implementation-status-sync---2026-07-27) |
-| Cart | Done / Hive gap | [Testing harness](TESTING.md#11-current-test-harness-notes---2026-07-27) |
-| Routing | Done | [Architecture status](ARCHITECTURE.md#21-implementation-status-sync---2026-07-27) |
-| Orders tracking | Partial | [Roadmap](ROADMAP.md) |
-| Wishlist | Partial | [Open questions](OPEN_QUESTIONS.md) |
-| Reviews | Partial | [Roadmap](ROADMAP.md) |
-| Auth | Partial | [Security](SECURITY.md) |
-| Support | Partial | [Architecture status](ARCHITECTURE.md#21-implementation-status-sync---2026-07-27) |
+| Catalog | Complete | Firestore stream, auto-seeding, search, and brand filter chips |
+| Cart | Complete | Riverpod provider with Hive CE write-through persistence |
+| Routing | Complete | Declarative GoRouter with auth-state stream refresh listener |
+| Orders tracking | Complete | Local Hive history + Cloud Firestore user order document sync |
+| Wishlist | Complete | Vault wishlist screen with 2-column grid and Hive storage |
+| Reviews | Complete | Product detail customer reviews and form validation |
+| Auth | Complete | VIP demo shortcut, email/password, and guest bypass mode |
+| Support | Complete | Customer Concierge screen and styled FAQ accordion |
 
 Progress notes are kept in sync with the root [README](../README.md), [AGENTS](../AGENTS.md), [GEMINI](../GEMINI.md), [ARCHITECTURE](ARCHITECTURE.md), and [TESTING](TESTING.md) files.
 

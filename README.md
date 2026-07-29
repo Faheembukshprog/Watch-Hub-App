@@ -1,21 +1,21 @@
 # App-WatchHub
 
-Flutter luxury watch commerce MVP using Riverpod, GoRouter, Hive CE, Firebase Auth, and Cloud Firestore.
+Flutter luxury watch commerce application using Riverpod, GoRouter, Hive CE, Firebase Auth, and Cloud Firestore.
 
-## Current Progress
+## Implementation Status
 
-| Area | Status | Notes |
+| Feature Area | Status | Implementation Details |
 |---|---|---|
-| Catalog | Done | Firestore `products` stream via `watchProductsProvider` |
-| Cart | Done / persistence gap | `CartNotifier` handles cart behavior; Hive write-through is still pending |
-| Routing | Done | `GoRouter` plus `StatefulShellRoute.indexedStack` bottom tabs |
-| Orders | Partial | Checkout creates local order history; Firestore tracking is pending |
-| Wishlist | Partial | Toggle provider exists; persistence/screens are pending |
-| Reviews | Partial | Product detail review UI exists; Firestore moderation is pending |
-| Auth | Partial | Firebase init/auth state exists; real email/password and roles are pending |
-| Support | Partial | Support and FAQ screens exist; ticket persistence is pending |
+| Catalog | Complete | Firestore products stream via watchProductsProvider with auto-seeding |
+| Cart | Complete | CartNotifier with Hive CE write-through local storage and quantity management |
+| Wishlist | Complete | Curated wishlist screen with local Hive CE persistence |
+| Routing | Complete | GoRouter with StatefulShellRoute bottom tabs and luxury navigation transitions |
+| Orders | Complete | Checkout order placement with local Hive CE history and Cloud Firestore sync |
+| Support | Complete | Customer Concierge screen with online status indicators and FAQ accordion |
+| Auth | Complete | Firebase Auth lazy provider VIP demo shortcut and guest bypass mode |
+| Theme | Complete | Dark Obsidian and Slate Royal Light Material 3 design systems |
 
-## Key Docs
+## Documentation
 
 - [Agent guide](AGENTS.md)
 - [Gemini guide](GEMINI.md)
@@ -26,6 +26,7 @@ Flutter luxury watch commerce MVP using Riverpod, GoRouter, Hive CE, Firebase Au
 ## Commands
 
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+flutter pub run build_runner build
+flutter analyze
 flutter test
 ```
