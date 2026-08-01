@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +13,7 @@ import '../../features/support/presentation/views/support_screen.dart';
 import '../../features/support/presentation/views/faq_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/wishlist/presentation/views/wishlist_screen.dart';
+import 'go_router_refresh_stream.dart';
 import 'scaffold_with_nav_bar.dart';
 
 // Providers Import
@@ -21,25 +21,6 @@ import 'package:app_watchhub/shared/providers/firebase_provider.dart';
 
 // Define a root navigator key for full-screen routes
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
-
-/// Converts a Stream into a Listenable for GoRouter.
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners(); // Sync initial state
-    _subscription = stream.asBroadcastStream().listen(
-      (_) => notifyListeners(),
-      onError: (Object _, StackTrace _) {},
-    );
-  }
-
-  late final StreamSubscription<dynamic> _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
 
 /// Route Path Constants
 class AppRoutes {

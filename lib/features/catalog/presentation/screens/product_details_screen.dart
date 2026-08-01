@@ -606,9 +606,9 @@ class ProductDetailsScreen extends ConsumerWidget {
     final commentController = TextEditingController();
     double selectedRating = 5.0;
 
-    showDialog(
+    showDialog<void>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
@@ -658,7 +658,7 @@ class ProductDetailsScreen extends ConsumerWidget {
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(dialogContext).pop(),
                   child: const Text(
                     'CANCEL',
                     style: TextStyle(color: Colors.grey),
@@ -675,7 +675,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                       ref
                           .read(productReviewsProvider.notifier)
                           .addReview(productId, name, selectedRating, comment);
-                      Navigator.of(context).pop();
+                      Navigator.of(dialogContext).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
@@ -694,7 +694,10 @@ class ProductDetailsScreen extends ConsumerWidget {
           },
         );
       },
-    );
+    ).whenComplete(() {
+      nameController.dispose();
+      commentController.dispose();
+    });
   }
 }
 

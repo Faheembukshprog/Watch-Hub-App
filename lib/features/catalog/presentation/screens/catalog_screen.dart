@@ -21,6 +21,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   String _searchQuery = '';
   String _selectedBrand = 'All';
   final _searchController = TextEditingController();
+  late final PageController _bannerPageController;
 
   final List<String> _brands = [
     'All',
@@ -53,8 +54,15 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _bannerPageController = PageController(viewportFraction: 0.92);
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
+    _bannerPageController.dispose();
     super.dispose();
   }
 
@@ -116,7 +124,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     child: PageView.builder(
                       itemCount: _promoBanners.length,
-                      controller: PageController(viewportFraction: 0.92),
+                      controller: _bannerPageController,
                       itemBuilder: (context, index) {
                         final banner = _promoBanners[index];
                         return Container(

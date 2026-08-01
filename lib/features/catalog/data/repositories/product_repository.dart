@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/product_model.dart';
@@ -29,9 +31,13 @@ class ProductRepository {
             return ProductModel.fromJson(data);
           }).toList();
         })
-        .handleError((_) {
-          return _defaultFallbackProducts();
-        });
+        .transform(
+          StreamTransformer<List<ProductModel>, List<ProductModel>>.fromHandlers(
+            handleError: (error, stackTrace, sink) {
+              sink.add(_defaultFallbackProducts());
+            },
+          ),
+        );
   }
 
   static List<ProductModel> _defaultFallbackProducts() {
