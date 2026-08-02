@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,6 +38,54 @@ class AppRoutes {
   static const String faq = '/faq';
   static const String support = '/support';
   static const String wishlist = '/wishlist';
+
+  static String productDetailsPath(String id) => '/product/$id';
+}
+
+bool isProtectedRoute(String location) {
+  return location.startsWith(AppRoutes.checkout) ||
+      location.startsWith(AppRoutes.orders) ||
+      location.startsWith(AppRoutes.profile) ||
+      location.startsWith(AppRoutes.admin);
+}
+
+bool isAllowedRedirect(String redirect) {
+  return redirect.startsWith('/') && !redirect.startsWith('//');
+}
+
+/// Pure redirect resolver used by GoRouter and unit tests.
+String? resolveAuthRedirect({
+  required bool isLoading,
+  required bool hasError,
+  required bool isLoggedIn,
+  required String location,
+  required String? redirectParam,
+}) {
+  if (isLoading || hasError) {
+    return location == AppRoutes.splash ? null : AppRoutes.splash;
+  }
+
+  if (location == AppRoutes.splash) {
+    return AppRoutes.catalog;
+  }
+
+  if (!isLoggedIn) {
+    if (isProtectedRoute(location)) {
+      return '${AppRoutes.login}?redirect=${Uri.encodeComponent(location)}';
+    }
+    return null;
+  }
+
+  if (location == AppRoutes.login) {
+    if (redirectParam != null &&
+        redirectParam.isNotEmpty &&
+        isAllowedRedirect(redirectParam)) {
+      return redirectParam;
+    }
+    return AppRoutes.catalog;
+  }
+
+  return null;
 }
 
 /// Centralized GoRouter Engine Provider
@@ -50,43 +99,19 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: AppRoutes.splash,
     navigatorKey: _rootNavigatorKey,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: kDebugMode,
     refreshListenable: refreshNotifier,
 
-    /// Security Gatekeeper Redirect Logic
     redirect: (context, state) {
       final authState = ref.read(authStateProvider);
 
-      if (authState.isLoading || authState.hasError) {
-        return state.matchedLocation == AppRoutes.splash
-            ? null
-            : AppRoutes.splash;
-      }
-
-      final user = authState.value;
-      final isLoggedIn = user != null;
-
-      final isGoingToSplash = state.matchedLocation == AppRoutes.splash;
-      final isGoingToLogin = state.matchedLocation == AppRoutes.login;
-      final isGoingToAdmin = state.matchedLocation.startsWith(AppRoutes.admin);
-
-      if (!isLoggedIn) {
-        if (!isGoingToLogin && !isGoingToSplash) {
-          return AppRoutes.login;
-        }
-        return null;
-      }
-
-      // If logged in, don't let them go to splash/login, send to catalog
-      if (isGoingToLogin || isGoingToSplash) {
-        return AppRoutes.catalog;
-      }
-
-      if (isGoingToAdmin && isLoggedIn) {
-        // Reserved for admin access claims
-      }
-
-      return null;
+      return resolveAuthRedirect(
+        isLoading: authState.isLoading,
+        hasError: authState.hasError,
+        isLoggedIn: authState.value != null,
+        location: state.matchedLocation,
+        redirectParam: state.uri.queryParameters['redirect'],
+      );
     },
 
     routes: [

@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:app_watchhub/shared/providers/firebase_provider.dart';
+import 'package:app_watchhub/core/router/app_router.dart';
 import '../providers/catalog_providers.dart';
 import '../providers/wishlist_provider.dart';
 import '../../domain/models/product_model.dart';
@@ -69,6 +70,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   @override
   Widget build(BuildContext context) {
     final catalogAsync = ref.watch(watchProductsProvider);
+    final authUser = ref.watch(authStateProvider).value;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -109,11 +111,19 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     ),
                   ),
                   actions: [
-                    IconButton(
-                      icon: const Icon(Icons.logout_rounded),
-                      tooltip: 'Sign Out',
-                      onPressed: () => ref.read(firebaseAuthProvider).signOut(),
-                    ),
+                    if (authUser != null)
+                      IconButton(
+                        icon: const Icon(Icons.logout_rounded),
+                        tooltip: 'Sign Out',
+                        onPressed: () =>
+                            ref.read(firebaseAuthProvider).signOut(),
+                      )
+                    else
+                      IconButton(
+                        icon: const Icon(Icons.login_rounded),
+                        tooltip: 'Sign In',
+                        onPressed: () => context.go(AppRoutes.login),
+                      ),
                   ],
                 ),
 

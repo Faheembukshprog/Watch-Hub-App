@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:app_watchhub/core/router/app_router.dart';
 import 'package:app_watchhub/shared/providers/firebase_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,6 +17,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isSignUpMode = false;
   String? _errorMessage;
 
   @override
@@ -42,6 +45,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             'Boutique authentication failed: ${e.toString().split(']').last.trim()}';
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _signUp(String email, String password) async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final auth = ref.read(firebaseAuthProvider);
+      await auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+    } catch (e) {
+      setState(() {
+        _errorMessage =
+            'Account creation failed: ${e.toString().split(']').last.trim()}';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _submitCredentials() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    if (_isSignUpMode) {
+      await _signUp(email, password);
+    } else {
+      await _login(email, password);
     }
   }
 
@@ -197,15 +236,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _login(
-                              _emailController.text,
-                              _passwordController.text,
-                            );
-                          }
-                        },
-                        child: const Text('SIGN IN'),
+                        onPressed: _submitCredentials,
+                        child: Text(_isSignUpMode ? 'CREATE ACCOUNT' : 'SIGN IN'),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isSignUpMode = !_isSignUpMode;
+                          _errorMessage = null;
+                        });
+                      },
+                      child: Text(
+                        _isSignUpMode
+                            ? 'Already have an account? Sign in'
+                            : 'New collector? Create an account',
+                        style: GoogleFonts.outfit(fontSize: 13),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () => context.go(AppRoutes.catalog),
+                      child: Text(
+                        'CONTINUE BROWSING',
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                          color: const Color(0xFFD4AF37),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
