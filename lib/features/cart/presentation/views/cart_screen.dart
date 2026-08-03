@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,15 +29,15 @@ class CartScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF0F1115)
-          : const Color(0xFFF8F9FA),
+          ? AppColors.darkBg
+          : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
           'SHOPPING BAG',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.bold,
             letterSpacing: 2.0,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: isDark ? Colors.white : AppColors.lightTextPrimary,
           ),
         ),
         actions: [
@@ -50,7 +51,7 @@ class CartScreen extends ConsumerWidget {
                   const SnackBar(
                     content: Text('Shopping bag cleared.'),
                     behavior: SnackBarBehavior.floating,
-                    backgroundColor: Color(0xFFD4AF37),
+                    backgroundColor: AppColors.goldAccent,
                   ),
                 );
               },
@@ -74,17 +75,17 @@ class CartScreen extends ConsumerWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: isDark
-                          ? const Color(0xFFA0A5B5)
-                          : const Color(0xFF64748B),
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
                     ),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () => context.go('/catalog'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD4AF37),
+                      backgroundColor: AppColors.goldAccent,
                       foregroundColor: isDark
-                          ? const Color(0xFF0F1115)
+                          ? AppColors.darkBg
                           : Colors.white,
                     ),
                     child: const Text('DISCOVER COLLECTION'),
@@ -106,13 +107,13 @@ class CartScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF181B22)
+                              ? AppColors.darkSurface
                               : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isDark
-                                ? const Color(0xFF2A2E39)
-                                : const Color(0xFFE2E8F0),
+                                ? AppColors.darkBorder
+                                : AppColors.lightBorder,
                           ),
                         ),
                         child: Row(
@@ -124,8 +125,8 @@ class CartScreen extends ConsumerWidget {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? const Color(0xFF0F1115)
-                                    : const Color(0xFFF1F5F9),
+                                    ? AppColors.darkBg
+                                    : AppColors.lightSurfaceMuted,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: item.product.imageUrl.isNotEmpty
@@ -159,7 +160,7 @@ class CartScreen extends ConsumerWidget {
                                     style: GoogleFonts.outfit(
                                       fontSize: 9,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFFD4AF37),
+                                      color: AppColors.goldAccent,
                                       letterSpacing: 1.0,
                                     ),
                                   ),
@@ -171,7 +172,7 @@ class CartScreen extends ConsumerWidget {
                                       fontWeight: FontWeight.bold,
                                       color: isDark
                                           ? Colors.white
-                                          : const Color(0xFF0F172A),
+                                          : AppColors.lightTextPrimary,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -182,7 +183,7 @@ class CartScreen extends ConsumerWidget {
                                     style: GoogleFonts.outfit(
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFFD4AF37),
+                                      color: AppColors.goldAccent,
                                     ),
                                   ),
                                 ],
@@ -207,8 +208,8 @@ class CartScreen extends ConsumerWidget {
                                         decoration: BoxDecoration(
                                           border: Border.all(
                                             color: isDark
-                                                ? const Color(0xFF2A2E39)
-                                                : const Color(0xFFE2E8F0),
+                                                ? AppColors.darkBorder
+                                                : AppColors.lightBorder,
                                           ),
                                           borderRadius: BorderRadius.circular(
                                             6,
@@ -234,7 +235,7 @@ class CartScreen extends ConsumerWidget {
                                           fontWeight: FontWeight.bold,
                                           color: isDark
                                               ? Colors.white
-                                              : const Color(0xFF0F172A),
+                                              : AppColors.lightTextPrimary,
                                         ),
                                       ),
                                     ),
@@ -250,8 +251,8 @@ class CartScreen extends ConsumerWidget {
                                         decoration: BoxDecoration(
                                           border: Border.all(
                                             color: isDark
-                                                ? const Color(0xFF2A2E39)
-                                                : const Color(0xFFE2E8F0),
+                                                ? AppColors.darkBorder
+                                                : AppColors.lightBorder,
                                           ),
                                           borderRadius: BorderRadius.circular(
                                             6,
@@ -280,15 +281,13 @@ class CartScreen extends ConsumerWidget {
                                           'Removed ${item.product.name} from bag.',
                                         ),
                                         behavior: SnackBarBehavior.floating,
-                                        backgroundColor: const Color(
-                                          0xFFD4AF37,
-                                        ),
+                                        backgroundColor: AppColors.goldAccent,
                                       ),
                                     );
                                   },
                                   child: const Icon(
                                     Icons.delete_outline_rounded,
-                                    color: Colors.redAccent,
+                                    color: AppColors.error,
                                     size: 20,
                                   ),
                                 ),
@@ -305,15 +304,15 @@ class CartScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF181B22) : Colors.white,
+                    color: isDark ? AppColors.darkSurface : Colors.white,
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(24),
                     ),
                     border: Border(
                       top: BorderSide(
                         color: isDark
-                            ? const Color(0xFF2A2E39)
-                            : const Color(0xFFE2E8F0),
+                            ? AppColors.darkBorder
+                            : AppColors.lightBorder,
                       ),
                     ),
                   ),
@@ -328,8 +327,8 @@ class CartScreen extends ConsumerWidget {
                               'Subtotal',
                               style: TextStyle(
                                 color: isDark
-                                    ? const Color(0xFFA0A5B5)
-                                    : const Color(0xFF64748B),
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
                               ),
                             ),
                             Text(
@@ -348,14 +347,14 @@ class CartScreen extends ConsumerWidget {
                               'Shipping (Express)',
                               style: TextStyle(
                                 color: isDark
-                                    ? const Color(0xFFA0A5B5)
-                                    : const Color(0xFF64748B),
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
                               ),
                             ),
                             const Text(
                               'FREE',
                               style: TextStyle(
-                                color: Colors.green,
+                                color: AppColors.success,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -369,8 +368,8 @@ class CartScreen extends ConsumerWidget {
                               'Estimated Tax (8%)',
                               style: TextStyle(
                                 color: isDark
-                                    ? const Color(0xFFA0A5B5)
-                                    : const Color(0xFF64748B),
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
                               ),
                             ),
                             Text(
@@ -392,7 +391,7 @@ class CartScreen extends ConsumerWidget {
                                 fontWeight: FontWeight.bold,
                                 color: isDark
                                     ? Colors.white
-                                    : const Color(0xFF0F172A),
+                                    : AppColors.lightTextPrimary,
                               ),
                             ),
                             Text(
@@ -400,7 +399,7 @@ class CartScreen extends ConsumerWidget {
                               style: GoogleFonts.outfit(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFFD4AF37),
+                                color: AppColors.goldAccent,
                               ),
                             ),
                           ],
@@ -413,9 +412,9 @@ class CartScreen extends ConsumerWidget {
                               context.push('/checkout');
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD4AF37),
+                              backgroundColor: AppColors.goldAccent,
                               foregroundColor: isDark
-                                  ? const Color(0xFF0F1115)
+                                  ? AppColors.darkBg
                                   : Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                             ),

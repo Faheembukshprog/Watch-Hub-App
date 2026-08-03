@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../cart/presentation/providers/cart_provider.dart';
@@ -67,10 +68,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          backgroundColor: isDark ? const Color(0xFF181B22) : Colors.white,
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
           icon: const Icon(
             Icons.check_circle_outline_rounded,
-            color: Color(0xFFD4AF37),
+            color: AppColors.goldAccent,
             size: 64,
           ),
           title: Text(
@@ -85,9 +86,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           actions: [
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD4AF37),
+                backgroundColor: AppColors.goldAccent,
                 foregroundColor: isDark
-                    ? const Color(0xFF0F1115)
+                    ? AppColors.darkBg
                     : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -121,15 +122,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF0F1115)
-          : const Color(0xFFF8F9FA),
+          ? AppColors.darkBg
+          : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
           'CHECKOUT',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.bold,
             letterSpacing: 2.0,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: isDark ? Colors.white : AppColors.lightTextPrimary,
           ),
         ),
         leading: IconButton(
@@ -164,7 +165,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.5,
-                        color: const Color(0xFFD4AF37),
+                        color: AppColors.goldAccent,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -214,7 +215,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.5,
-                        color: const Color(0xFFD4AF37),
+                        color: AppColors.goldAccent,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -230,13 +231,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF181B22)
+                              ? AppColors.darkSurface
                               : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isDark
-                                ? const Color(0xFF2A2E39)
-                                : const Color(0xFFE2E8F0),
+                                ? AppColors.darkBorder
+                                : AppColors.lightBorder,
                           ),
                         ),
                         child: Column(
@@ -250,13 +251,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                 ),
                               ),
                               value: 'Cash on Delivery',
-                              activeColor: const Color(0xFFD4AF37),
+                              activeColor: AppColors.goldAccent,
                             ),
                             Divider(
                               height: 1,
                               color: isDark
-                                  ? const Color(0xFF2A2E39)
-                                  : const Color(0xFFE2E8F0),
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
                             ),
                             RadioListTile<String>(
                               title: Text(
@@ -267,7 +268,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                 ),
                               ),
                               value: 'Card',
-                              activeColor: const Color(0xFFD4AF37),
+                              activeColor: AppColors.goldAccent,
                             ),
                           ],
                         ),
@@ -282,12 +283,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.5,
-                        color: const Color(0xFFD4AF37),
+                        color: AppColors.goldAccent,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Card(
-                      color: isDark ? const Color(0xFF181B22) : Colors.white,
+                      color: isDark ? AppColors.darkSurface : Colors.white,
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
@@ -318,7 +319,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                         fontWeight: FontWeight.bold,
                                         color: isDark
                                             ? Colors.white
-                                            : const Color(0xFF0F172A),
+                                            : AppColors.lightTextPrimary,
                                       ),
                                     ),
                                   ],
@@ -333,8 +334,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                   'Subtotal',
                                   style: TextStyle(
                                     color: isDark
-                                        ? const Color(0xFFA0A5B5)
-                                        : const Color(0xFF64748B),
+                                        ? AppColors.darkTextSecondary
+                                        : AppColors.lightTextSecondary,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -355,15 +356,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                   'Express Shipping',
                                   style: TextStyle(
                                     color: isDark
-                                        ? const Color(0xFFA0A5B5)
-                                        : const Color(0xFF64748B),
+                                        ? AppColors.darkTextSecondary
+                                        : AppColors.lightTextSecondary,
                                     fontSize: 13,
                                   ),
                                 ),
                                 const Text(
                                   'FREE',
                                   style: TextStyle(
-                                    color: Colors.green,
+                                    color: AppColors.success,
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -378,8 +379,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                   'Estimated Tax (8%)',
                                   style: TextStyle(
                                     color: isDark
-                                        ? const Color(0xFFA0A5B5)
-                                        : const Color(0xFF64748B),
+                                        ? AppColors.darkTextSecondary
+                                        : AppColors.lightTextSecondary,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -403,7 +404,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                     fontWeight: FontWeight.bold,
                                     color: isDark
                                         ? Colors.white
-                                        : const Color(0xFF0F172A),
+                                        : AppColors.lightTextPrimary,
                                   ),
                                 ),
                                 Text(
@@ -411,7 +412,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                   style: GoogleFonts.outfit(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFFD4AF37),
+                                    color: AppColors.goldAccent,
                                   ),
                                 ),
                               ],
@@ -426,9 +427,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       child: ElevatedButton(
                         onPressed: () => _placeOrder(totalAmount),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD4AF37),
+                          backgroundColor: AppColors.goldAccent,
                           foregroundColor: isDark
-                              ? const Color(0xFF0F1115)
+                              ? AppColors.darkBg
                               : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
@@ -494,20 +495,20 @@ class _CheckoutProgressIndicator extends StatelessWidget {
     required bool isActive,
     required bool isDark,
   }) {
-    Color circleColor = isDark ? const Color(0xFF181B22) : Colors.white;
+    Color circleColor = isDark ? AppColors.darkSurface : Colors.white;
     Color borderCol = isDark
-        ? const Color(0xFF2A2E39)
-        : const Color(0xFFE2E8F0);
-    Color textCol = isDark ? const Color(0xFFA0A5B5) : const Color(0xFF64748B);
+        ? AppColors.darkBorder
+        : AppColors.lightBorder;
+    Color textCol = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     if (isCompleted) {
-      circleColor = const Color(0xFFD4AF37).withValues(alpha: 0.15);
-      borderCol = const Color(0xFFD4AF37);
-      textCol = const Color(0xFFD4AF37);
+      circleColor = AppColors.goldAccent.withValues(alpha: 0.15);
+      borderCol = AppColors.goldAccent;
+      textCol = AppColors.goldAccent;
     } else if (isActive) {
-      circleColor = const Color(0xFFD4AF37);
-      borderCol = const Color(0xFFD4AF37);
-      textCol = const Color(0xFFD4AF37);
+      circleColor = AppColors.goldAccent;
+      borderCol = AppColors.goldAccent;
+      textCol = AppColors.goldAccent;
     }
 
     return Column(
@@ -525,7 +526,7 @@ class _CheckoutProgressIndicator extends StatelessWidget {
                 ? const Icon(
                     Icons.check_rounded,
                     size: 16,
-                    color: Color(0xFFD4AF37),
+                    color: AppColors.goldAccent,
                   )
                 : Text(
                     stepNumber,
@@ -557,8 +558,8 @@ class _CheckoutProgressIndicator extends StatelessWidget {
       height: 2,
       margin: const EdgeInsets.only(bottom: 18),
       color: isCompleted
-          ? const Color(0xFFD4AF37)
-          : Colors.grey.withValues(alpha: 0.3),
+          ? AppColors.goldAccent
+          : AppColors.neutral.withValues(alpha: 0.3),
     );
   }
 }

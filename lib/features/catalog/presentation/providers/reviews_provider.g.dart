@@ -9,65 +9,79 @@ part of 'reviews_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(ProductReviews)
-final productReviewsProvider = ProductReviewsProvider._();
+@ProviderFor(productReviews)
+final productReviewsProvider = ProductReviewsFamily._();
 
 final class ProductReviewsProvider
-    extends $NotifierProvider<ProductReviews, Map<String, List<ReviewModel>>> {
-  ProductReviewsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'productReviewsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ReviewModel>>,
+          List<ReviewModel>,
+          Stream<List<ReviewModel>>
+        >
+    with
+        $FutureModifier<List<ReviewModel>>,
+        $StreamProvider<List<ReviewModel>> {
+  ProductReviewsProvider._({
+    required ProductReviewsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'productReviewsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$productReviewsHash();
 
+  @override
+  String toString() {
+    return r'productReviewsProvider'
+        ''
+        '($argument)';
+  }
+
   @$internal
   @override
-  ProductReviews create() => ProductReviews();
+  $StreamProviderElement<List<ReviewModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Map<String, List<ReviewModel>> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<Map<String, List<ReviewModel>>>(
-        value,
-      ),
-    );
+  @override
+  Stream<List<ReviewModel>> create(Ref ref) {
+    final argument = this.argument as String;
+    return productReviews(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProductReviewsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
   }
 }
 
-String _$productReviewsHash() => r'e05cc9bed9e4c7017193f412680c0965642850f1';
+String _$productReviewsHash() => r'bfff60fdd8c999e6a4e6499919505b80611d2190';
 
-abstract class _$ProductReviews
-    extends $Notifier<Map<String, List<ReviewModel>>> {
-  Map<String, List<ReviewModel>> build();
-  @$mustCallSuper
+final class ProductReviewsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<ReviewModel>>, String> {
+  ProductReviewsFamily._()
+    : super(
+        retry: null,
+        name: r'productReviewsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProductReviewsProvider call(String productId) =>
+      ProductReviewsProvider._(argument: productId, from: this);
+
   @override
-  WhenComplete runBuild() {
-    final ref =
-        this.ref
-            as $Ref<
-              Map<String, List<ReviewModel>>,
-              Map<String, List<ReviewModel>>
-            >;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<
-                Map<String, List<ReviewModel>>,
-                Map<String, List<ReviewModel>>
-              >,
-              Map<String, List<ReviewModel>>,
-              Object?,
-              Object?
-            >;
-    return element.handleCreate(ref, build);
-  }
+  String toString() => r'productReviewsProvider';
 }

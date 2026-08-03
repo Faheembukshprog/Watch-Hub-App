@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:app_watchhub/core/router/app_router.dart';
 import 'package:app_watchhub/shared/providers/firebase_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -114,8 +115,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF0F1115)
-          : const Color(0xFFF8F9FA),
+          ? AppColors.darkBg
+          : AppColors.lightBg,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -129,17 +130,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF181B22) : Colors.white,
+                      color: isDark ? AppColors.darkSurface : Colors.white,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: const Color(0xFFD4AF37).withValues(alpha: 0.3),
+                        color: AppColors.goldAccent.withValues(alpha: 0.3),
                         width: 1.5,
                       ),
                     ),
                     child: const Icon(
                       Icons.watch_rounded,
                       size: 64,
-                      color: Color(0xFFD4AF37),
+                      color: AppColors.goldAccent,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -151,7 +152,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 6.0,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -161,7 +162,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 2.0,
-                      color: const Color(0xFFD4AF37),
+                      color: AppColors.goldAccent,
                     ),
                   ),
                   const SizedBox(height: 48),
@@ -200,17 +201,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         horizontal: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.redAccent.withValues(alpha: 0.1),
+                        color: AppColors.error.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Colors.redAccent.withValues(alpha: 0.3),
+                          color: AppColors.error.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
                         children: [
                           const Icon(
                             Icons.error_outline_rounded,
-                            color: Colors.redAccent,
+                            color: AppColors.error,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
@@ -218,7 +219,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             child: Text(
                               _errorMessage!,
                               style: const TextStyle(
-                                color: Colors.redAccent,
+                                color: AppColors.error,
                                 fontSize: 13,
                               ),
                             ),
@@ -231,7 +232,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   // --- ACTION BUTTONS ---
                   if (_isLoading)
-                    const CircularProgressIndicator(color: Color(0xFFD4AF37))
+                    const CircularProgressIndicator(color: AppColors.goldAccent)
                   else ...[
                     SizedBox(
                       width: double.infinity,
@@ -264,7 +265,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
-                          color: const Color(0xFFD4AF37),
+                          color: AppColors.goldAccent,
                         ),
                       ),
                     ),
@@ -280,7 +281,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.0,
-                              color: Colors.grey,
+                              color: AppColors.neutral,
                             ),
                           ),
                         ),
@@ -296,9 +297,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               side: BorderSide(
-                                color: const Color(
-                                  0xFFD4AF37,
-                                ).withValues(alpha: 0.5),
+                                color: AppColors.goldAccent.withValues(
+                                  alpha: 0.5,
+                                ),
                               ),
                             ),
                             child: Text(

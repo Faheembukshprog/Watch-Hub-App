@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -226,9 +227,9 @@ class SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.watch, size: 80, color: Color(0xFFD4AF37)),
+            Icon(Icons.watch, size: 80, color: AppColors.goldAccent),
             SizedBox(height: 24),
-            CircularProgressIndicator(color: Color(0xFFD4AF37)),
+            CircularProgressIndicator(color: AppColors.goldAccent),
           ],
         ),
       ),

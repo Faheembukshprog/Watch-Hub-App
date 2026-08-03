@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FAQScreen extends StatelessWidget {
@@ -11,15 +12,15 @@ class FAQScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF0F1115)
-          : const Color(0xFFF8F9FA),
+          ? AppColors.darkBg
+          : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
           'FAQ',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.bold,
             letterSpacing: 2.0,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: isDark ? Colors.white : AppColors.lightTextPrimary,
           ),
         ),
         leading: IconButton(
@@ -70,10 +71,10 @@ class _FAQTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF181B22) : Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? const Color(0xFF2A2E39) : const Color(0xFFE2E8F0),
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
         ),
       ),
       child: ClipRRect(
@@ -86,23 +87,23 @@ class _FAQTile extends StatelessWidget {
                 style: GoogleFonts.outfit(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  color: isDark ? Colors.white : AppColors.lightTextPrimary,
                 ),
               ),
-              iconColor: const Color(0xFFD4AF37),
+              iconColor: AppColors.goldAccent,
               collapsedIconColor: isDark ? Colors.white54 : Colors.black45,
               shape: const Border(),
               collapsedShape: const Border(),
               children: [
-                const Divider(color: Color(0xFFD4AF37), height: 1),
+                const Divider(color: AppColors.goldAccent, height: 1),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
                     answer,
                     style: GoogleFonts.inter(
                       color: isDark
-                          ? const Color(0xFFA0A5B5)
-                          : const Color(0xFF64748B),
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
                       fontSize: 13,
                       height: 1.5,
                     ),

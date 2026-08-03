@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:app_watchhub/shared/providers/firebase_provider.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:app_watchhub/core/router/app_router.dart';
 import '../providers/catalog_providers.dart';
 import '../providers/wishlist_provider.dart';
@@ -107,7 +108,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     style: GoogleFonts.outfit(
                       fontWeight: FontWeight.bold,
                       letterSpacing: 4.0,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
                     ),
                   ),
                   actions: [
@@ -196,12 +197,12 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     ),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF181B22) : Colors.white,
+                        color: isDark ? AppColors.darkSurface : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isDark
-                              ? const Color(0xFF2A2E39)
-                              : const Color(0xFFE2E8F0),
+                              ? AppColors.darkBorder
+                              : AppColors.lightBorder,
                         ),
                       ),
                       child: TextField(
@@ -216,8 +217,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                           prefixIcon: Icon(
                             Icons.search_rounded,
                             color: isDark
-                                ? const Color(0xFFA0A5B5)
-                                : const Color(0xFF64748B),
+                                ? AppColors.darkTextSecondary
+                                : AppColors.lightTextSecondary,
                           ),
                           suffixIcon: _searchQuery.isNotEmpty
                               ? IconButton(
@@ -262,11 +263,11 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                 letterSpacing: 0.8,
                                 color: isSelected
                                     ? (isDark
-                                          ? const Color(0xFF0F1115)
+                                          ? AppColors.darkBg
                                           : Colors.white)
                                     : (isDark
-                                          ? const Color(0xFFA0A5B5)
-                                          : const Color(0xFF64748B)),
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.lightTextSecondary),
                               ),
                             ),
                             selected: isSelected,
@@ -277,16 +278,16 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                 });
                               }
                             },
-                            selectedColor: const Color(0xFFD4AF37),
+                            selectedColor: AppColors.goldAccent,
                             backgroundColor: isDark
-                                ? const Color(0xFF181B22)
+                                ? AppColors.darkSurface
                                 : Colors.white,
                             side: BorderSide(
                               color: isSelected
-                                  ? const Color(0xFFD4AF37)
+                                  ? AppColors.goldAccent
                                   : (isDark
-                                        ? const Color(0xFF2A2E39)
-                                        : const Color(0xFFE2E8F0)),
+                                        ? AppColors.darkBorder
+                                        : AppColors.lightBorder),
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
@@ -305,7 +306,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     child: Center(
                       child: Text(
                         'No matching timepieces found in the vault.',
-                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                        style: TextStyle(
+                          color: AppColors.neutral,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   )
@@ -339,7 +343,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
               child: Text(
                 'Failed to sync vault inventory: $error',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.redAccent),
+                style: const TextStyle(color: AppColors.error),
               ),
             ),
           ),
@@ -364,10 +368,10 @@ class _ProductCard extends ConsumerWidget {
       onTap: () => context.go('/product/${watch.id}'),
       child: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF181B22) : Colors.white,
+          color: isDark ? AppColors.darkSurface : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDark ? const Color(0xFF2A2E39) : const Color(0xFFE2E8F0),
+            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
           ),
         ),
         child: Column(
@@ -381,8 +385,8 @@ class _ProductCard extends ConsumerWidget {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: isDark
-                          ? const Color(0xFF0F1115)
-                          : const Color(0xFFF1F5F9),
+                          ? AppColors.darkBg
+                          : AppColors.lightSurfaceMuted,
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(16),
                       ),
@@ -434,7 +438,7 @@ class _ProductCard extends ConsumerWidget {
                                   : 'Added ${watch.name} to Wishlist',
                             ),
                             behavior: SnackBarBehavior.floating,
-                            backgroundColor: const Color(0xFFD4AF37),
+                            backgroundColor: AppColors.goldAccent,
                             duration: const Duration(seconds: 1),
                           ),
                         );
@@ -443,7 +447,7 @@ class _ProductCard extends ConsumerWidget {
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF20242D)
+                              ? AppColors.darkSurfaceCard
                               : Colors.white,
                           shape: BoxShape.circle,
                           boxShadow: [
@@ -457,7 +461,7 @@ class _ProductCard extends ConsumerWidget {
                         child: Icon(
                           isInWish ? Icons.favorite : Icons.favorite_border,
                           size: 18,
-                          color: const Color(0xFFD4AF37),
+                          color: AppColors.goldAccent,
                         ),
                       ),
                     ),
@@ -477,7 +481,7 @@ class _ProductCard extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFFD4AF37),
+                      color: AppColors.goldAccent,
                       letterSpacing: 1.2,
                     ),
                     maxLines: 1,
@@ -489,7 +493,7 @@ class _ProductCard extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -500,7 +504,7 @@ class _ProductCard extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFFD4AF37),
+                      color: AppColors.goldAccent,
                     ),
                   ),
                 ],

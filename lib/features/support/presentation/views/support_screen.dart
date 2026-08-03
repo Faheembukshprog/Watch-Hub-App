@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SupportScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _SupportScreenState extends State<SupportScreen> {
         const SnackBar(
           content: Text('Please fill out all fields.'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.redAccent,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -51,7 +52,7 @@ class _SupportScreenState extends State<SupportScreen> {
           const SnackBar(
             content: Text('Concierge ticket submitted successfully.'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Color(0xFFD4AF37),
+            backgroundColor: AppColors.goldAccent,
           ),
         );
       }
@@ -65,15 +66,15 @@ class _SupportScreenState extends State<SupportScreen> {
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF0F1115)
-          : const Color(0xFFF8F9FA),
+          ? AppColors.darkBg
+          : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
           'CUSTOMER CONCIERGE',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: isDark ? Colors.white : AppColors.lightTextPrimary,
           ),
         ),
         leading: IconButton(
@@ -91,12 +92,12 @@ class _SupportScreenState extends State<SupportScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF181B22) : Colors.white,
+                color: isDark ? AppColors.darkSurface : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isDark
-                      ? const Color(0xFF2A2E39)
-                      : const Color(0xFFE2E8F0),
+                      ? AppColors.darkBorder
+                      : AppColors.lightBorder,
                 ),
               ),
               child: Row(
@@ -105,12 +106,12 @@ class _SupportScreenState extends State<SupportScreen> {
                     children: [
                       CircleAvatar(
                         radius: 24,
-                        backgroundColor: const Color(
-                          0xFFD4AF37,
-                        ).withValues(alpha: 0.15),
+                        backgroundColor: AppColors.goldAccent.withValues(
+                          alpha: 0.15,
+                        ),
                         child: const Icon(
                           Icons.support_agent_rounded,
-                          color: Color(0xFFD4AF37),
+                          color: AppColors.goldAccent,
                           size: 28,
                         ),
                       ),
@@ -121,11 +122,11 @@ class _SupportScreenState extends State<SupportScreen> {
                           width: 12,
                           height: 12,
                           decoration: BoxDecoration(
-                            color: Colors.green,
+                            color: AppColors.success,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: isDark
-                                  ? const Color(0xFF181B22)
+                                  ? AppColors.darkSurface
                                   : Colors.white,
                               width: 2,
                             ),
@@ -146,7 +147,7 @@ class _SupportScreenState extends State<SupportScreen> {
                             fontSize: 14,
                             color: isDark
                                 ? Colors.white
-                                : const Color(0xFF0F172A),
+                                : AppColors.lightTextPrimary,
                           ),
                         ),
                         Text(
@@ -154,8 +155,8 @@ class _SupportScreenState extends State<SupportScreen> {
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             color: isDark
-                                ? const Color(0xFFA0A5B5)
-                                : const Color(0xFF64748B),
+                                ? AppColors.darkTextSecondary
+                                : AppColors.lightTextSecondary,
                           ),
                         ),
                       ],
@@ -172,7 +173,7 @@ class _SupportScreenState extends State<SupportScreen> {
               style: GoogleFonts.outfit(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                color: AppColors.neutral,
                 letterSpacing: 1.5,
               ),
             ),
@@ -199,7 +200,7 @@ class _SupportScreenState extends State<SupportScreen> {
               style: GoogleFonts.outfit(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                color: AppColors.neutral,
                 letterSpacing: 1.5,
               ),
             ),
@@ -230,9 +231,9 @@ class _SupportScreenState extends State<SupportScreen> {
               child: ElevatedButton(
                 onPressed: _isSubmitting ? null : _submitTicket,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD4AF37),
+                  backgroundColor: AppColors.goldAccent,
                   foregroundColor: isDark
-                      ? const Color(0xFF0F1115)
+                      ? AppColors.darkBg
                       : Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -275,37 +276,40 @@ class _SupportContactCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF181B22) : Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? const Color(0xFF2A2E39) : const Color(0xFFE2E8F0),
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
         ),
       ),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFFD4AF37).withValues(alpha: 0.1),
+            color: AppColors.goldAccent.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: const Color(0xFFD4AF37)),
+          child: Icon(icon, color: AppColors.goldAccent),
         ),
         title: Text(
           title,
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.bold,
             fontSize: 14,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: isDark ? Colors.white : AppColors.lightTextPrimary,
           ),
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(
             fontSize: 11,
-            color: isDark ? const Color(0xFFA0A5B5) : const Color(0xFF64748B),
+            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
           ),
         ),
-        trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+        trailing: const Icon(
+          Icons.chevron_right_rounded,
+          color: AppColors.neutral,
+        ),
         onTap: onTap,
       ),
     );

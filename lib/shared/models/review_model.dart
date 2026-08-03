@@ -7,6 +7,8 @@ part 'review_model.g.dart';
 abstract class ReviewModel with _$ReviewModel {
   const factory ReviewModel({
     required String id,
+    required String productId,
+    required String userId,
     required String userName,
     required double rating,
     required String comment,

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'core/storage/app_hive.dart';
+import 'core/constants/app_colors.dart';
 import 'firebase_options.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -74,7 +75,7 @@ class AppWatchHub extends ConsumerWidget {
                           vertical: 8,
                           horizontal: 16,
                         ),
-                        color: Colors.redAccent,
+                        color: AppColors.error,
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

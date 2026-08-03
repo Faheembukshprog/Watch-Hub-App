@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ReviewModel {
 
- String get id; String get userName; double get rating; String get comment; DateTime get date;
+ String get id; String get productId; String get userId; String get userName; double get rating; String get comment; DateTime get date;
 /// Create a copy of ReviewModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ReviewModelCopyWith<ReviewModel> get copyWith => _$ReviewModelCopyWithImpl<Revi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReviewModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.date, date) || other.date == date));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReviewModel&&(identical(other.id, id) || other.id == id)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.date, date) || other.date == date));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userName,rating,comment,date);
+int get hashCode => Object.hash(runtimeType,id,productId,userId,userName,rating,comment,date);
 
 @override
 String toString() {
-  return 'ReviewModel(id: $id, userName: $userName, rating: $rating, comment: $comment, date: $date)';
+  return 'ReviewModel(id: $id, productId: $productId, userId: $userId, userName: $userName, rating: $rating, comment: $comment, date: $date)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ReviewModelCopyWith<$Res>  {
   factory $ReviewModelCopyWith(ReviewModel value, $Res Function(ReviewModel) _then) = _$ReviewModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String userName, double rating, String comment, DateTime date
+ String id, String productId, String userId, String userName, double rating, String comment, DateTime date
 });
 
 
@@ -65,9 +65,11 @@ class _$ReviewModelCopyWithImpl<$Res>
 
 /// Create a copy of ReviewModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userName = null,Object? rating = null,Object? comment = null,Object? date = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? productId = null,Object? userId = null,Object? userName = null,Object? rating = null,Object? comment = null,Object? date = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,productId: null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
+as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
 as String,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double,comment: null == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
@@ -157,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userName,  double rating,  String comment,  DateTime date)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String productId,  String userId,  String userName,  double rating,  String comment,  DateTime date)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReviewModel() when $default != null:
-return $default(_that.id,_that.userName,_that.rating,_that.comment,_that.date);case _:
+return $default(_that.id,_that.productId,_that.userId,_that.userName,_that.rating,_that.comment,_that.date);case _:
   return orElse();
 
 }
@@ -178,10 +180,10 @@ return $default(_that.id,_that.userName,_that.rating,_that.comment,_that.date);c
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userName,  double rating,  String comment,  DateTime date)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String productId,  String userId,  String userName,  double rating,  String comment,  DateTime date)  $default,) {final _that = this;
 switch (_that) {
 case _ReviewModel():
-return $default(_that.id,_that.userName,_that.rating,_that.comment,_that.date);case _:
+return $default(_that.id,_that.productId,_that.userId,_that.userName,_that.rating,_that.comment,_that.date);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +200,10 @@ return $default(_that.id,_that.userName,_that.rating,_that.comment,_that.date);c
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userName,  double rating,  String comment,  DateTime date)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String productId,  String userId,  String userName,  double rating,  String comment,  DateTime date)?  $default,) {final _that = this;
 switch (_that) {
 case _ReviewModel() when $default != null:
-return $default(_that.id,_that.userName,_that.rating,_that.comment,_that.date);case _:
+return $default(_that.id,_that.productId,_that.userId,_that.userName,_that.rating,_that.comment,_that.date);case _:
   return null;
 
 }
@@ -213,10 +215,12 @@ return $default(_that.id,_that.userName,_that.rating,_that.comment,_that.date);c
 @JsonSerializable()
 
 class _ReviewModel implements ReviewModel {
-  const _ReviewModel({required this.id, required this.userName, required this.rating, required this.comment, required this.date});
+  const _ReviewModel({required this.id, required this.productId, required this.userId, required this.userName, required this.rating, required this.comment, required this.date});
   factory _ReviewModel.fromJson(Map<String, dynamic> json) => _$ReviewModelFromJson(json);
 
 @override final  String id;
+@override final  String productId;
+@override final  String userId;
 @override final  String userName;
 @override final  double rating;
 @override final  String comment;
@@ -235,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReviewModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.date, date) || other.date == date));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReviewModel&&(identical(other.id, id) || other.id == id)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.date, date) || other.date == date));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userName,rating,comment,date);
+int get hashCode => Object.hash(runtimeType,id,productId,userId,userName,rating,comment,date);
 
 @override
 String toString() {
-  return 'ReviewModel(id: $id, userName: $userName, rating: $rating, comment: $comment, date: $date)';
+  return 'ReviewModel(id: $id, productId: $productId, userId: $userId, userName: $userName, rating: $rating, comment: $comment, date: $date)';
 }
 
 
@@ -255,7 +259,7 @@ abstract mixin class _$ReviewModelCopyWith<$Res> implements $ReviewModelCopyWith
   factory _$ReviewModelCopyWith(_ReviewModel value, $Res Function(_ReviewModel) _then) = __$ReviewModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String userName, double rating, String comment, DateTime date
+ String id, String productId, String userId, String userName, double rating, String comment, DateTime date
 });
 
 
@@ -272,9 +276,11 @@ class __$ReviewModelCopyWithImpl<$Res>
 
 /// Create a copy of ReviewModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userName = null,Object? rating = null,Object? comment = null,Object? date = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? productId = null,Object? userId = null,Object? userName = null,Object? rating = null,Object? comment = null,Object? date = null,}) {
   return _then(_ReviewModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,productId: null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
+as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
 as String,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double,comment: null == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable

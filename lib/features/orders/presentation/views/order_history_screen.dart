@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import '../providers/order_history_provider.dart';
 import '../../domain/models/order_model.dart';
 
@@ -32,11 +33,11 @@ class OrderHistoryScreen extends ConsumerWidget {
                 Color statusColor;
                 switch (order.status) {
                   case OrderStatus.delivered:
-                    statusColor = Colors.green;
+                    statusColor = AppColors.success;
                   case OrderStatus.cancelled:
-                    statusColor = Colors.red;
+                    statusColor = AppColors.error;
                   default:
-                    statusColor = Colors.orange;
+                    statusColor = AppColors.warning;
                 }
 
                 return Card(

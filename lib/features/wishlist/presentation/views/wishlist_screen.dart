@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -20,15 +21,15 @@ class WishlistScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF0F1115)
-          : const Color(0xFFF8F9FA),
+          ? AppColors.darkBg
+          : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
           'CURATED WISHLIST',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.bold,
             letterSpacing: 2.0,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: isDark ? Colors.white : AppColors.lightTextPrimary,
           ),
         ),
         leading: IconButton(
@@ -61,8 +62,8 @@ class WishlistScreen extends ConsumerWidget {
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: isDark
-                            ? const Color(0xFFA0A5B5)
-                            : const Color(0xFF64748B),
+                            ? AppColors.darkTextSecondary
+                            : AppColors.lightTextSecondary,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -96,7 +97,7 @@ class WishlistScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(
-          child: CircularProgressIndicator(color: Color(0xFFD4AF37)),
+          child: CircularProgressIndicator(color: AppColors.goldAccent),
         ),
         error: (err, stack) =>
             Center(child: Text('Failed to load wishlist: $err')),
@@ -116,10 +117,10 @@ class _WishlistCard extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF181B22) : Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? const Color(0xFF2A2E39) : const Color(0xFFE2E8F0),
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
         ),
       ),
       child: Column(
@@ -133,8 +134,8 @@ class _WishlistCard extends ConsumerWidget {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: isDark
-                        ? const Color(0xFF0F1115)
-                        : const Color(0xFFF1F5F9),
+                        ? AppColors.darkBg
+                        : AppColors.lightSurfaceMuted,
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(16),
                     ),
@@ -166,18 +167,18 @@ class _WishlistCard extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF20242D) : Colors.white,
+                        color: isDark ? AppColors.darkSurfaceCard : Colors.white,
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: isDark
-                              ? const Color(0xFF2A2E39)
-                              : const Color(0xFFE2E8F0),
+                              ? AppColors.darkBorder
+                              : AppColors.lightBorder,
                         ),
                       ),
                       child: const Icon(
                         Icons.close_rounded,
                         size: 16,
-                        color: Colors.redAccent,
+                        color: AppColors.error,
                       ),
                     ),
                   ),
@@ -197,7 +198,7 @@ class _WishlistCard extends ConsumerWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 8,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFFD4AF37),
+                    color: AppColors.goldAccent,
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -207,7 +208,7 @@ class _WishlistCard extends ConsumerWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    color: isDark ? Colors.white : AppColors.lightTextPrimary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -218,7 +219,7 @@ class _WishlistCard extends ConsumerWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFFD4AF37),
+                    color: AppColors.goldAccent,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -231,14 +232,14 @@ class _WishlistCard extends ConsumerWidget {
                         SnackBar(
                           content: Text('Added ${watch.name} to Shopping Bag'),
                           behavior: SnackBarBehavior.floating,
-                          backgroundColor: const Color(0xFFD4AF37),
+                          backgroundColor: AppColors.goldAccent,
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD4AF37),
+                      backgroundColor: AppColors.goldAccent,
                       foregroundColor: isDark
-                          ? const Color(0xFF0F1115)
+                          ? AppColors.darkBg
                           : Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       shape: RoundedRectangleBorder(

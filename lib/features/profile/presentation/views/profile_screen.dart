@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,15 +28,15 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF0F1115)
-          : const Color(0xFFF8F9FA),
+          ? AppColors.darkBg
+          : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
           'BOUTIQUE PROFILE',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.bold,
             letterSpacing: 2.0,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            color: isDark ? Colors.white : AppColors.lightTextPrimary,
           ),
         ),
       ),
@@ -47,15 +48,15 @@ class ProfileScreen extends ConsumerWidget {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF181B22) : Colors.white,
+                color: isDark ? AppColors.darkSurface : Colors.white,
                 borderRadius: const BorderRadius.vertical(
                   bottom: Radius.circular(32),
                 ),
                 border: Border(
                   bottom: BorderSide(
                     color: isDark
-                        ? const Color(0xFF2A2E39)
-                        : const Color(0xFFE2E8F0),
+                        ? AppColors.darkBorder
+                        : AppColors.lightBorder,
                   ),
                 ),
               ),
@@ -74,16 +75,16 @@ class ProfileScreen extends ConsumerWidget {
                           border: Border.all(
                             color: isAnonymous
                                 ? Colors.transparent
-                                : const Color(0xFFD4AF37),
+                                : AppColors.goldAccent,
                             width: 2,
                           ),
                           boxShadow: isAnonymous
                               ? []
                               : [
                                   BoxShadow(
-                                    color: const Color(
-                                      0xFFD4AF37,
-                                    ).withValues(alpha: 0.25),
+                                    color: AppColors.goldAccent.withValues(
+                                      alpha: 0.25,
+                                    ),
                                     blurRadius: 16,
                                     spreadRadius: 2,
                                   ),
@@ -93,14 +94,14 @@ class ProfileScreen extends ConsumerWidget {
                       CircleAvatar(
                         radius: 48,
                         backgroundColor: isDark
-                            ? const Color(0xFF0F1115)
-                            : const Color(0xFFF1F5F9),
+                            ? AppColors.darkBg
+                            : AppColors.lightSurfaceMuted,
                         child: Icon(
                           isAnonymous
                               ? Icons.person_outline_rounded
                               : Icons.workspace_premium_outlined,
                           size: 48,
-                          color: const Color(0xFFD4AF37),
+                          color: AppColors.goldAccent,
                         ),
                       ),
                     ],
@@ -113,7 +114,7 @@ class ProfileScreen extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -124,8 +125,8 @@ class ProfileScreen extends ConsumerWidget {
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       color: isDark
-                          ? const Color(0xFFA0A5B5)
-                          : const Color(0xFF64748B),
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -137,10 +138,10 @@ class ProfileScreen extends ConsumerWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD4AF37).withValues(alpha: 0.15),
+                      color: AppColors.goldAccent.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: const Color(0xFFD4AF37),
+                        color: AppColors.goldAccent,
                         width: 1,
                       ),
                     ),
@@ -150,7 +151,7 @@ class ProfileScreen extends ConsumerWidget {
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.5,
-                        color: const Color(0xFFD4AF37),
+                        color: AppColors.goldAccent,
                       ),
                     ),
                   ),
@@ -171,7 +172,7 @@ class ProfileScreen extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: AppColors.neutral,
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -206,7 +207,7 @@ class ProfileScreen extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: AppColors.neutral,
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -216,20 +217,20 @@ class ProfileScreen extends ConsumerWidget {
                   Container(
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF181B22) : Colors.white,
+                      color: isDark ? AppColors.darkSurface : Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isDark
-                            ? const Color(0xFF2A2E39)
-                            : const Color(0xFFE2E8F0),
+                            ? AppColors.darkBorder
+                            : AppColors.lightBorder,
                       ),
                     ),
                     child: SwitchListTile(
                       value: isDark,
-                      activeThumbColor: const Color(0xFFD4AF37),
+                      activeThumbColor: AppColors.goldAccent,
                       inactiveTrackColor: isDark
                           ? Colors.black26
-                          : Colors.grey[200],
+                          : AppColors.lightControlTrack,
                       title: Text(
                         'Dark Obsidian Theme',
                         style: GoogleFonts.outfit(
@@ -237,7 +238,7 @@ class ProfileScreen extends ConsumerWidget {
                           fontSize: 14,
                           color: isDark
                               ? Colors.white
-                              : const Color(0xFF0F172A),
+                              : AppColors.lightTextPrimary,
                         ),
                       ),
                       subtitle: Text(
@@ -245,8 +246,8 @@ class ProfileScreen extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark
-                              ? const Color(0xFFA0A5B5)
-                              : const Color(0xFF64748B),
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
                         ),
                       ),
                       onChanged: (val) {
@@ -269,8 +270,8 @@ class ProfileScreen extends ConsumerWidget {
                     onTap: () {
                       ref.read(firebaseAuthProvider).signOut();
                     },
-                    textColor: Colors.redAccent,
-                    iconColor: Colors.redAccent,
+                    textColor: AppColors.error,
+                    iconColor: AppColors.error,
                     isDark: isDark,
                   ),
                 ],
@@ -308,10 +309,10 @@ class _ProfileMenuItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF181B22) : Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? const Color(0xFF2A2E39) : const Color(0xFFE2E8F0),
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
         ),
       ),
       child: ListTile(
@@ -320,14 +321,14 @@ class _ProfileMenuItem extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: (iconColor ?? const Color(0xFFD4AF37)).withValues(
+            color: (iconColor ?? AppColors.goldAccent).withValues(
               alpha: 0.1,
             ),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
-            color: iconColor ?? const Color(0xFFD4AF37),
+            color: iconColor ?? AppColors.goldAccent,
             size: 22,
           ),
         ),
@@ -337,20 +338,20 @@ class _ProfileMenuItem extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 14,
             color:
-                textColor ?? (isDark ? Colors.white : const Color(0xFF0F172A)),
+                textColor ?? (isDark ? Colors.white : AppColors.lightTextPrimary),
           ),
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(
             fontSize: 11,
-            color: isDark ? const Color(0xFFA0A5B5) : const Color(0xFF64748B),
+            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
           ),
         ),
         trailing: const Icon(
           Icons.arrow_forward_ios_rounded,
           size: 14,
-          color: Colors.grey,
+          color: AppColors.neutral,
         ),
       ),
     );

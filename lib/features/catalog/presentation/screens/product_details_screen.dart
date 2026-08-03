@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:app_watchhub/core/constants/app_colors.dart';
+import 'package:app_watchhub/core/router/app_router.dart';
+import 'package:app_watchhub/shared/providers/firebase_provider.dart';
 import '../../domain/models/product_model.dart';
+import '../../data/repositories/review_repository.dart';
 import '../providers/catalog_providers.dart';
 import '../providers/wishlist_provider.dart';
 import '../providers/reviews_provider.dart';
 import 'package:app_watchhub/features/cart/presentation/providers/cart_provider.dart';
-import 'package:app_watchhub/shared/models/review_model.dart';
 
 class ProductDetailsScreen extends ConsumerWidget {
   final String id;
@@ -73,7 +76,7 @@ class ProductDetailsScreen extends ConsumerWidget {
       },
       loading: () => const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(color: Color(0xFFD4AF37)),
+          child: CircularProgressIndicator(color: AppColors.goldAccent),
         ),
       ),
       error: (err, stack) {
@@ -105,28 +108,9 @@ class ProductDetailsScreen extends ConsumerWidget {
     final wishlist = ref.watch(wishlistProvider);
     final isInWish = wishlist.contains(product.id);
 
-    // Reviews State integration
-    final allReviewsMap = ref.watch(productReviewsProvider);
-    final reviews =
-        allReviewsMap[product.id] ??
-        [
-          ReviewModel(
-            id: 'seed-1',
-            userName: 'Charles Vane',
-            rating: 5.0,
-            comment:
-                'Exquisite timepiece. The finish and craftsmanship are top tier.',
-            date: DateTime.now().subtract(const Duration(days: 2)),
-          ),
-          ReviewModel(
-            id: 'seed-2',
-            userName: 'Eleanor Guthrie',
-            rating: 4.5,
-            comment: 'Stunning luxury look, runs extremely accurately.',
-            date: DateTime.now().subtract(const Duration(days: 5)),
-          ),
-        ];
-
+    // Reviews from Firestore
+    final reviewsAsync = ref.watch(productReviewsProvider(product.id));
+    final reviews = reviewsAsync.value ?? [];
     final averageRating = reviews.isEmpty
         ? 0.0
         : reviews.fold<double>(0.0, (sum, r) => sum + r.rating) /
@@ -143,9 +127,7 @@ class ProductDetailsScreen extends ConsumerWidget {
         };
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF0F1115)
-          : const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.scaffoldBackground(theme.brightness),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -157,7 +139,7 @@ class ProductDetailsScreen extends ConsumerWidget {
           IconButton(
             icon: Icon(
               isInWish ? Icons.favorite : Icons.favorite_border,
-              color: const Color(0xFFD4AF37),
+              color: AppColors.goldAccent,
             ),
             onPressed: () {
               ref.read(wishlistProvider.notifier).toggleWishlist(product);
@@ -169,7 +151,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                         : 'Added ${product.name} to Wishlist',
                   ),
                   behavior: SnackBarBehavior.floating,
-                  backgroundColor: const Color(0xFFD4AF37),
+                  backgroundColor: AppColors.goldAccent,
                   duration: const Duration(seconds: 2),
                 ),
               );
@@ -192,12 +174,12 @@ class ProductDetailsScreen extends ConsumerWidget {
                       height: 280,
                       margin: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF181B22) : Colors.white,
+                        color: isDark ? AppColors.darkSurface : Colors.white,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
                           color: isDark
-                              ? const Color(0xFF2A2E39)
-                              : const Color(0xFFE2E8F0),
+                              ? AppColors.darkBorder
+                              : AppColors.lightBorder,
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -248,13 +230,13 @@ class ProductDetailsScreen extends ConsumerWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFD4AF37).withValues(alpha: 0.1),
+                          color: AppColors.goldAccent.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           product.brand.toUpperCase(),
                           style: GoogleFonts.outfit(
-                            color: const Color(0xFFD4AF37),
+                            color: AppColors.goldAccent,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                             letterSpacing: 1.5,
@@ -265,8 +247,8 @@ class ProductDetailsScreen extends ConsumerWidget {
                         'ID: ${product.id}',
                         style: TextStyle(
                           color: isDark
-                              ? const Color(0xFFA0A5B5)
-                              : const Color(0xFF64748B),
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
                           fontSize: 11,
                           fontFamily: 'monospace',
                         ),
@@ -281,7 +263,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
                       height: 1.2,
                     ),
                   ),
@@ -293,7 +275,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFFD4AF37),
+                      color: AppColors.goldAccent,
                     ),
                   ),
 
@@ -310,7 +292,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                                 : (index < averageRating
                                       ? Icons.star_half
                                       : Icons.star_border),
-                            color: const Color(0xFFD4AF37),
+                            color: AppColors.goldAccent,
                             size: 18,
                           );
                         }),
@@ -335,7 +317,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -379,7 +361,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -389,8 +371,8 @@ class ProductDetailsScreen extends ConsumerWidget {
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       color: isDark
-                          ? const Color(0xFFA0A5B5)
-                          : const Color(0xFF64748B),
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
                       height: 1.5,
                     ),
                   ),
@@ -408,30 +390,52 @@ class ProductDetailsScreen extends ConsumerWidget {
                           fontWeight: FontWeight.bold,
                           color: isDark
                               ? Colors.white
-                              : const Color(0xFF0F172A),
+                              : AppColors.lightTextPrimary,
                         ),
                       ),
                       TextButton.icon(
                         icon: const Icon(Icons.rate_review_outlined, size: 16),
                         label: const Text('Write Review'),
                         onPressed: () =>
-                            _showWriteReviewDialog(context, ref, product.id),
+                            _onWriteReviewPressed(context, ref, product.id),
                         style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFFD4AF37),
+                          foregroundColor: AppColors.goldAccent,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
 
-                  if (reviews.isEmpty)
+                  if (reviewsAsync.isLoading && reviews.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Center(
+                        child: SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    )
+                  else if (reviewsAsync.hasError)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        'Unable to load reviews right now.',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: AppColors.secondaryText(theme.brightness),
+                        ),
+                      ),
+                    )
+                  else if (reviews.isEmpty)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 12),
                       child: Text(
                         'No reviews yet. Be the first to review this timepiece!',
                         style: TextStyle(
                           fontStyle: FontStyle.italic,
-                          color: Colors.grey,
+                          color: AppColors.neutral,
                         ),
                       ),
                     )
@@ -447,13 +451,13 @@ class ProductDetailsScreen extends ConsumerWidget {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: isDark
-                                ? const Color(0xFF181B22)
+                                ? AppColors.darkSurface
                                 : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isDark
-                                  ? const Color(0xFF2A2E39)
-                                  : const Color(0xFFE2E8F0),
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
                             ),
                           ),
                           child: Column(
@@ -470,15 +474,15 @@ class ProductDetailsScreen extends ConsumerWidget {
                                       fontSize: 13,
                                       color: isDark
                                           ? Colors.white
-                                          : const Color(0xFF0F172A),
+                                          : AppColors.lightTextPrimary,
                                     ),
                                   ),
                                   Text(
                                     '${r.date.month}/${r.date.day}/${r.date.year}',
                                     style: TextStyle(
                                       color: isDark
-                                          ? const Color(0xFFA0A5B5)
-                                          : const Color(0xFF64748B),
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.lightTextSecondary,
                                       fontSize: 11,
                                     ),
                                   ),
@@ -491,7 +495,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                                     starIdx < r.rating.floor()
                                         ? Icons.star
                                         : Icons.star_border,
-                                    color: const Color(0xFFD4AF37),
+                                    color: AppColors.goldAccent,
                                     size: 14,
                                   );
                                 }),
@@ -502,8 +506,8 @@ class ProductDetailsScreen extends ConsumerWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: isDark
-                                      ? const Color(0xFFA0A5B5)
-                                      : const Color(0xFF64748B),
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.lightTextSecondary,
                                   height: 1.4,
                                 ),
                               ),
@@ -523,12 +527,12 @@ class ProductDetailsScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF181B22) : Colors.white,
+              color: isDark ? AppColors.darkSurface : Colors.white,
               border: Border(
                 top: BorderSide(
                   color: isDark
-                      ? const Color(0xFF2A2E39)
-                      : const Color(0xFFE2E8F0),
+                      ? AppColors.darkBorder
+                      : AppColors.lightBorder,
                 ),
               ),
               boxShadow: [
@@ -553,11 +557,11 @@ class ProductDetailsScreen extends ConsumerWidget {
                               'Added ${product.name} to Shopping Cart',
                             ),
                             behavior: SnackBarBehavior.floating,
-                            backgroundColor: const Color(0xFFD4AF37),
+                            backgroundColor: AppColors.goldAccent,
                             action: SnackBarAction(
                               label: 'VIEW CART',
                               textColor: isDark
-                                  ? const Color(0xFF0F1115)
+                                  ? AppColors.darkBg
                                   : Colors.white,
                               onPressed: () {
                                 context.go('/cart');
@@ -576,9 +580,9 @@ class ProductDetailsScreen extends ConsumerWidget {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD4AF37),
+                        backgroundColor: AppColors.goldAccent,
                         foregroundColor: isDark
-                            ? const Color(0xFF0F1115)
+                            ? AppColors.darkBg
                             : Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -597,14 +601,45 @@ class ProductDetailsScreen extends ConsumerWidget {
     );
   }
 
-  void _showWriteReviewDialog(
+  void _onWriteReviewPressed(
     BuildContext context,
     WidgetRef ref,
     String productId,
   ) {
-    final nameController = TextEditingController();
+    final user = ref.read(authStateProvider).value;
+    if (user == null) {
+      final redirect = Uri.encodeComponent(
+        AppRoutes.productDetailsPath(productId),
+      );
+      context.go('${AppRoutes.login}?redirect=$redirect');
+      return;
+    }
+
+    final displayName = user.displayName?.trim();
+    final userName = (displayName != null && displayName.isNotEmpty)
+        ? displayName
+        : user.email?.split('@').first ?? 'Collector';
+
+    _showWriteReviewDialog(
+      context,
+      ref,
+      productId: productId,
+      userId: user.uid,
+      userName: userName,
+    );
+  }
+
+  void _showWriteReviewDialog(
+    BuildContext context,
+    WidgetRef ref, {
+    required String productId,
+    required String userId,
+    required String userName,
+  }) {
+    final nameController = TextEditingController(text: userName);
     final commentController = TextEditingController();
     double selectedRating = 5.0;
+    var isSubmitting = false;
 
     showDialog<void>(
       context: context,
@@ -633,7 +668,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                             index < selectedRating.floor()
                                 ? Icons.star
                                 : Icons.star_border,
-                            color: const Color(0xFFD4AF37),
+                            color: AppColors.goldAccent,
                             size: 32,
                           ),
                           onPressed: () {
@@ -661,33 +696,62 @@ class ProductDetailsScreen extends ConsumerWidget {
                   onPressed: () => Navigator.of(dialogContext).pop(),
                   child: const Text(
                     'CANCEL',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: AppColors.neutral),
                   ),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD4AF37),
+                    backgroundColor: AppColors.goldAccent,
                   ),
-                  onPressed: () {
-                    final name = nameController.text.trim();
-                    final comment = commentController.text.trim();
-                    if (name.isNotEmpty && comment.isNotEmpty) {
-                      ref
-                          .read(productReviewsProvider.notifier)
-                          .addReview(productId, name, selectedRating, comment);
-                      Navigator.of(dialogContext).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Thank you! Review submitted successfully.',
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Color(0xFFD4AF37),
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text('SUBMIT'),
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          final name = nameController.text.trim();
+                          final comment = commentController.text.trim();
+                          if (name.isEmpty || comment.isEmpty) {
+                            return;
+                          }
+
+                          setState(() => isSubmitting = true);
+
+                          try {
+                            await ref
+                                .read(reviewRepositoryProvider)
+                                .submitReview(
+                                  productId: productId,
+                                  userId: userId,
+                                  userName: name,
+                                  rating: selectedRating,
+                                  comment: comment,
+                                );
+                            if (dialogContext.mounted) {
+                              Navigator.of(dialogContext).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Thank you! Review submitted successfully.',
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: AppColors.goldAccent,
+                                ),
+                              );
+                            }
+                          } catch (_) {
+                            setState(() => isSubmitting = false);
+                            if (dialogContext.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Failed to submit review. Please try again.',
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: AppColors.error,
+                                ),
+                              );
+                            }
+                          }
+                        },
+                  child: Text(isSubmitting ? 'SUBMITTING...' : 'SUBMIT'),
                 ),
               ],
             );
@@ -719,15 +783,15 @@ class _SpecCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF181B22) : Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? const Color(0xFF2A2E39) : const Color(0xFFE2E8F0),
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
         ),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: const Color(0xFFD4AF37)),
+          Icon(icon, size: 20, color: AppColors.goldAccent),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -739,8 +803,8 @@ class _SpecCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10,
                     color: isDark
-                        ? const Color(0xFFA0A5B5)
-                        : const Color(0xFF64748B),
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -750,7 +814,7 @@ class _SpecCard extends StatelessWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    color: isDark ? Colors.white : AppColors.lightTextPrimary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
