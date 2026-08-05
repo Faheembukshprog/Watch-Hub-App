@@ -124,13 +124,13 @@ class AppWatchHub extends ConsumerWidget {
       builder: (context, child) {
         return Consumer(
           builder: (context, ref, _) {
-            final connectivity = ref.watch(connectivityProvider).asData?.value;
+            final connectivityResult = ref
+                .watch(connectivityProvider)
+                .asData
+                ?.value;
             final isOffline =
-                connectivity != null &&
-                connectivity.isNotEmpty &&
-                connectivity.every(
-                  (result) => result == ConnectivityResult.none,
-                );
+                connectivityResult != null &&
+                connectivityResult == ConnectivityResult.none;
 
             if (isOffline) {
               return Stack(
