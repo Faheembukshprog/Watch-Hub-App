@@ -4,6 +4,16 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
+/// Default [FirebaseOptions] for use with your Firebase apps.
+///
+/// Example:
+/// ```dart
+/// import 'firebase_options.dart';
+/// // ...
+/// await Firebase.initializeApp(
+///   options: DefaultFirebaseOptions.currentPlatform,
+/// );
+/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -13,8 +23,14 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
+        return ios;
+      case TargetPlatform.macOS:
+        return macos;
+      case TargetPlatform.windows:
+        return windows;
+      case TargetPlatform.linux:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos/ios - '
+          'DefaultFirebaseOptions have not been configured for linux - '
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       default:
@@ -24,7 +40,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // MUST CONTAIN VALID WEB KEYS
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyBR3f5SniqMmjAmFuODa0GplwBRYcB1fJY',
     appId: '1:262205640310:web:346a10a2f78b4eb7ad5957',
@@ -32,6 +47,7 @@ class DefaultFirebaseOptions {
     projectId: 'app-watchhub-08',
     authDomain: 'app-watchhub-08.firebaseapp.com',
     storageBucket: 'app-watchhub-08.firebasestorage.app',
+    measurementId: 'G-R7BPJ4HEEC',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -40,5 +56,33 @@ class DefaultFirebaseOptions {
     messagingSenderId: '262205640310',
     projectId: 'app-watchhub-08',
     storageBucket: 'app-watchhub-08.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAzexrnUxIYthTf-vMMv4blz-I8q6N28Pw',
+    appId: '1:262205640310:ios:ad3a3390b2078451ad5957',
+    messagingSenderId: '262205640310',
+    projectId: 'app-watchhub-08',
+    storageBucket: 'app-watchhub-08.firebasestorage.app',
+    iosBundleId: 'com.appwatchhub.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAzexrnUxIYthTf-vMMv4blz-I8q6N28Pw',
+    appId: '1:262205640310:ios:f0835c8fdc0bff4bad5957',
+    messagingSenderId: '262205640310',
+    projectId: 'app-watchhub-08',
+    storageBucket: 'app-watchhub-08.firebasestorage.app',
+    iosBundleId: 'com.example.appWatchhub',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBR3f5SniqMmjAmFuODa0GplwBRYcB1fJY',
+    appId: '1:262205640310:web:6512555f5fc92d48ad5957',
+    messagingSenderId: '262205640310',
+    projectId: 'app-watchhub-08',
+    authDomain: 'app-watchhub-08.firebaseapp.com',
+    storageBucket: 'app-watchhub-08.firebasestorage.app',
+    measurementId: 'G-V3HMQ00D6H',
   );
 }

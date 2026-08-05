@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -20,9 +21,7 @@ class WishlistScreen extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark
-          ? AppColors.darkBg
-          : AppColors.lightBg,
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
           'CURATED WISHLIST',
@@ -46,34 +45,49 @@ class WishlistScreen extends ConsumerWidget {
           if (wishlistedProducts.isEmpty) {
             return Center(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.favorite_border_rounded,
-                      size: 80,
-                      color: isDark ? Colors.white24 : Colors.black26,
+                      size: 64,
+                      color: Colors.grey[400],
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Your curated wishlist is empty',
+                      'Your wishlist is empty',
                       style: GoogleFonts.outfit(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                         color: isDark
                             ? AppColors.darkTextSecondary
-                            : AppColors.lightTextSecondary,
+                            : Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     Text(
-                      'Curate your personal collection of luxury pieces while browsing the boutique.',
+                      'Add watches to your wishlist and move them to the cart when you are ready to buy.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 13,
-                        color: isDark ? Colors.white30 : Colors.black38,
+                        fontSize: 14,
+                        color: isDark
+                            ? AppColors.darkTextSecondary
+                            : Colors.black54,
                       ),
+                    ),
+                    const SizedBox(height: 24),
+                    OutlinedButton(
+                      onPressed: () => context.go('/catalog'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.goldAccent,
+                        side: const BorderSide(color: AppColors.goldAccent),
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Continue Shopping'),
                     ),
                   ],
                 ),
@@ -115,14 +129,14 @@ class _WishlistCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-        ),
-      ),
+    return Card(
+      elevation: 2,
+      shadowColor: Colors.black26,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: isDark
+          ? AppColors.darkSurface
+          : Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -130,30 +144,28 @@ class _WishlistCard extends ConsumerWidget {
           Expanded(
             child: Stack(
               children: [
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? AppColors.darkBg
-                        : AppColors.lightSurfaceMuted,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
-                    ),
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
                   ),
-                  padding: const EdgeInsets.all(12),
-                  child: watch.imageUrl.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: watch.imageUrl,
-                          fit: BoxFit.contain,
-                          errorWidget: (context, url, error) => Icon(
+                  child: Container(
+                    width: double.infinity,
+                    color: isDark ? AppColors.darkBg : Colors.grey[100],
+                    padding: const EdgeInsets.all(12),
+                    child: watch.imageUrl.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: watch.imageUrl,
+                            fit: BoxFit.contain,
+                            errorWidget: (context, url, error) => Icon(
+                              Icons.watch_rounded,
+                              color: isDark ? Colors.white30 : Colors.black26,
+                            ),
+                          )
+                        : Icon(
                             Icons.watch_rounded,
                             color: isDark ? Colors.white30 : Colors.black26,
                           ),
-                        )
-                      : Icon(
-                          Icons.watch_rounded,
-                          color: isDark ? Colors.white30 : Colors.black26,
-                        ),
+                  ),
                 ),
 
                 // Remove from wishlist top-right overlay button
@@ -167,7 +179,9 @@ class _WishlistCard extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkSurfaceCard : Colors.white,
+                        color: isDark
+                            ? AppColors.darkSurfaceCard
+                            : Colors.white,
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: isDark
@@ -228,9 +242,10 @@ class _WishlistCard extends ConsumerWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       ref.read(cartProvider.notifier).addToCart(watch);
+                      ref.read(wishlistProvider.notifier).toggleWishlist(watch);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Added ${watch.name} to Shopping Bag'),
+                          content: Text('Moved ${watch.name} to Shopping Bag'),
                           behavior: SnackBarBehavior.floating,
                           backgroundColor: AppColors.goldAccent,
                         ),
@@ -238,9 +253,7 @@ class _WishlistCard extends ConsumerWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.goldAccent,
-                      foregroundColor: isDark
-                          ? AppColors.darkBg
-                          : Colors.white,
+                      foregroundColor: isDark ? AppColors.darkBg : Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -248,7 +261,7 @@ class _WishlistCard extends ConsumerWidget {
                       elevation: 0,
                     ),
                     child: Text(
-                      'ADD TO BAG',
+                      'ADD TO CART',
                       style: GoogleFonts.outfit(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,

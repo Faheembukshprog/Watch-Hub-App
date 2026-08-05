@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 
-/// Listenable adapter that converts a [Stream] (e.g. FirebaseAuth.authStateChanges)
-/// into a [ChangeNotifier] so GoRouter can observe auth state changes.
+/// Listenable adapter that converts a [Stream] into a [ChangeNotifier]
+/// so GoRouter can observe auth state changes.
 class GoRouterRefreshStream extends ChangeNotifier {
   late final StreamSubscription<dynamic> _subscription;
 

@@ -22,8 +22,20 @@ class CatalogScreen extends ConsumerStatefulWidget {
 class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   String _searchQuery = '';
   String _selectedBrand = 'All';
+  double _minPrice = 0;
+  double _maxPrice = 20000;
+  String _selectedType = 'All';
+  String _sortBy = 'Default';
   final _searchController = TextEditingController();
   late final PageController _bannerPageController;
+
+  final Map<String, double> _popularityScores = {
+    'rolex_submariner': 4.8,
+    'omega_speedmaster': 4.6,
+    'patek_nautilus': 4.9,
+    'ap_royal_oak': 4.7,
+    'cartier_santos': 4.4,
+  };
 
   final List<String> _brands = [
     'All',
@@ -32,6 +44,21 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     'Patek Philippe',
     'Audemars Piguet',
     'Cartier',
+  ];
+
+  final List<String> _productTypes = [
+    'All',
+    'Sports',
+    'Luxury',
+    'Classic',
+    'Dress',
+  ];
+
+  final List<String> _sortOptions = [
+    'Default',
+    'Price Low-High',
+    'Price High-Low',
+    'Popularity',
   ];
 
   final List<Map<String, String>> _promoBanners = [
@@ -80,7 +107,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
         child: catalogAsync.when(
           data: (products) {
             // Apply filtering logic locally for high-fidelity demonstration
-            final filteredProducts = products.where((product) {
+            var filteredProducts = products.where((product) {
               final matchesBrand =
                   _selectedBrand == 'All' ||
                   product.brand.toLowerCase() == _selectedBrand.toLowerCase();
@@ -91,8 +118,37 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                   product.brand.toLowerCase().contains(
                     _searchQuery.toLowerCase(),
                   );
-              return matchesBrand && matchesQuery;
+              final matchesPrice =
+                  product.price >= _minPrice && product.price <= _maxPrice;
+              final matchesType =
+                  _selectedType == 'All' ||
+                  product.tags.contains(_selectedType.toLowerCase());
+              return matchesBrand &&
+                  matchesQuery &&
+                  matchesPrice &&
+                  matchesType;
             }).toList();
+
+            // Apply sorting
+            switch (_sortBy) {
+              case 'Price Low-High':
+                filteredProducts.sort((a, b) => a.price.compareTo(b.price));
+                break;
+              case 'Price High-Low':
+                filteredProducts.sort((a, b) => b.price.compareTo(a.price));
+                break;
+              case 'Popularity':
+                filteredProducts.sort((a, b) {
+                  final aScore = _popularityScores[a.id] ?? 0.0;
+                  final bScore = _popularityScores[b.id] ?? 0.0;
+                  return bScore.compareTo(aScore);
+                });
+                break;
+              case 'Default':
+              default:
+                // Keep default order
+                break;
+            }
 
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
@@ -262,9 +318,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.8,
                                 color: isSelected
-                                    ? (isDark
-                                          ? AppColors.darkBg
-                                          : Colors.white)
+                                    ? (isDark ? AppColors.darkBg : Colors.white)
                                     : (isDark
                                           ? AppColors.darkTextSecondary
                                           : AppColors.lightTextSecondary),
@@ -296,6 +350,129 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                           ),
                         );
                       }).toList(),
+                    ),
+                  ),
+                ),
+
+                // --- Price Range Filter ---
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Price Range: \$${_minPrice.toStringAsFixed(0)} - \$${_maxPrice.toStringAsFixed(0)}',
+                          style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: isDark
+                                ? Colors.white
+                                : AppColors.lightTextPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        RangeSlider(
+                          values: RangeValues(_minPrice, _maxPrice),
+                          min: 0,
+                          max: 20000,
+                          divisions: 20,
+                          labels: RangeLabels(
+                            _minPrice.toStringAsFixed(0),
+                            _maxPrice.toStringAsFixed(0),
+                          ),
+                          onChanged: (RangeValues values) {
+                            setState(() {
+                              _minPrice = values.start;
+                              _maxPrice = values.end;
+                            });
+                          },
+                          activeColor: AppColors.goldAccent,
+                          inactiveColor: isDark
+                              ? AppColors.darkBorder
+                              : AppColors.lightBorder,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // --- Product Type & Sort Filters ---
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButton<String>(
+                            value: _selectedType,
+                            isExpanded: true,
+                            underline: Container(
+                              height: 1,
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
+                            ),
+                            items: _productTypes.map((type) {
+                              return DropdownMenuItem(
+                                value: type,
+                                child: Text(
+                                  type,
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedType = value;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: DropdownButton<String>(
+                            value: _sortBy,
+                            isExpanded: true,
+                            underline: Container(
+                              height: 1,
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
+                            ),
+                            items: _sortOptions.map((sort) {
+                              return DropdownMenuItem(
+                                value: sort,
+                                child: Text(
+                                  sort,
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _sortBy = value;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -366,14 +543,14 @@ class _ProductCard extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () => context.go('/product/${watch.id}'),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-          ),
-        ),
+      child: Card(
+        elevation: 2,
+        shadowColor: Colors.black26,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        color: isDark
+            ? AppColors.darkSurface
+            : Theme.of(context).colorScheme.surface,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -381,43 +558,48 @@ class _ProductCard extends ConsumerWidget {
             Expanded(
               child: Stack(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.darkBg
-                          : AppColors.lightSurfaceMuted,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(16),
-                      ),
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(12),
                     ),
-                    padding: const EdgeInsets.all(12),
-                    child: Hero(
-                      tag: 'watch_image_${watch.id}',
-                      child: watch.imageUrl.isNotEmpty
-                          ? CachedNetworkImage(
-                              imageUrl: watch.imageUrl,
-                              fit: BoxFit.contain,
-                              placeholder: (context, url) => Shimmer.fromColors(
-                                baseColor: isDark
-                                    ? Colors.grey[800]!
-                                    : Colors.grey[300]!,
-                                highlightColor: isDark
-                                    ? Colors.grey[700]!
-                                    : Colors.grey[100]!,
-                                child: Container(color: Colors.white),
-                              ),
-                              errorWidget: (context, url, error) => Icon(
+                    child: Container(
+                      width: double.infinity,
+                      color: isDark ? AppColors.darkBg : Colors.grey[100],
+                      padding: const EdgeInsets.all(12),
+                      child: Hero(
+                        tag: 'watch_image_${watch.id}',
+                        child: watch.imageUrl.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: watch.imageUrl,
+                                fit: BoxFit.contain,
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
+                                      baseColor: isDark
+                                          ? Colors.grey[800]!
+                                          : Colors.grey[300]!,
+                                      highlightColor: isDark
+                                          ? Colors.grey[700]!
+                                          : Colors.grey[100]!,
+                                      child: Container(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.surface,
+                                      ),
+                                    ),
+                                errorWidget: (context, url, error) => Icon(
+                                  Icons.watch_rounded,
+                                  size: 48,
+                                  color: isDark
+                                      ? Colors.white30
+                                      : Colors.black26,
+                                ),
+                              )
+                            : Icon(
                                 Icons.watch_rounded,
                                 size: 48,
                                 color: isDark ? Colors.white30 : Colors.black26,
                               ),
-                            )
-                          : Icon(
-                              Icons.watch_rounded,
-                              size: 48,
-                              color: isDark ? Colors.white30 : Colors.black26,
-                            ),
+                      ),
                     ),
                   ),
 

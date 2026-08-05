@@ -30,7 +30,7 @@ class CartScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: isDark
           ? AppColors.darkBg
-          : AppColors.lightBg,
+          : Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'SHOPPING BAG',
@@ -59,38 +59,52 @@ class CartScreen extends ConsumerWidget {
         ],
       ),
       body: cartItems.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 80,
-                    color: isDark ? Colors.white24 : Colors.black26,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Your shopping bag is empty',
-                    style: GoogleFonts.outfit(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: isDark
-                          ? AppColors.darkTextSecondary
-                          : AppColors.lightTextSecondary,
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.shopping_bag_outlined,
+                      size: 64,
+                      color: Colors.grey[400],
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => context.go('/catalog'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.goldAccent,
-                      foregroundColor: isDark
-                          ? AppColors.darkBg
-                          : Colors.white,
+                    const SizedBox(height: 16),
+                    Text(
+                      'Your cart is empty',
+                      style: GoogleFonts.outfit(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
                     ),
-                    child: const Text('DISCOVER COLLECTION'),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Add watches to your bag and return here to complete checkout.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isDark
+                            ? AppColors.darkTextSecondary
+                            : Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    OutlinedButton(
+                      onPressed: () => context.go('/catalog'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.goldAccent,
+                        side: const BorderSide(color: AppColors.goldAccent),
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Continue Shopping'),
+                    ),
+                  ],
+                ),
               ),
             )
           : Column(
@@ -106,9 +120,7 @@ class CartScreen extends ConsumerWidget {
                         margin: const EdgeInsets.only(bottom: 16),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? AppColors.darkSurface
-                              : Colors.white,
+                          color: isDark ? AppColors.darkSurface : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isDark

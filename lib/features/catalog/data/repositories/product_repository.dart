@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/product_model.dart';
@@ -32,7 +33,10 @@ class ProductRepository {
           }).toList();
         })
         .transform(
-          StreamTransformer<List<ProductModel>, List<ProductModel>>.fromHandlers(
+          StreamTransformer<
+            List<ProductModel>,
+            List<ProductModel>
+          >.fromHandlers(
             handleError: (error, stackTrace, sink) {
               sink.add(_defaultFallbackProducts());
             },
@@ -113,7 +117,11 @@ class ProductRepository {
   /// Automatically seeds Firestore with rich luxury watch catalog data if empty
   Future<void> seedIfEmpty() async {
     try {
-      final query = await _firestore.collection('products').limit(1).get();
+      final query = await _firestore
+          .collection('products')
+          .limit(1)
+          .get(const GetOptions(source: Source.serverAndCache));
+
       if (query.docs.isEmpty) {
         final batch = _firestore.batch();
 
@@ -195,8 +203,9 @@ class ProductRepository {
 
         await batch.commit();
       }
-    } catch (_) {
-      // Gracefully swallow errors during startup
+    } catch (e, st) {
+      debugPrint('Firestore seed check skipped/failed: $e');
+      debugPrint('$st');
     }
   }
 }

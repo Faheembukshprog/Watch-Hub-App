@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // Feature Imports
 import '../../features/cart/presentation/views/cart_screen.dart';
@@ -15,7 +16,8 @@ import '../../features/support/presentation/views/support_screen.dart';
 import '../../features/support/presentation/views/faq_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/wishlist/presentation/views/wishlist_screen.dart';
-import 'go_router_refresh_stream.dart';
+import '../../features/admin/presentation/views/admin_screen.dart';
+
 import 'scaffold_with_nav_bar.dart';
 
 // Providers Import
@@ -62,22 +64,33 @@ String? resolveAuthRedirect({
   required String location,
   required String? redirectParam,
 }) {
-  if (isLoading || hasError) {
+  if (isLoading) {
+    // While auth is initializing, keep users on the splash route and
+    // redirect any other route back to splash until resolved.
     return location == AppRoutes.splash ? null : AppRoutes.splash;
   }
 
-  if (location == AppRoutes.splash) {
-    return AppRoutes.catalog;
+  if (hasError) {
+    return location == AppRoutes.splash ? null : AppRoutes.splash;
   }
 
   if (!isLoggedIn) {
+    if (location == AppRoutes.login) return null;
+
+    // Allow guests to browse the main catalog without forcing login.
+    if (location == AppRoutes.catalog) return null;
+
+    // If splash is resolved and user is not logged in, send them to catalog.
+    if (location == AppRoutes.splash) return AppRoutes.catalog;
+
     if (isProtectedRoute(location)) {
       return '${AppRoutes.login}?redirect=${Uri.encodeComponent(location)}';
     }
-    return null;
+
+    return AppRoutes.login;
   }
 
-  if (location == AppRoutes.login) {
+  if (location == AppRoutes.login || location == AppRoutes.splash) {
     if (redirectParam != null &&
         redirectParam.isNotEmpty &&
         isAllowedRedirect(redirectParam)) {
@@ -89,10 +102,19 @@ String? resolveAuthRedirect({
   return null;
 }
 
+/// Custom notifier class to publicly expose notifyListeners for GoRouter
+class RouterRefreshNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
+
 /// Centralized GoRouter Engine Provider
 final routerProvider = Provider<GoRouter>((ref) {
-  final refreshNotifier = GoRouterRefreshStream(
-    ref.watch(firebaseAuthProvider).authStateChanges(),
+  final refreshNotifier = RouterRefreshNotifier();
+
+  // Listen reactively to authStateProvider changes
+  ref.listen<AsyncValue<dynamic>>(
+    authStateProvider,
+    (_, _) => refreshNotifier.notify(),
   );
 
   ref.onDispose(refreshNotifier.dispose);
@@ -129,8 +151,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       // --- ADMIN ROUTE ---
       GoRoute(
         path: AppRoutes.admin,
-        builder: (context, state) =>
-            const Scaffold(body: Center(child: Text('Admin Control Panel'))),
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminScreen(),
       ),
 
       // --- MAIN APP WITH BOTTOM NAVIGATION (StatefulShellRoute) ---
@@ -217,20 +239,36 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.watch, size: 80, color: AppColors.goldAccent),
-            SizedBox(height: 24),
-            CircularProgressIndicator(color: AppColors.goldAccent),
-          ],
+    return Scaffold(
+      body: Container(
+        color: Colors.white,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.watch, size: 80, color: AppColors.goldAccent),
+              const SizedBox(height: 24),
+              const CircularProgressIndicator(color: AppColors.goldAccent),
+              const SizedBox(height: 24),
+              Text(
+                'Initializing...',
+                style: GoogleFonts.outfit(
+                  fontSize: 14,
+                  color: AppColors.neutral,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

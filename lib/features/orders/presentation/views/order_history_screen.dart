@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:app_watchhub/core/constants/app_colors.dart';
 import '../providers/order_history_provider.dart';
@@ -15,10 +16,54 @@ class OrderHistoryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('My Orders')),
       body: orders.isEmpty
-          ? const Center(
-              child: Text(
-                'You haven\'t placed any orders yet.',
-                style: TextStyle(fontSize: 16),
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.timeline_outlined,
+                      size: 64,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No orders yet',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Browse the boutique and place your first order to see tracking progress here.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextSecondary
+                            : Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    OutlinedButton(
+                      onPressed: () => context.go('/catalog'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.goldAccent,
+                        side: const BorderSide(color: AppColors.goldAccent),
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Continue Shopping'),
+                    ),
+                  ],
+                ),
               ),
             )
           : ListView.builder(
@@ -103,8 +148,11 @@ class OrderHistoryScreen extends ConsumerWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      '${item.productName} (x${item.quantity})',
+                                    Expanded(
+                                      child: Text(
+                                        '${item.productName} (x${item.quantity})',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                     Text(
                                       '\$${(item.price * item.quantity).toStringAsFixed(2)}',
@@ -126,6 +174,13 @@ class OrderHistoryScreen extends ConsumerWidget {
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Delivery Progress',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBox(height: 10),
+                            _OrderStatusTimeline(status: order.status),
                           ],
                         ),
                       ),
@@ -135,5 +190,123 @@ class OrderHistoryScreen extends ConsumerWidget {
               },
             ),
     );
+  }
+}
+
+class _OrderStatusTimeline extends StatelessWidget {
+  final OrderStatus status;
+
+  const _OrderStatusTimeline({required this.status});
+
+  Color _statusColor(OrderStatus step) {
+    switch (step) {
+      case OrderStatus.delivered:
+        return AppColors.success;
+      case OrderStatus.cancelled:
+        return AppColors.error;
+      case OrderStatus.shipped:
+        return AppColors.warning;
+      case OrderStatus.processing:
+        return AppColors.goldAccent;
+      case OrderStatus.pending:
+        return AppColors.neutral;
+    }
+  }
+
+  bool _isActive(OrderStatus step) {
+    final orderIndex = OrderStatus.values.indexOf(status);
+    final stepIndex = OrderStatus.values.indexOf(step);
+    return stepIndex <= orderIndex;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final steps = [
+      OrderStatus.pending,
+      OrderStatus.processing,
+      OrderStatus.shipped,
+      OrderStatus.delivered,
+    ];
+
+    return Column(
+      children: steps.map((step) {
+        final active = _isActive(step);
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    width: 18,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: active
+                          ? _statusColor(step)
+                          : AppColors.lightSurfaceMuted,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: active
+                            ? _statusColor(step)
+                            : AppColors.lightBorder,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  if (step != steps.last)
+                    Container(
+                      width: 2,
+                      height: 48,
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      color: AppColors.lightBorder,
+                    ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      step.name.toUpperCase(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: active
+                            ? _statusColor(step)
+                            : AppColors.lightTextSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _statusSubtitle(step),
+                      style: TextStyle(
+                        color: AppColors.lightTextSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  String _statusSubtitle(OrderStatus step) {
+    switch (step) {
+      case OrderStatus.pending:
+        return 'Order received by Concierge';
+      case OrderStatus.processing:
+        return 'Authentication, inspection and packaging';
+      case OrderStatus.shipped:
+        return 'Luxury shipment in transit with premium delivery';
+      case OrderStatus.delivered:
+        return 'Package delivered to your residence';
+      case OrderStatus.cancelled:
+        return 'Order has been cancelled';
+    }
   }
 }

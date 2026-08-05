@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,27 +14,96 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'shared/providers/theme_provider.dart';
 import 'shared/providers/connectivity_provider.dart';
+import 'shared/providers/firebase_provider.dart';
 import 'features/catalog/data/repositories/product_repository.dart';
 
-void main() async {
-  // 1. Ensure Flutter bindings are initialized before async calls
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. Await Firebase initialization across all platforms (Web & Mobile)
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await _initializeFirebase();
 
-  // 3. Auto-seed luxury watch catalog into Firestore if it is currently empty
   try {
-    await ProductRepository(FirebaseFirestore.instance).seedIfEmpty();
-  } catch (_) {
-    // Gracefully handle seed exceptions (e.g. offline startup)
+    await AppHive.init();
+  } catch (e) {
+    debugPrint('Hive initialization failed: $e');
   }
 
-  // 4. Open local persistence before providers hydrate state
-  await AppHive.init();
+  runApp(
+    ProviderScope(
+      child: firebaseInitFailed
+          ? const FirebaseInitErrorApp()
+          : const AppWatchHub(),
+    ),
+  );
 
-  // 5. Mount Riverpod Scope at the absolute root
-  runApp(const ProviderScope(child: AppWatchHub()));
+  if (Firebase.apps.isNotEmpty && !firebaseInitFailed) {
+    unawaited(_safeSeedDatabase());
+  }
+}
+
+Future<void> _initializeFirebase() async {
+  firebaseInitFailed = false;
+  firebaseInitError = null;
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e, st) {
+    firebaseInitFailed = true;
+    firebaseInitError = e.toString();
+    debugPrint('Firebase initialization failed: $firebaseInitError');
+    debugPrint('$st');
+  }
+}
+
+Future<void> _safeSeedDatabase() async {
+  if (Firebase.apps.isEmpty || firebaseInitFailed) {
+    return;
+  }
+
+  try {
+    await ProductRepository(FirebaseFirestore.instance).seedIfEmpty();
+  } catch (e) {
+    debugPrint('Database seeding failed: $e');
+  }
+}
+
+class FirebaseInitErrorApp extends StatelessWidget {
+  const FirebaseInitErrorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'App-WatchHub',
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red, size: 64),
+                const SizedBox(height: 16),
+                const Text(
+                  'Firebase failed to initialize.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  firebaseInitError ??
+                      'Please check your Firebase configuration and try again.',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class AppWatchHub extends ConsumerWidget {

@@ -41,7 +41,7 @@ final class OrderHistoryProvider
   }
 }
 
-String _$orderHistoryHash() => r'30a07a34a0b0207f30f59686a753ccd4b74c6966';
+String _$orderHistoryHash() => r'e7a49518e9c87ef067a372b42061d85147320815';
 
 abstract class _$OrderHistory extends $Notifier<List<OrderModel>> {
   List<OrderModel> build();

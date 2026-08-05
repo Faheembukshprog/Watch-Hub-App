@@ -12,10 +12,18 @@ import '../providers/wishlist_provider.dart';
 import '../providers/reviews_provider.dart';
 import 'package:app_watchhub/features/cart/presentation/providers/cart_provider.dart';
 
-class ProductDetailsScreen extends ConsumerWidget {
+class ProductDetailsScreen extends ConsumerStatefulWidget {
   final String id;
 
   const ProductDetailsScreen({super.key, required this.id});
+
+  @override
+  ConsumerState<ProductDetailsScreen> createState() =>
+      _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
+  String _reviewSortBy = 'Date';
 
   // Dynamic Specs Map based on watch ID
   static const Map<String, Map<String, String>> _specsMap = {
@@ -52,15 +60,15 @@ class ProductDetailsScreen extends ConsumerWidget {
   };
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final productsAsync = ref.watch(watchProductsProvider);
 
     return productsAsync.when(
       data: (products) {
         final product = products.firstWhere(
-          (p) => p.id == id,
+          (p) => p.id == widget.id,
           orElse: () => ProductModel(
-            id: id,
+            id: widget.id,
             name: 'Speedmaster Professional Moonwatch',
             brand: 'OMEGA',
             price: 6800.00,
@@ -81,7 +89,7 @@ class ProductDetailsScreen extends ConsumerWidget {
       ),
       error: (err, stack) {
         final fallbackProduct = ProductModel(
-          id: id,
+          id: widget.id,
           name: 'Speedmaster Professional Moonwatch',
           brand: 'OMEGA',
           price: 6800.00,
@@ -164,7 +172,7 @@ class ProductDetailsScreen extends ConsumerWidget {
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -189,30 +197,35 @@ class ProductDetailsScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      child: Center(
-                        child: Hero(
-                          tag: 'watch_image_${product.id}',
-                          child: product.imageUrl.isNotEmpty
-                              ? Image.network(
-                                  product.imageUrl,
-                                  height: 200,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Icon(
-                                        Icons.watch,
-                                        size: 160,
-                                        color: isDark
-                                            ? Colors.white24
-                                            : Colors.black26,
-                                      ),
-                                )
-                              : Icon(
-                                  Icons.watch,
-                                  size: 160,
-                                  color: isDark
-                                      ? Colors.white24
-                                      : Colors.black26,
-                                ),
+                      child: InteractiveViewer(
+                        boundaryMargin: const EdgeInsets.all(20),
+                        minScale: 0.5,
+                        maxScale: 3.0,
+                        child: Center(
+                          child: Hero(
+                            tag: 'watch_image_${product.id}',
+                            child: product.imageUrl.isNotEmpty
+                                ? Image.network(
+                                    product.imageUrl,
+                                    height: 200,
+                                    fit: BoxFit.contain,
+                                    errorBuilder:
+                                        (context, error, stackTrace) => Icon(
+                                          Icons.watch,
+                                          size: 160,
+                                          color: isDark
+                                              ? Colors.white24
+                                              : Colors.black26,
+                                        ),
+                                  )
+                                : Icon(
+                                    Icons.watch,
+                                    size: 160,
+                                    color: isDark
+                                        ? Colors.white24
+                                        : Colors.black26,
+                                  ),
+                          ),
                         ),
                       ),
                     ),
@@ -393,14 +406,49 @@ class ProductDetailsScreen extends ConsumerWidget {
                               : AppColors.lightTextPrimary,
                         ),
                       ),
-                      TextButton.icon(
-                        icon: const Icon(Icons.rate_review_outlined, size: 16),
-                        label: const Text('Write Review'),
-                        onPressed: () =>
-                            _onWriteReviewPressed(context, ref, product.id),
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.goldAccent,
-                        ),
+                      Row(
+                        children: [
+                          PopupMenuButton<String>(
+                            onSelected: (value) {
+                              setState(() {
+                                _reviewSortBy = value;
+                              });
+                            },
+                            itemBuilder: (BuildContext context) => [
+                              const PopupMenuItem(
+                                value: 'Date',
+                                child: Text('By Date'),
+                              ),
+                              const PopupMenuItem(
+                                value: 'Rating',
+                                child: Text('By Rating'),
+                              ),
+                            ],
+                            child: Chip(
+                              label: Text(
+                                'Sort: $_reviewSortBy',
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                              backgroundColor: AppColors.goldAccent.withValues(
+                                alpha: 0.2,
+                              ),
+                              labelStyle: const TextStyle(
+                                color: AppColors.goldAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          TextButton.icon(
+                            onPressed: () =>
+                                _onWriteReviewPressed(context, ref, product.id),
+                            icon: const Icon(Icons.rate_review_outlined),
+                            label: const Text('Write Review'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.goldAccent,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -440,79 +488,94 @@ class ProductDetailsScreen extends ConsumerWidget {
                       ),
                     )
                   else
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: reviews.length,
-                      itemBuilder: (context, index) {
-                        final r = reviews[index];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? AppColors.darkSurface
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder,
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                    Builder(
+                      builder: (context) {
+                        var sortedReviews = List.from(reviews);
+                        if (_reviewSortBy == 'Rating') {
+                          sortedReviews.sort(
+                            (a, b) => b.rating.compareTo(a.rating),
+                          );
+                        } else {
+                          sortedReviews.sort(
+                            (a, b) => b.date.compareTo(a.date),
+                          );
+                        }
+
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: sortedReviews.length,
+                          itemBuilder: (context, index) {
+                            final r = sortedReviews[index];
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? AppColors.darkSurface
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isDark
+                                      ? AppColors.darkBorder
+                                      : AppColors.lightBorder,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    r.userName,
-                                    style: GoogleFonts.outfit(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                      color: isDark
-                                          ? Colors.white
-                                          : AppColors.lightTextPrimary,
-                                    ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        r.userName,
+                                        style: GoogleFonts.outfit(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: isDark
+                                              ? Colors.white
+                                              : AppColors.lightTextPrimary,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${r.date.month}/${r.date.day}/${r.date.year}',
+                                        style: TextStyle(
+                                          color: isDark
+                                              ? AppColors.darkTextSecondary
+                                              : AppColors.lightTextSecondary,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: List.generate(5, (starIdx) {
+                                      return Icon(
+                                        starIdx < r.rating.floor()
+                                            ? Icons.star
+                                            : Icons.star_border,
+                                        color: AppColors.goldAccent,
+                                        size: 14,
+                                      );
+                                    }),
+                                  ),
+                                  const SizedBox(height: 6),
                                   Text(
-                                    '${r.date.month}/${r.date.day}/${r.date.year}',
+                                    r.comment,
                                     style: TextStyle(
+                                      fontSize: 13,
                                       color: isDark
                                           ? AppColors.darkTextSecondary
                                           : AppColors.lightTextSecondary,
-                                      fontSize: 11,
+                                      height: 1.4,
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: List.generate(5, (starIdx) {
-                                  return Icon(
-                                    starIdx < r.rating.floor()
-                                        ? Icons.star
-                                        : Icons.star_border,
-                                    color: AppColors.goldAccent,
-                                    size: 14,
-                                  );
-                                }),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                r.comment,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: isDark
-                                      ? AppColors.darkTextSecondary
-                                      : AppColors.lightTextSecondary,
-                                  height: 1.4,
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         );
                       },
                     ),
@@ -530,9 +593,7 @@ class ProductDetailsScreen extends ConsumerWidget {
               color: isDark ? AppColors.darkSurface : Colors.white,
               border: Border(
                 top: BorderSide(
-                  color: isDark
-                      ? AppColors.darkBorder
-                      : AppColors.lightBorder,
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
                 ),
               ),
               boxShadow: [
@@ -547,49 +608,88 @@ class ProductDetailsScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        // Add product to cart via state provider
-                        ref.read(cartProvider.notifier).addToCart(product);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Added ${product.name} to Shopping Cart',
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              ref
+                                  .read(cartProvider.notifier)
+                                  .addToCart(product);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Added ${product.name} to Shopping Cart',
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: AppColors.goldAccent,
+                                  action: SnackBarAction(
+                                    label: 'VIEW CART',
+                                    textColor: isDark
+                                        ? AppColors.darkBg
+                                        : Colors.white,
+                                    onPressed: () {
+                                      context.go('/cart');
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.shopping_bag_outlined),
+                            label: Text(
+                              'ADD TO CART',
+                              style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
                             ),
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: AppColors.goldAccent,
-                            action: SnackBarAction(
-                              label: 'VIEW CART',
-                              textColor: isDark
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                              backgroundColor: AppColors.goldAccent,
+                              foregroundColor: isDark
                                   ? AppColors.darkBg
                                   : Colors.white,
-                              onPressed: () {
-                                context.go('/cart');
-                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 2,
                             ),
                           ),
-                        );
-                      },
-                      icon: const Icon(Icons.shopping_bag_outlined),
-                      label: Text(
-                        'ADD TO CART',
-                        style: GoogleFonts.outfit(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
                         ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.goldAccent,
-                        foregroundColor: isDark
-                            ? AppColors.darkBg
-                            : Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              ref
+                                  .read(cartProvider.notifier)
+                                  .addToCart(product);
+                              context.go('/checkout');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                              backgroundColor: isDark
+                                  ? AppColors.darkSurfaceCard
+                                  : Theme.of(context).colorScheme.primary,
+                              foregroundColor: isDark
+                                  ? Colors.white
+                                  : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 2,
+                            ),
+                            child: Text(
+                              'BUY NOW',
+                              style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
                         ),
-                        elevation: 0,
-                      ),
+                      ],
                     ),
                   ),
                 ],
@@ -598,34 +698,6 @@ class ProductDetailsScreen extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void _onWriteReviewPressed(
-    BuildContext context,
-    WidgetRef ref,
-    String productId,
-  ) {
-    final user = ref.read(authStateProvider).value;
-    if (user == null) {
-      final redirect = Uri.encodeComponent(
-        AppRoutes.productDetailsPath(productId),
-      );
-      context.go('${AppRoutes.login}?redirect=$redirect');
-      return;
-    }
-
-    final displayName = user.displayName?.trim();
-    final userName = (displayName != null && displayName.isNotEmpty)
-        ? displayName
-        : user.email?.split('@').first ?? 'Collector';
-
-    _showWriteReviewDialog(
-      context,
-      ref,
-      productId: productId,
-      userId: user.uid,
-      userName: userName,
     );
   }
 
@@ -762,6 +834,34 @@ class ProductDetailsScreen extends ConsumerWidget {
       nameController.dispose();
       commentController.dispose();
     });
+  }
+
+  void _onWriteReviewPressed(
+    BuildContext context,
+    WidgetRef ref,
+    String productId,
+  ) {
+    final user = ref.read(authStateProvider).value;
+    if (user == null) {
+      final redirect = Uri.encodeComponent(
+        AppRoutes.productDetailsPath(productId),
+      );
+      context.go('${AppRoutes.login}?redirect=$redirect');
+      return;
+    }
+
+    final displayName = user.displayName?.trim();
+    final userName = (displayName != null && displayName.isNotEmpty)
+        ? displayName
+        : user.email?.split('@').first ?? 'Collector';
+
+    _showWriteReviewDialog(
+      context,
+      ref,
+      productId: productId,
+      userId: user.uid,
+      userName: userName,
+    );
   }
 }
 

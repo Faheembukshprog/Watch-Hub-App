@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:app_watchhub/shared/providers/firebase_provider.dart';
 
-class FAQScreen extends StatelessWidget {
+class FAQScreen extends ConsumerWidget {
   const FAQScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final firestore = ref.watch(firebaseFirestoreProvider);
 
     return Scaffold(
-      backgroundColor: isDark
-          ? AppColors.darkBg
-          : AppColors.lightBg,
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
           'FAQ',
@@ -28,31 +30,45 @@ class FAQScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        physics: const BouncingScrollPhysics(),
-        children: const [
-          _FAQTile(
-            question: 'Are the watches authentic?',
-            answer:
-                'Yes, every timepiece in our collection is 100% authentic and comes with a certificate of authenticity and the original manufacturer warranty.',
-          ),
-          _FAQTile(
-            question: 'How long does shipping take?',
-            answer:
-                'We offer worldwide express shipping. Domestic orders typically arrive within 2-3 business days, while international orders take 5-7 business days.',
-          ),
-          _FAQTile(
-            question: 'What is your return policy?',
-            answer:
-                'We offer a 14-day return policy for unworn watches in their original condition and packaging. Please contact support to initiate a return.',
-          ),
-          _FAQTile(
-            question: 'Do you offer servicing?',
-            answer:
-                'Yes, we have a network of certified watchmakers who can service your timepiece. Contact us for a quote and shipping instructions.',
-          ),
-        ],
+      body: StreamBuilder<QuerySnapshot>(
+        stream: firestore.collection('faq').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.goldAccent),
+            );
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final faqs = snapshot.data?.docs ?? [];
+          if (faqs.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'No FAQs available',
+                  style: GoogleFonts.outfit(fontSize: 16),
+                ),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            physics: const BouncingScrollPhysics(),
+            itemCount: faqs.length,
+            itemBuilder: (context, index) {
+              final faqData = faqs[index].data() as Map<String, dynamic>;
+              return _FAQTile(
+                question: faqData['question'] ?? 'Question',
+                answer: faqData['answer'] ?? 'Answer',
+                isDark: isDark,
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -61,13 +77,16 @@ class FAQScreen extends StatelessWidget {
 class _FAQTile extends StatelessWidget {
   final String question;
   final String answer;
+  final bool isDark;
 
-  const _FAQTile({required this.question, required this.answer});
+  const _FAQTile({
+    required this.question,
+    required this.answer,
+    this.isDark = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(

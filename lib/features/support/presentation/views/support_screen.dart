@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:app_watchhub/shared/providers/firebase_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SupportScreen extends StatefulWidget {
+class SupportScreen extends ConsumerStatefulWidget {
   const SupportScreen({super.key});
 
   @override
-  State<SupportScreen> createState() => _SupportScreenState();
+  ConsumerState<SupportScreen> createState() => _SupportScreenState();
 }
 
-class _SupportScreenState extends State<SupportScreen> {
+class _SupportScreenState extends ConsumerState<SupportScreen> {
   final _subjectController = TextEditingController();
   final _messageController = TextEditingController();
   bool _isSubmitting = false;
@@ -21,7 +24,7 @@ class _SupportScreenState extends State<SupportScreen> {
     super.dispose();
   }
 
-  void _submitTicket() {
+  Future<void> _submitTicket() async {
     final subject = _subjectController.text.trim();
     final message = _messageController.text.trim();
 
@@ -40,12 +43,22 @@ class _SupportScreenState extends State<SupportScreen> {
       _isSubmitting = true;
     });
 
-    // Simulate sending to support
-    Future.delayed(const Duration(seconds: 1), () {
+    try {
+      final firestore = ref.read(firebaseFirestoreProvider);
+      final auth = ref.read(firebaseAuthProvider);
+      final userId = auth.currentUser?.uid ?? 'anonymous';
+      final userEmail = auth.currentUser?.email ?? 'guest@watchhub.com';
+
+      await firestore.collection('support_tickets').add({
+        'userId': userId,
+        'userEmail': userEmail,
+        'subject': subject,
+        'message': message,
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 'open',
+      });
+
       if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
         _subjectController.clear();
         _messageController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -56,7 +69,23 @@ class _SupportScreenState extends State<SupportScreen> {
           ),
         );
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error submitting ticket: $e'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
   }
 
   @override
@@ -65,9 +94,7 @@ class _SupportScreenState extends State<SupportScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark
-          ? AppColors.darkBg
-          : AppColors.lightBg,
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
           'CUSTOMER CONCIERGE',
@@ -95,9 +122,7 @@ class _SupportScreenState extends State<SupportScreen> {
                 color: isDark ? AppColors.darkSurface : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isDark
-                      ? AppColors.darkBorder
-                      : AppColors.lightBorder,
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
                 ),
               ),
               child: Row(
@@ -232,9 +257,7 @@ class _SupportScreenState extends State<SupportScreen> {
                 onPressed: _isSubmitting ? null : _submitTicket,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.goldAccent,
-                  foregroundColor: isDark
-                      ? AppColors.darkBg
-                      : Colors.white,
+                  foregroundColor: isDark ? AppColors.darkBg : Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: _isSubmitting
@@ -303,7 +326,9 @@ class _SupportContactCard extends StatelessWidget {
           subtitle,
           style: TextStyle(
             fontSize: 11,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.lightTextSecondary,
           ),
         ),
         trailing: const Icon(

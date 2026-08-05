@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app_watchhub/core/constants/app_colors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,11 +8,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:app_watchhub/shared/providers/firebase_provider.dart';
 import 'package:app_watchhub/shared/providers/theme_provider.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(firebaseAuthProvider).currentUser;
     final themeMode = ref.watch(themeProvider);
 
@@ -27,9 +33,7 @@ class ProfileScreen extends ConsumerWidget {
     final isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
-      backgroundColor: isDark
-          ? AppColors.darkBg
-          : AppColors.lightBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'BOUTIQUE PROFILE',
@@ -48,7 +52,9 @@ class ProfileScreen extends ConsumerWidget {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurface : Colors.white,
+                color: isDark
+                    ? AppColors.darkSurface
+                    : Theme.of(context).colorScheme.surface,
                 borderRadius: const BorderRadius.vertical(
                   bottom: Radius.circular(32),
                 ),
@@ -60,7 +66,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
               child: Column(
                 children: [
                   Stack(
@@ -109,13 +115,29 @@ class ProfileScreen extends ConsumerWidget {
                   const SizedBox(height: 20),
 
                   // Display Name
-                  Text(
-                    displayName,
-                    style: GoogleFonts.outfit(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          displayName,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.outfit(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: isDark
+                                ? Colors.white
+                                : AppColors.lightTextPrimary,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit_rounded),
+                        color: AppColors.goldAccent,
+                        tooltip: 'Edit Profile',
+                        onPressed: () => _showEditProfileDialog(context, ref),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 4),
 
@@ -140,10 +162,7 @@ class ProfileScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: AppColors.goldAccent.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.goldAccent,
-                        width: 1,
-                      ),
+                      border: Border.all(color: AppColors.goldAccent, width: 1),
                     ),
                     child: Text(
                       vipBadge,
@@ -199,6 +218,13 @@ class ProfileScreen extends ConsumerWidget {
                     onTap: () => context.push('/support'),
                     isDark: isDark,
                   ),
+                  _ProfileMenuItem(
+                    icon: Icons.feedback_outlined,
+                    title: 'Send Feedback',
+                    subtitle: 'Share your experience with the boutique',
+                    onTap: () => _showFeedbackDialog(context, ref),
+                    isDark: isDark,
+                  ),
 
                   const SizedBox(height: 24),
 
@@ -217,7 +243,9 @@ class ProfileScreen extends ConsumerWidget {
                   Container(
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkSurface : Colors.white,
+                      color: isDark
+                          ? AppColors.darkSurface
+                          : Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isDark
@@ -283,6 +311,191 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
   }
+
+  Future<void> _showEditProfileDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final authUser = ref.read(firebaseAuthProvider).currentUser;
+    if (authUser == null) {
+      return;
+    }
+
+    final nameController = TextEditingController(
+      text: authUser.displayName ?? '',
+    );
+    final phoneController = TextEditingController();
+    final addressController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Edit Profile'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Display Name',
+                  prefixIcon: Icon(Icons.person_outline_rounded),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Phone Number',
+                  prefixIcon: Icon(Icons.phone_outlined),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: addressController,
+                decoration: const InputDecoration(
+                  labelText: 'Shipping Address',
+                  prefixIcon: Icon(Icons.location_on_outlined),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final displayName = nameController.text.trim();
+              final phone = phoneController.text.trim();
+              final address = addressController.text.trim();
+
+              try {
+                final userDoc = FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(authUser.uid);
+
+                await userDoc.set({
+                  'displayName': displayName,
+                  'phone': phone,
+                  'shippingAddress': address,
+                }, SetOptions(merge: true));
+
+                if (displayName.isNotEmpty) {
+                  await authUser.updateDisplayName(displayName);
+                }
+
+                if (dialogContext.mounted) {
+                  Navigator.pop(dialogContext);
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    const SnackBar(
+                      content: Text('Profile updated successfully.'),
+                      backgroundColor: AppColors.success,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (dialogContext.mounted) {
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    SnackBar(
+                      content: Text('Could not save profile: $e'),
+                      backgroundColor: AppColors.error,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Save Changes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showFeedbackDialog(BuildContext context, WidgetRef ref) async {
+    final authUser = ref.read(firebaseAuthProvider).currentUser;
+    final email = authUser?.email ?? 'guest@watchhub.com';
+    final feedbackController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Send Feedback'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: feedbackController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Your message',
+                hintText: 'Tell us how we can improve the boutique experience.',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final message = feedbackController.text.trim();
+              if (message.isEmpty) {
+                if (dialogContext.mounted) {
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter your feedback.'),
+                      backgroundColor: AppColors.error,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+                return;
+              }
+
+              try {
+                await FirebaseFirestore.instance.collection('feedback').add({
+                  'userId': authUser?.uid ?? 'anonymous',
+                  'userEmail': email,
+                  'message': message,
+                  'createdAt': FieldValue.serverTimestamp(),
+                });
+                if (dialogContext.mounted) {
+                  Navigator.pop(dialogContext);
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    const SnackBar(
+                      content: Text('Feedback sent. Thank you!'),
+                      backgroundColor: AppColors.success,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (dialogContext.mounted) {
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    SnackBar(
+                      content: Text('Feedback failed: $e'),
+                      backgroundColor: AppColors.error,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ProfileMenuItem extends StatelessWidget {
@@ -321,16 +534,10 @@ class _ProfileMenuItem extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: (iconColor ?? AppColors.goldAccent).withValues(
-              alpha: 0.1,
-            ),
+            color: (iconColor ?? AppColors.goldAccent).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            icon,
-            color: iconColor ?? AppColors.goldAccent,
-            size: 22,
-          ),
+          child: Icon(icon, color: iconColor ?? AppColors.goldAccent, size: 22),
         ),
         title: Text(
           title,
@@ -338,14 +545,17 @@ class _ProfileMenuItem extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 14,
             color:
-                textColor ?? (isDark ? Colors.white : AppColors.lightTextPrimary),
+                textColor ??
+                (isDark ? Colors.white : AppColors.lightTextPrimary),
           ),
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(
             fontSize: 11,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.lightTextSecondary,
           ),
         ),
         trailing: const Icon(
