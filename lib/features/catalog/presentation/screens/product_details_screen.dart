@@ -256,16 +256,6 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           ),
                         ),
                       ),
-                      Text(
-                        'ID: ${product.id}',
-                        style: TextStyle(
-                          color: isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.lightTextSecondary,
-                          fontSize: 11,
-                          fontFamily: 'monospace',
-                        ),
-                      ),
                     ],
                   ),
 
@@ -629,7 +619,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                                         ? AppColors.darkBg
                                         : Colors.white,
                                     onPressed: () {
-                                      context.go('/cart');
+                                      context.go(AppRoutes.cart);
                                     },
                                   ),
                                 ),
@@ -664,7 +654,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                               ref
                                   .read(cartProvider.notifier)
                                   .addToCart(product);
-                              context.go('/checkout');
+                              context.go(AppRoutes.checkout);
                             },
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),

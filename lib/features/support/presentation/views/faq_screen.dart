@@ -31,7 +31,7 @@ class FAQScreen extends ConsumerWidget {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: firestore.collection('faq').snapshots(),
+        stream: firestore.collection('faqs').orderBy('order').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -39,7 +39,13 @@ class FAQScreen extends ConsumerWidget {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            debugPrint('FAQ Error: ${snapshot.error}');
+            return Center(
+              child: Text(
+                'Error loading FAQs: ${snapshot.error}',
+                style: GoogleFonts.outfit(color: Colors.red),
+              ),
+            );
           }
 
           final faqs = snapshot.data?.docs ?? [];

@@ -17,20 +17,17 @@ final firebaseFirestoreProvider = Provider<FirebaseFirestore>((ref) {
   return FirebaseFirestore.instance;
 });
 
-/// Exposes the auth state stream for the user with a Web timeout fallback.
+/// Exposes the auth state stream for the user.
+///
+/// Do not fall back to emitting `null` via timeout, because that can create
+/// a false unauthenticated state while Firebase is still initializing or
+/// refreshing credentials.
 final authStateStreamProvider = Provider<Stream<User?>>((ref) {
   if (Firebase.apps.isEmpty) {
     return Stream.value(null);
   }
 
-  return ref
-      .watch(firebaseAuthProvider)
-      .authStateChanges()
-      .timeout(
-        const Duration(seconds: 2),
-        onTimeout: (sink) => sink.add(null),
-      )
-      .asBroadcastStream();
+  return ref.watch(firebaseAuthProvider).authStateChanges().asBroadcastStream();
 });
 
 /// Exposes auth state as an `AsyncValue<User?>`.
