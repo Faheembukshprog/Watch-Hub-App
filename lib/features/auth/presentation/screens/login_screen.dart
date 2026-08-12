@@ -127,7 +127,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _showPasswordResetDialog() async {
-    final resetEmailController = TextEditingController();
+    final resetEmailController = TextEditingController(
+      text: _emailController.text.trim(),
+    );
     await showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(

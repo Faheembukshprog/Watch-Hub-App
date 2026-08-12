@@ -59,6 +59,37 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     },
   };
 
+  void _showFullScreenImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (context) => Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          iconTheme: const IconThemeData(color: Colors.white),
+          elevation: 0,
+        ),
+        body: Center(
+          child: InteractiveViewer(
+            minScale: 0.5,
+            maxScale: 5.0,
+            child: imageUrl.isNotEmpty
+                ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.contain,
+                  )
+                : const Icon(
+                    Icons.watch,
+                    size: 200,
+                    color: Colors.white24,
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final productsAsync = ref.watch(watchProductsProvider);
@@ -197,34 +228,37 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           ),
                         ],
                       ),
-                      child: InteractiveViewer(
-                        boundaryMargin: const EdgeInsets.all(20),
-                        minScale: 0.5,
-                        maxScale: 3.0,
-                        child: Center(
-                          child: Hero(
-                            tag: 'watch_image_${product.id}',
-                            child: product.imageUrl.isNotEmpty
-                                ? Image.network(
-                                    product.imageUrl,
-                                    height: 200,
-                                    fit: BoxFit.contain,
-                                    errorBuilder:
-                                        (context, error, stackTrace) => Icon(
-                                          Icons.watch,
-                                          size: 160,
-                                          color: isDark
-                                              ? Colors.white24
-                                              : Colors.black26,
-                                        ),
-                                  )
-                                : Icon(
-                                    Icons.watch,
-                                    size: 160,
-                                    color: isDark
-                                        ? Colors.white24
-                                        : Colors.black26,
-                                  ),
+                      child: GestureDetector(
+                        onTap: () => _showFullScreenImage(context, product.imageUrl),
+                        child: InteractiveViewer(
+                          boundaryMargin: const EdgeInsets.all(20),
+                          minScale: 0.5,
+                          maxScale: 3.0,
+                          child: Center(
+                            child: Hero(
+                              tag: 'watch_image_${product.id}',
+                              child: product.imageUrl.isNotEmpty
+                                  ? Image.network(
+                                      product.imageUrl,
+                                      height: 200,
+                                      fit: BoxFit.contain,
+                                      errorBuilder:
+                                          (context, error, stackTrace) => Icon(
+                                            Icons.watch,
+                                            size: 160,
+                                            color: isDark
+                                                ? Colors.white24
+                                                : Colors.black26,
+                                          ),
+                                    )
+                                  : Icon(
+                                      Icons.watch,
+                                      size: 160,
+                                      color: isDark
+                                          ? Colors.white24
+                                          : Colors.black26,
+                                    ),
+                            ),
                           ),
                         ),
                       ),

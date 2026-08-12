@@ -82,6 +82,182 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     },
   ];
 
+  void _showFilterModal(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) {
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.7,
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkSurface : Colors.white,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
+            ),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Refine Collection',
+                      style: GoogleFonts.outfit(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : AppColors.lightTextPrimary,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        // Sort By
+                        Text(
+                          'Sort By',
+                          style: GoogleFonts.outfit(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.goldAccent,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          children: _sortOptions.map((sort) {
+                            final isSelected = _sortBy == sort;
+                            return ChoiceChip(
+                              label: Text(sort),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  setModalState(() => _sortBy = sort);
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          }).toList(),
+                        ),
+
+                        const SizedBox(height: 24),
+                        // Product Type
+                        Text(
+                          'Watch Type',
+                          style: GoogleFonts.outfit(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.goldAccent,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          children: _productTypes.map((type) {
+                            final isSelected = _selectedType == type;
+                            return ChoiceChip(
+                              label: Text(type),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  setModalState(() => _selectedType = type);
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          }).toList(),
+                        ),
+
+                        const SizedBox(height: 24),
+                        // Price Range
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Price Range',
+                              style: GoogleFonts.outfit(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.goldAccent,
+                              ),
+                            ),
+                            Text(
+                              '\$${_minPrice.toInt()} - \$${_maxPrice.toInt()}',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        RangeSlider(
+                          values: RangeValues(_minPrice, _maxPrice),
+                          min: 0,
+                          max: 20000,
+                          divisions: 20,
+                          activeColor: AppColors.goldAccent,
+                          onChanged: (values) {
+                            setModalState(() {
+                              _minPrice = values.start;
+                              _maxPrice = values.end;
+                            });
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setModalState(() {
+                        _selectedBrand = 'All';
+                        _selectedType = 'All';
+                        _sortBy = 'Default';
+                        _minPrice = 0;
+                        _maxPrice = 20000;
+                        _searchQuery = '';
+                        _searchController.clear();
+                      });
+                      setState(() {});
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isDark ? Colors.white10 : Colors.grey[200],
+                      foregroundColor: isDark ? Colors.white : Colors.black,
+                    ),
+                    child: const Text('RESET ALL FILTERS'),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('SHOW RESULTS'),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -168,6 +344,11 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     ),
                   ),
                   actions: [
+                    IconButton(
+                      icon: const Icon(Icons.filter_list_rounded),
+                      tooltip: 'Filter & Sort',
+                      onPressed: () => _showFilterModal(context),
+                    ),
                     if (authUser != null)
                       IconButton(
                         icon: const Icon(Icons.logout_rounded),
@@ -276,8 +457,11 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                 ? AppColors.darkTextSecondary
                                 : AppColors.lightTextSecondary,
                           ),
-                          suffixIcon: _searchQuery.isNotEmpty
-                              ? IconButton(
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (_searchQuery.isNotEmpty)
+                                IconButton(
                                   icon: const Icon(Icons.clear_rounded),
                                   onPressed: () {
                                     _searchController.clear();
@@ -285,8 +469,13 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                       _searchQuery = '';
                                     });
                                   },
-                                )
-                              : null,
+                                ),
+                              IconButton(
+                                icon: const Icon(Icons.tune_rounded),
+                                onPressed: () => _showFilterModal(context),
+                              ),
+                            ],
+                          ),
                           filled: false,
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
@@ -350,129 +539,6 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                           ),
                         );
                       }).toList(),
-                    ),
-                  ),
-                ),
-
-                // --- Price Range Filter ---
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 12.0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Price Range: \$${_minPrice.toStringAsFixed(0)} - \$${_maxPrice.toStringAsFixed(0)}',
-                          style: GoogleFonts.outfit(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: isDark
-                                ? Colors.white
-                                : AppColors.lightTextPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        RangeSlider(
-                          values: RangeValues(_minPrice, _maxPrice),
-                          min: 0,
-                          max: 20000,
-                          divisions: 20,
-                          labels: RangeLabels(
-                            _minPrice.toStringAsFixed(0),
-                            _maxPrice.toStringAsFixed(0),
-                          ),
-                          onChanged: (RangeValues values) {
-                            setState(() {
-                              _minPrice = values.start;
-                              _maxPrice = values.end;
-                            });
-                          },
-                          activeColor: AppColors.goldAccent,
-                          inactiveColor: isDark
-                              ? AppColors.darkBorder
-                              : AppColors.lightBorder,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // --- Product Type & Sort Filters ---
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: DropdownButton<String>(
-                            value: _selectedType,
-                            isExpanded: true,
-                            underline: Container(
-                              height: 1,
-                              color: isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder,
-                            ),
-                            items: _productTypes.map((type) {
-                              return DropdownMenuItem(
-                                value: type,
-                                child: Text(
-                                  type,
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _selectedType = value;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: DropdownButton<String>(
-                            value: _sortBy,
-                            isExpanded: true,
-                            underline: Container(
-                              height: 1,
-                              color: isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder,
-                            ),
-                            items: _sortOptions.map((sort) {
-                              return DropdownMenuItem(
-                                value: sort,
-                                child: Text(
-                                  sort,
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _sortBy = value;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),

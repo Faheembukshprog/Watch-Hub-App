@@ -9,7 +9,7 @@ abstract final class AppColors {
   static const Color goldLight = Color(0xFFE5C158);
 
   // Dark palette
-  static const Color darkBg = Color(0xFF0F1115);
+  static const Color darkBg = Color(0xFF121212);
   static const Color darkSurface = Color(0xFF181B22);
   static const Color darkSurfaceCard = Color(0xFF20242D);
   static const Color darkBorder = Color(0xFF2A2E39);

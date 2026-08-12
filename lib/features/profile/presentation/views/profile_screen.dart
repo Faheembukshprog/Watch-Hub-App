@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:app_watchhub/shared/providers/firebase_provider.dart';
 import 'package:app_watchhub/shared/providers/theme_provider.dart';
+import '../providers/profile_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -19,16 +20,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(firebaseAuthProvider).currentUser;
+    final profileAsync = ref.watch(userProfileProvider);
     final themeMode = ref.watch(themeProvider);
 
+    final profile = profileAsync.value;
     final isAnonymous = user?.isAnonymous ?? true;
+    
     final email = isAnonymous
         ? 'guest@watchhub.com'
         : (user?.email ?? 'collector@watchhub.com');
-    final displayName = isAnonymous
-        ? 'Guest Client'
-        : (user?.displayName ?? 'Valued Collector');
+        
+    final displayName = profile?['displayName'] ?? 
+        (isAnonymous ? 'Guest Client' : (user?.displayName ?? 'Valued Collector'));
+        
     final vipBadge = isAnonymous ? 'VISITOR' : 'COLLECTOR MEMBER';
+    final shippingAddress = profile?['shippingAddress'] ?? 'No address on file';
+    final phone = profile?['phone'] ?? 'No phone on file';
 
     final isDark = themeMode == ThemeMode.dark;
 
@@ -186,6 +193,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (!isAnonymous) ...[
+                    Text(
+                      'COLLECTOR INFORMATION',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.neutral,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _ProfileMenuItem(
+                      icon: Icons.location_on_outlined,
+                      title: 'Shipping Address',
+                      subtitle: shippingAddress,
+                      onTap: () => _showEditProfileDialog(context, ref),
+                      isDark: isDark,
+                    ),
+                    _ProfileMenuItem(
+                      icon: Icons.phone_outlined,
+                      title: 'Secure Contact',
+                      subtitle: phone,
+                      onTap: () => _showEditProfileDialog(context, ref),
+                      isDark: isDark,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
                   Text(
                     'SERVICES & SUPPORT',
                     style: GoogleFonts.outfit(
@@ -321,11 +356,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       return;
     }
 
+    final profile = ref.read(userProfileProvider).value;
+
     final nameController = TextEditingController(
-      text: authUser.displayName ?? '',
+      text: profile?['displayName'] ?? authUser.displayName ?? '',
     );
-    final phoneController = TextEditingController();
-    final addressController = TextEditingController();
+    final phoneController = TextEditingController(
+      text: profile?['phone'] ?? '',
+    );
+    final addressController = TextEditingController(
+      text: profile?['shippingAddress'] ?? '',
+    );
 
     await showDialog(
       context: context,

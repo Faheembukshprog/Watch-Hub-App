@@ -1,0 +1,22 @@
+- [ ] **Feature 1: Password Recovery**
+    - [ ] Add email validation to `_showPasswordResetDialog` in `login_screen.dart`
+    - [ ] Add success/error snackbars
+- [ ] **Feature 2, 3, 4: Catalog Filters & Sorting**
+    - [ ] Refactor filters in `catalog_screen.dart` into a `ModalBottomSheet`
+    - [ ] Ensure local filtering logic is consistent
+- [ ] **Feature 5: Image Zoom**
+    - [ ] Implement full-screen image viewer in `product_details_screen.dart`
+- [ ] **Feature 6, 7: Profile Edit & Shipping Address**
+    - [ ] Create `profile_provider.dart` to fetch data from Firestore `users` collection
+    - [ ] Update `ProfileScreen` to display address/phone
+    - [ ] Polish `_showEditProfileDialog`
+- [ ] **Feature 8: Order Tracking Timeline**
+    - [ ] Refine `_OrderStatusTimeline` in `order_history_screen.dart`
+- [ ] **Feature 9: Move Wishlist to Cart**
+    - [ ] Verify logic in `wishlist_screen.dart`
+- [ ] **Feature 10: Sort Reviews**
+    - [ ] Verify logic in `product_details_screen.dart`
+- [ ] **Feature 11: Feedback Form**
+    - [ ] Verify logic in `profile_screen.dart`
+- [ ] **Final Verification**
+    - [ ] Run app and test all features

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:app_watchhub/core/constants/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/order_history_provider.dart';
 import '../../domain/models/order_model.dart';
 
@@ -221,6 +222,9 @@ class _OrderStatusTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     final steps = [
       OrderStatus.pending,
       OrderStatus.processing,
@@ -231,61 +235,80 @@ class _OrderStatusTimeline extends StatelessWidget {
     return Column(
       children: steps.map((step) {
         final active = _isActive(step);
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6.0),
+        final isLast = step == steps.last;
+        
+        return IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                children: [
-                  Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: active
-                          ? _statusColor(step)
-                          : AppColors.lightSurfaceMuted,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: active
-                            ? _statusColor(step)
-                            : AppColors.lightBorder,
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  if (step != steps.last)
-                    Container(
-                      width: 2,
-                      height: 48,
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      color: AppColors.lightBorder,
-                    ),
-                ],
-              ),
-              const SizedBox(width: 12),
-              Expanded(
+              Padding(
+                padding: const EdgeInsets.only(top: 2.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      step.name.toUpperCase(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      width: 14,
+                      height: 14,
+                      decoration: BoxDecoration(
                         color: active
                             ? _statusColor(step)
-                            : AppColors.lightTextSecondary,
+                            : Colors.transparent,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: active
+                              ? _statusColor(step)
+                              : (isDark ? Colors.white24 : Colors.grey[300]!),
+                          width: active ? 3 : 2,
+                        ),
+                        boxShadow: active ? [
+                          BoxShadow(
+                            color: _statusColor(step).withValues(alpha: 0.3),
+                            blurRadius: 6,
+                            spreadRadius: 2,
+                          )
+                        ] : [],
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _statusSubtitle(step),
-                      style: TextStyle(
-                        color: AppColors.lightTextSecondary,
-                        fontSize: 13,
+                    if (!isLast)
+                      Expanded(
+                        child: Container(
+                          width: 1.5,
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          color: active 
+                            ? _statusColor(step).withValues(alpha: 0.5) 
+                            : (isDark ? Colors.white12 : Colors.grey[200]!),
+                        ),
                       ),
-                    ),
                   ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: isLast ? 0 : 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        step.name.toUpperCase(),
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.0,
+                          color: active
+                              ? (isDark ? Colors.white : AppColors.lightTextPrimary)
+                              : AppColors.neutral,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _statusSubtitle(step),
+                        style: TextStyle(
+                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
