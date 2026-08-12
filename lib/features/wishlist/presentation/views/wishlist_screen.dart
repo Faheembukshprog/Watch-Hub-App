@@ -240,19 +240,39 @@ class _WishlistCard extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      ref.read(cartProvider.notifier).addToCart(watch);
-                      ref.read(wishlistProvider.notifier).toggleWishlist(watch);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Moved ${watch.name} to Shopping Bag'),
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: AppColors.goldAccent,
-                        ),
-                      );
-                    },
+                    onPressed: watch.stock <= 0
+                        ? null
+                        : () {
+                            final error = ref
+                                .read(cartProvider.notifier)
+                                .addToCart(watch);
+                            
+                            if (error != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(error),
+                                  backgroundColor: AppColors.error,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                              return;
+                            }
+
+                            ref
+                                .read(wishlistProvider.notifier)
+                                .toggleWishlist(watch);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Moved ${watch.name} to Shopping Bag'),
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: AppColors.goldAccent,
+                              ),
+                            );
+                          },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.goldAccent,
+                      backgroundColor: watch.stock <= 0
+                          ? Colors.grey
+                          : AppColors.goldAccent,
                       foregroundColor: isDark ? AppColors.darkBg : Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       shape: RoundedRectangleBorder(
@@ -261,7 +281,7 @@ class _WishlistCard extends ConsumerWidget {
                       elevation: 0,
                     ),
                     child: Text(
-                      'ADD TO CART',
+                      watch.stock <= 0 ? 'OUT OF STOCK' : 'ADD TO CART',
                       style: GoogleFonts.outfit(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,

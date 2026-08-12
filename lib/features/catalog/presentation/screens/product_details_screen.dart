@@ -107,7 +107,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=600',
             description:
                 'The Speedmaster Professional Moonwatch is one of the world\'s most iconic timepieces. Having been a part of all six lunar missions, the legendary chronograph is an impressive representation of the brand\'s adventurous pioneering spirit.',
-            stockCount: 5,
+            stock: 5,
           ),
         );
 
@@ -128,7 +128,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
               'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=600',
           description:
               'The Speedmaster Professional Moonwatch is one of the world\'s most iconic timepieces. Having been a part of all six lunar missions, the legendary chronograph is an impressive representation of the brand\'s adventurous pioneering spirit.',
-          stockCount: 5,
+          stock: 5,
         );
         return _buildDetailsUI(context, ref, fallbackProduct);
       },
@@ -315,6 +315,27 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                       color: AppColors.goldAccent,
                     ),
                   ),
+
+                  const SizedBox(height: 8),
+
+                  if (product.stock > 0)
+                    Text(
+                      'In Stock: ${product.stock}',
+                      style: const TextStyle(
+                        color: AppColors.success,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    )
+                  else
+                    const Text(
+                      'OUT OF STOCK',
+                      style: TextStyle(
+                        color: AppColors.error,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
 
                   const SizedBox(height: 16),
 
@@ -636,32 +657,46 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {
-                              ref
-                                  .read(cartProvider.notifier)
-                                  .addToCart(product);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Added ${product.name} to Shopping Cart',
-                                  ),
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: AppColors.goldAccent,
-                                  action: SnackBarAction(
-                                    label: 'VIEW CART',
-                                    textColor: isDark
-                                        ? AppColors.darkBg
-                                        : Colors.white,
-                                    onPressed: () {
-                                      context.go(AppRoutes.cart);
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
+                            onPressed: product.stock <= 0
+                                ? null
+                                : () {
+                                    final error = ref
+                                        .read(cartProvider.notifier)
+                                        .addToCart(product);
+                                    
+                                    if (error != null) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(error),
+                                          backgroundColor: AppColors.error,
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Added ${product.name} to Shopping Cart',
+                                        ),
+                                        behavior: SnackBarBehavior.floating,
+                                        backgroundColor: AppColors.goldAccent,
+                                        action: SnackBarAction(
+                                          label: 'VIEW CART',
+                                          textColor: isDark
+                                              ? AppColors.darkBg
+                                              : Colors.white,
+                                          onPressed: () {
+                                            context.go(AppRoutes.cart);
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
                             icon: const Icon(Icons.shopping_bag_outlined),
                             label: Text(
-                              'ADD TO CART',
+                              product.stock <= 0 ? 'OUT OF STOCK' : 'ADD TO CART',
                               style: GoogleFonts.outfit(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
@@ -670,7 +705,9 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                             ),
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
-                              backgroundColor: AppColors.goldAccent,
+                              backgroundColor: product.stock <= 0
+                                  ? Colors.grey
+                                  : AppColors.goldAccent,
                               foregroundColor: isDark
                                   ? AppColors.darkBg
                                   : Colors.white,
@@ -684,17 +721,32 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {
-                              ref
-                                  .read(cartProvider.notifier)
-                                  .addToCart(product);
-                              context.go(AppRoutes.checkout);
-                            },
+                            onPressed: product.stock <= 0
+                                ? null
+                                : () {
+                                    final error = ref
+                                        .read(cartProvider.notifier)
+                                        .addToCart(product);
+                                    
+                                    if (error != null) {
+                                       ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(error),
+                                          backgroundColor: AppColors.error,
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    context.go(AppRoutes.checkout);
+                                  },
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
-                              backgroundColor: isDark
-                                  ? AppColors.darkSurfaceCard
-                                  : Theme.of(context).colorScheme.primary,
+                              backgroundColor: product.stock <= 0
+                                  ? Colors.grey.withAlpha(50)
+                                  : (isDark
+                                      ? AppColors.darkSurfaceCard
+                                      : Theme.of(context).colorScheme.primary),
                               foregroundColor: isDark
                                   ? Colors.white
                                   : Colors.white,

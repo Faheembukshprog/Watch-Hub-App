@@ -15,7 +15,8 @@ class CartNotifier extends _$CartNotifier {
   }
 
   /// Add product to cart or increment quantity if already present
-  void addToCart(ProductModel product) {
+  /// Returns a message if stock limit is reached, otherwise null.
+  String? addToCart(ProductModel product) {
     final existingIndex = state.indexWhere(
       (item) => item.product.id == product.id,
     );
@@ -23,15 +24,24 @@ class CartNotifier extends _$CartNotifier {
     if (existingIndex != -1) {
       final updatedList = List<CartItemModel>.from(state);
       final currentItem = updatedList[existingIndex];
+      
+      if (currentItem.quantity >= product.stock) {
+        return "Maximum stock reached";
+      }
+
       updatedList[existingIndex] = currentItem.copyWith(
         quantity: currentItem.quantity + 1,
       );
       state = updatedList;
     } else {
+      if (product.stock <= 0) {
+        return "Out of Stock";
+      }
       state = [...state, CartItemModel(product: product, quantity: 1)];
     }
 
     _persist();
+    return null;
   }
 
   /// Remove item completely from cart
@@ -41,10 +51,19 @@ class CartNotifier extends _$CartNotifier {
   }
 
   /// Increment or decrement item quantity
-  void updateQuantity(String productId, int quantity) {
+  /// Returns a message if stock limit is reached, otherwise null.
+  String? updateQuantity(String productId, int quantity) {
     if (quantity <= 0) {
       removeFromCart(productId);
-      return;
+      return null;
+    }
+
+    final itemIndex = state.indexWhere((item) => item.product.id == productId);
+    if (itemIndex == -1) return null;
+
+    final item = state[itemIndex];
+    if (quantity > item.product.stock) {
+      return "Maximum stock reached";
     }
 
     state = [
@@ -55,6 +74,7 @@ class CartNotifier extends _$CartNotifier {
           item,
     ];
     _persist();
+    return null;
   }
 
   /// Clear all items

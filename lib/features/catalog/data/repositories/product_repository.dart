@@ -55,7 +55,7 @@ class ProductRepository {
             'https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&q=80&w=600',
         description:
             'The Rolex Submariner Date is the benchmark for divers\' watches. It features a unidirectional rotatable bezel with Cerachrom insert and solid-link Oyster bracelet.',
-        stockCount: 8,
+        stock: 8,
         isAvailable: true,
         tags: ['diver', 'steel', 'classic', 'automatic'],
       ),
@@ -68,7 +68,7 @@ class ProductRepository {
             'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=600',
         description:
             'The Speedmaster Professional Moonwatch is one of the world\'s most iconic timepieces. Chronograph with manual-winding movement calibre 3861, hesalite crystal, and historic dial details.',
-        stockCount: 12,
+        stock: 12,
         isAvailable: true,
         tags: ['chronograph', 'space', 'heritage', 'manual'],
       ),
@@ -81,7 +81,7 @@ class ProductRepository {
             'https://images.unsplash.com/photo-1622434641406-a158123450f9?auto=format&fit=crop&q=80&w=600',
         description:
             'With the rounded octagonal shape of its bezel, the Nautilus has epitomized the elegant sports watch since 1976. Features a horizontally embossed dial and integrated steel bracelet.',
-        stockCount: 2,
+        stock: 2,
         isAvailable: true,
         tags: ['sport', 'grail', 'integrated', 'automatic'],
       ),
@@ -94,7 +94,7 @@ class ProductRepository {
             'https://images.unsplash.com/photo-1629581678313-36cf745a9af9?auto=format&fit=crop&q=80&w=600',
         description:
             'The Audemars Piguet Royal Oak is an avant-garde masterpiece. Features the famous octagonal bezel secured by eight hexagonal screws, tapisserie dial, and integrated steel bracelet.',
-        stockCount: 4,
+        stock: 4,
         isAvailable: true,
         tags: ['sport', 'luxury', 'integrated', 'automatic'],
       ),
@@ -107,7 +107,7 @@ class ProductRepository {
             'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=600',
         description:
             'Created in 1904, the Santos watch is based on the concept of form, minimalist lines, and precision proportions, embodying the pioneer spirit of aviation.',
-        stockCount: 10,
+        stock: 10,
         isAvailable: true,
         tags: ['dress', 'classic', 'square', 'automatic'],
       ),
@@ -134,7 +134,7 @@ class ProductRepository {
                 'https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&q=80&w=600',
             'description':
                 'The Rolex Submariner Date is the benchmark for divers\' watches. It features a unidirectional rotatable bezel with Cerachrom insert and solid-link Oyster bracelet.',
-            'stockCount': 8,
+            'stock': 8,
             'isAvailable': true,
             'tags': ['diver', 'steel', 'classic', 'automatic'],
           },
@@ -146,7 +146,7 @@ class ProductRepository {
                 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=600',
             'description':
                 'The Speedmaster Professional Moonwatch is one of the world\'s most iconic timepieces. Chronograph with manual-winding movement calibre 3861, hesalite crystal, and historic dial details.',
-            'stockCount': 12,
+            'stock': 12,
             'isAvailable': true,
             'tags': ['chronograph', 'space', 'heritage', 'manual'],
           },
@@ -158,7 +158,7 @@ class ProductRepository {
                 'https://images.unsplash.com/photo-1622434641406-a158123450f9?auto=format&fit=crop&q=80&w=600',
             'description':
                 'With the rounded octagonal shape of its bezel, the Nautilus has epitomized the elegant sports watch since 1976. Features a horizontally embossed dial and integrated steel bracelet.',
-            'stockCount': 2,
+            'stock': 2,
             'isAvailable': true,
             'tags': ['sport', 'grail', 'integrated', 'automatic'],
           },
@@ -170,7 +170,7 @@ class ProductRepository {
                 'https://images.unsplash.com/photo-1629581678313-36cf745a9af9?auto=format&fit=crop&q=80&w=600',
             'description':
                 'The Audemars Piguet Royal Oak is an avant-garde masterpiece. Features the famous octagonal bezel secured by eight hexagonal screws, tapisserie dial, and integrated steel bracelet.',
-            'stockCount': 4,
+            'stock': 4,
             'isAvailable': true,
             'tags': ['sport', 'luxury', 'integrated', 'automatic'],
           },
@@ -182,7 +182,7 @@ class ProductRepository {
                 'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=600',
             'description':
                 'Created in 1904, the Santos watch is based on the concept of form, minimalist lines, and precision proportions, embodying the pioneer spirit of aviation.',
-            'stockCount': 10,
+            'stock': 10,
             'isAvailable': true,
             'tags': ['dress', 'classic', 'square', 'automatic'],
           },

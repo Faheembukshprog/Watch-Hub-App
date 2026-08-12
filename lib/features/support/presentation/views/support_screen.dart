@@ -272,6 +272,77 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                       ),
               ),
             ),
+            const SizedBox(height: 24),
+
+            // --- My Tickets ---
+            Text(
+              'MY RECENT TICKETS',
+              style: GoogleFonts.outfit(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: AppColors.neutral,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            StreamBuilder<QuerySnapshot>(
+              stream: ref.watch(firebaseFirestoreProvider)
+                  .collection('support_tickets')
+                  .where('userId', isEqualTo: ref.watch(firebaseAuthProvider).currentUser?.uid ?? 'anonymous')
+                  .orderBy('timestamp', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) return const Text('Sync error');
+                if (!snapshot.hasData) return const CircularProgressIndicator();
+                
+                final docs = snapshot.data!.docs;
+                if (docs.isEmpty) {
+                  return const Text(
+                    'No active concierge tickets found.',
+                    style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.grey),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final data = docs[index].data() as Map<String, dynamic>;
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.darkSurface : Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(data['subject'] ?? 'No Subject', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                              Text(
+                                data['status']?.toString().toUpperCase() ?? 'OPEN',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: (data['status'] == 'open') ? Colors.orange : Colors.green,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(data['message'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),

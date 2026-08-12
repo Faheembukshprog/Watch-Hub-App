@@ -22,6 +22,7 @@ import 'scaffold_with_nav_bar.dart';
 
 // Providers Import
 import 'package:app_watchhub/shared/providers/firebase_provider.dart';
+import 'package:app_watchhub/features/profile/presentation/providers/profile_provider.dart';
 
 // Define a root navigator key for full-screen routes
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -61,12 +62,11 @@ String? resolveAuthRedirect({
   required bool isLoading,
   required bool hasError,
   required bool isLoggedIn,
+  required bool isAdmin,
   required String location,
   required String? redirectParam,
 }) {
   if (isLoading) {
-    // While auth is initializing, keep users on the splash route and
-    // redirect any other route back to splash until resolved.
     return location == AppRoutes.splash ? null : AppRoutes.splash;
   }
 
@@ -76,11 +76,7 @@ String? resolveAuthRedirect({
 
   if (!isLoggedIn) {
     if (location == AppRoutes.login) return null;
-
-    // Allow guests to browse the main catalog without forcing login.
     if (location == AppRoutes.catalog) return null;
-
-    // If splash is resolved and user is not logged in, send them to catalog.
     if (location == AppRoutes.splash) return AppRoutes.catalog;
 
     if (isProtectedRoute(location)) {
@@ -90,7 +86,15 @@ String? resolveAuthRedirect({
     return AppRoutes.login;
   }
 
-  if (location == AppRoutes.login || location == AppRoutes.splash) {
+  // Admin Redirection Logic - Force to Admin Panel ONLY on login/splash
+  if (isAdmin) {
+    if (location == AppRoutes.login || location == AppRoutes.splash) {
+      return AppRoutes.admin;
+    }
+    return null;
+  }
+
+  if (location == AppRoutes.login || location == AppRoutes.splash || location == AppRoutes.admin) {
     if (redirectParam != null &&
         redirectParam.isNotEmpty &&
         isAllowedRedirect(redirectParam)) {
@@ -117,6 +121,12 @@ final routerProvider = Provider<GoRouter>((ref) {
     (_, _) => refreshNotifier.notify(),
   );
 
+  // Also listen to profile changes for isAdmin updates
+  ref.listen<AsyncValue<dynamic>>(
+    userProfileProvider,
+    (_, _) => refreshNotifier.notify(),
+  );
+
   ref.onDispose(refreshNotifier.dispose);
 
   return GoRouter(
@@ -127,11 +137,15 @@ final routerProvider = Provider<GoRouter>((ref) {
 
     redirect: (context, state) {
       final authState = ref.read(authStateProvider);
+      final profileState = ref.read(userProfileProvider);
+      
+      final isAdmin = profileState.value?['isAdmin'] == true;
 
       return resolveAuthRedirect(
         isLoading: authState.isLoading,
         hasError: authState.hasError,
         isLoggedIn: authState.value != null,
+        isAdmin: isAdmin,
         location: state.matchedLocation,
         redirectParam: state.uri.queryParameters['redirect'],
       );

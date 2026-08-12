@@ -12,7 +12,7 @@ abstract class ProductModel with _$ProductModel {
     required double price,
     required String imageUrl,
     required String description,
-    required int stockCount,
+    required int stock,
     @Default(true) bool isAvailable,
     @Default([]) List<String> tags,
   }) = _ProductModel;

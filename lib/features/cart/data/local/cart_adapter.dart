@@ -15,7 +15,7 @@ class CartAdapter extends TypeAdapter<CartItemModel> {
       price: reader.readDouble(),
       imageUrl: reader.readString(),
       description: reader.readString(),
-      stockCount: reader.readInt(),
+      stock: reader.readInt(),
       isAvailable: reader.readBool(),
       tags: reader.readStringList(),
     );
@@ -35,7 +35,7 @@ class CartAdapter extends TypeAdapter<CartItemModel> {
       ..writeDouble(product.price)
       ..writeString(product.imageUrl)
       ..writeString(product.description)
-      ..writeInt(product.stockCount)
+      ..writeInt(product.stock)
       ..writeBool(product.isAvailable)
       ..writeStringList(product.tags)
       ..writeInt(obj.quantity);

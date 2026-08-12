@@ -14,7 +14,7 @@ void main() {
       price: 5400.00,
       imageUrl: '',
       description: 'Classic professional dive timepiece.',
-      stockCount: 10,
+      stock: 10,
     );
 
     final testProduct2 = ProductModel(
@@ -24,7 +24,7 @@ void main() {
       price: 9500.00,
       imageUrl: '',
       description: 'The legendary luxury diving watch.',
-      stockCount: 5,
+      stock: 5,
     );
 
     setUp(() {

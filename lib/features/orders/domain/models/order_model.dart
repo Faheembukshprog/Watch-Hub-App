@@ -22,10 +22,10 @@ class OrderItem {
 
   factory OrderItem.fromMap(Map<String, dynamic> map) {
     return OrderItem(
-      productId: map['productId'] ?? '',
-      productName: map['productName'] ?? '',
-      price: (map['price'] as num).toDouble(),
-      quantity: map['quantity'] as int,
+      productId: map['productId'] ?? 'UNK',
+      productName: map['productName'] ?? 'Unknown Item',
+      price: (map['price'] as num?)?.toDouble() ?? 0.0,
+      quantity: (map['quantity'] as num?)?.toInt() ?? 0,
     );
   }
 }
@@ -61,15 +61,22 @@ class OrderModel {
 
   factory OrderModel.fromMap(Map<String, dynamic> map) {
     return OrderModel(
-      id: map['id'] ?? '',
-      items: List<OrderItem>.from(
-        (map['items'] as List<dynamic>).map((x) => OrderItem.fromMap(x)),
+      id: map['id'] ?? 'ORD-UNK',
+      items: map['items'] != null
+          ? List<OrderItem>.from(
+              (map['items'] as List<dynamic>).map((x) => OrderItem.fromMap(x)),
+            )
+          : [],
+      totalAmount: (map['totalAmount'] as num?)?.toDouble() ?? 0.0,
+      orderDate: map['orderDate'] != null
+          ? DateTime.tryParse(map['orderDate'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      shippingAddress: map['shippingAddress'] ?? 'No Address',
+      paymentMethod: map['paymentMethod'] ?? 'N/A',
+      status: OrderStatus.values.firstWhere(
+        (e) => e.name == map['status'],
+        orElse: () => OrderStatus.pending,
       ),
-      totalAmount: (map['totalAmount'] as num).toDouble(),
-      orderDate: DateTime.parse(map['orderDate']),
-      shippingAddress: map['shippingAddress'] ?? '',
-      paymentMethod: map['paymentMethod'] ?? '',
-      status: OrderStatus.values.byName(map['status'] ?? 'pending'),
     );
   }
 }
