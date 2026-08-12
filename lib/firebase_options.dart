@@ -57,7 +57,6 @@ class DefaultFirebaseOptions {
     projectId: 'app-watchhub-08',
     storageBucket: 'app-watchhub-08.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAzexrnUxIYthTf-vMMv4blz-I8q6N28Pw',
     appId: '1:262205640310:ios:ad3a3390b2078451ad5957',
@@ -66,7 +65,6 @@ class DefaultFirebaseOptions {
     storageBucket: 'app-watchhub-08.firebasestorage.app',
     iosBundleId: 'com.appwatchhub.app',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyAzexrnUxIYthTf-vMMv4blz-I8q6N28Pw',
     appId: '1:262205640310:ios:f0835c8fdc0bff4bad5957',
