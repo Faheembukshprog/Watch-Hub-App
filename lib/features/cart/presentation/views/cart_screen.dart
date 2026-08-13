@@ -14,8 +14,7 @@ class CartScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cartItems = ref.watch(cartProvider);
     final cartNotifier = ref.read(cartProvider.notifier);
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final subtotal = cartItems.fold<double>(
       0.0,
@@ -58,53 +57,54 @@ class CartScreen extends ConsumerWidget {
             ),
         ],
       ),
-      body: Center(
+      body: Align(
+        alignment: Alignment.topCenter,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 800),
+          constraints: const BoxConstraints(maxWidth: 1000),
           child: cartItems.isEmpty
               ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.shopping_bag_outlined,
-                          size: 64,
+                          size: 80,
                           color: Colors.grey[400],
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
                         Text(
-                          'Your cart is empty',
+                          'Your curated bag is empty',
                           style: GoogleFonts.outfit(
-                            fontSize: 18,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: isDark ? Colors.white : Colors.black87,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         Text(
-                          'Add watches to your bag and return here to complete checkout.',
+                          'Explore our exclusive timepieces and select a masterpiece to begin your collection.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 15,
                             color: isDark
                                 ? AppColors.darkTextSecondary
                                 : Colors.black54,
                           ),
                         ),
-                        const SizedBox(height: 24),
-                        OutlinedButton(
+                        const SizedBox(height: 32),
+                        ElevatedButton(
                           onPressed: () => context.go('/catalog'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.goldAccent,
-                            side: const BorderSide(color: AppColors.goldAccent),
-                            minimumSize: const Size(double.infinity, 48),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.goldAccent,
+                            foregroundColor: isDark ? AppColors.darkBg : Colors.white,
+                            minimumSize: const Size(220, 52),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          child: const Text('Continue Shopping'),
+                          child: const Text('EXPLORE COLLECTION'),
                         ),
                       ],
                     ),
@@ -115,35 +115,38 @@ class CartScreen extends ConsumerWidget {
                     // --- Cart Items List ---
                     Expanded(
                       child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(24),
                         physics: const BouncingScrollPhysics(),
                         itemCount: cartItems.length,
                         itemBuilder: (context, index) {
                           final item = cartItems[index];
                           return Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.only(bottom: 20),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: isDark ? AppColors.darkSurface : Colors.white,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isDark
                                     ? AppColors.darkBorder
                                     : AppColors.lightBorder,
                               ),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))
+                              ],
                             ),
                             child: Row(
                               children: [
                                 // Watch Image Container
                                 Container(
-                                  width: 80,
-                                  height: 80,
-                                  padding: const EdgeInsets.all(8),
+                                  width: 100,
+                                  height: 100,
+                                  padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
                                     color: isDark
                                         ? AppColors.darkBg
                                         : AppColors.lightSurfaceMuted,
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: item.product.imageUrl.isNotEmpty
                                       ? CachedNetworkImage(
@@ -164,7 +167,7 @@ class CartScreen extends ConsumerWidget {
                                               : Colors.black26,
                                         ),
                                 ),
-                                const SizedBox(width: 16),
+                                const SizedBox(width: 20),
 
                                 // Watch Meta Details
                                 Expanded(
@@ -174,17 +177,17 @@ class CartScreen extends ConsumerWidget {
                                       Text(
                                         item.product.brand.toUpperCase(),
                                         style: GoogleFonts.outfit(
-                                          fontSize: 9,
+                                          fontSize: 10,
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.goldAccent,
-                                          letterSpacing: 1.0,
+                                          letterSpacing: 1.5,
                                         ),
                                       ),
-                                      const SizedBox(height: 2),
+                                      const SizedBox(height: 4),
                                       Text(
                                         item.product.name,
                                         style: GoogleFonts.outfit(
-                                          fontSize: 14,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: isDark
                                               ? Colors.white
@@ -193,11 +196,11 @@ class CartScreen extends ConsumerWidget {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      const SizedBox(height: 6),
+                                      const SizedBox(height: 8),
                                       Text(
                                         '\$${item.product.price.toStringAsFixed(0)}',
                                         style: GoogleFonts.outfit(
-                                          fontSize: 13,
+                                          fontSize: 15,
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.goldAccent,
                                         ),
@@ -220,7 +223,7 @@ class CartScreen extends ConsumerWidget {
                                             );
                                           },
                                           child: Container(
-                                            padding: const EdgeInsets.all(4),
+                                            padding: const EdgeInsets.all(6),
                                             decoration: BoxDecoration(
                                               border: Border.all(
                                                 color: isDark
@@ -228,12 +231,12 @@ class CartScreen extends ConsumerWidget {
                                                     : AppColors.lightBorder,
                                               ),
                                               borderRadius: BorderRadius.circular(
-                                                6,
+                                                8,
                                               ),
                                             ),
                                             child: Icon(
                                               Icons.remove,
-                                              size: 16,
+                                              size: 18,
                                               color: isDark
                                                   ? Colors.white70
                                                   : Colors.black87,
@@ -242,12 +245,12 @@ class CartScreen extends ConsumerWidget {
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0,
+                                            horizontal: 14.0,
                                           ),
                                           child: Text(
                                             '${item.quantity}',
                                             style: GoogleFonts.outfit(
-                                              fontSize: 14,
+                                              fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                               color: isDark
                                                   ? Colors.white
@@ -263,7 +266,7 @@ class CartScreen extends ConsumerWidget {
                                             );
                                           },
                                           child: Container(
-                                            padding: const EdgeInsets.all(4),
+                                            padding: const EdgeInsets.all(6),
                                             decoration: BoxDecoration(
                                               border: Border.all(
                                                 color: isDark
@@ -271,12 +274,12 @@ class CartScreen extends ConsumerWidget {
                                                     : AppColors.lightBorder,
                                               ),
                                               borderRadius: BorderRadius.circular(
-                                                6,
+                                                8,
                                               ),
                                             ),
                                             child: Icon(
                                               Icons.add,
-                                              size: 16,
+                                              size: 18,
                                               color: isDark
                                                   ? Colors.white70
                                                   : Colors.black87,
@@ -285,7 +288,7 @@ class CartScreen extends ConsumerWidget {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: 16),
                                     GestureDetector(
                                       onTap: () {
                                         cartNotifier.removeFromCart(
@@ -304,7 +307,7 @@ class CartScreen extends ConsumerWidget {
                                       child: const Icon(
                                         Icons.delete_outline_rounded,
                                         color: AppColors.error,
-                                        size: 20,
+                                        size: 22,
                                       ),
                                     ),
                                   ],
@@ -318,11 +321,11 @@ class CartScreen extends ConsumerWidget {
 
                     // --- Invoice Breakdown Sheet ---
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                       decoration: BoxDecoration(
                         color: isDark ? AppColors.darkSurface : Colors.white,
                         borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(24),
+                          top: Radius.circular(32),
                         ),
                         border: Border(
                           top: BorderSide(
@@ -331,80 +334,32 @@ class CartScreen extends ConsumerWidget {
                                 : AppColors.lightBorder,
                           ),
                         ),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -5))
+                        ],
                       ),
                       child: SafeArea(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Subtotal',
-                                  style: TextStyle(
-                                    color: isDark
-                                        ? AppColors.darkTextSecondary
-                                        : AppColors.lightTextSecondary,
-                                  ),
-                                ),
-                                Text(
-                                  '\$${subtotal.toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
+                            _buildInvoiceRow('Subtotal', '\$${subtotal.toStringAsFixed(2)}', isDark),
+                            const SizedBox(height: 12),
+                            _buildInvoiceRow('Global Logistics', 'FREE', isDark, isSuccess: true),
+                            const SizedBox(height: 12),
+                            _buildInvoiceRow('Sales Tax (8%)', '\$${tax.toStringAsFixed(2)}', isDark),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 20),
+                              child: Divider(height: 1),
                             ),
-                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Shipping (Express)',
-                                  style: TextStyle(
-                                    color: isDark
-                                        ? AppColors.darkTextSecondary
-                                        : AppColors.lightTextSecondary,
-                                  ),
-                                ),
-                                const Text(
-                                  'FREE',
-                                  style: TextStyle(
-                                    color: AppColors.success,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Estimated Tax (8%)',
-                                  style: TextStyle(
-                                    color: isDark
-                                        ? AppColors.darkTextSecondary
-                                        : AppColors.lightTextSecondary,
-                                  ),
-                                ),
-                                Text(
-                                  '\$${tax.toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Divider(height: 24),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Total Amount',
+                                  'GRAND TOTAL',
                                   style: GoogleFonts.outfit(
-                                    fontSize: 16,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.0,
                                     color: isDark
                                         ? Colors.white
                                         : AppColors.lightTextPrimary,
@@ -413,33 +368,33 @@ class CartScreen extends ConsumerWidget {
                                 Text(
                                   '\$${totalAmount.toStringAsFixed(2)}',
                                   style: GoogleFonts.outfit(
-                                    fontSize: 18,
+                                    fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.goldAccent,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 32),
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  context.push('/checkout');
-                                },
+                                onPressed: () => context.push('/checkout'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.goldAccent,
                                   foregroundColor: isDark
                                       ? AppColors.darkBg
                                       : Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(vertical: 20),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  elevation: 4,
                                 ),
                                 child: Text(
-                                  'PROCEED TO CHECKOUT',
+                                  'PROCEED TO SECURE CHECKOUT',
                                   style: GoogleFonts.outfit(
-                                    fontSize: 14,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.0,
+                                    letterSpacing: 1.5,
                                   ),
                                 ),
                               ),
@@ -452,6 +407,31 @@ class CartScreen extends ConsumerWidget {
                 ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInvoiceRow(String label, String value, bool isDark, {bool isSuccess = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.lightTextSecondary,
+            fontSize: 14,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            color: isSuccess ? AppColors.success : (isDark ? Colors.white : Colors.black87),
+          ),
+        ),
+      ],
     );
   }
 }

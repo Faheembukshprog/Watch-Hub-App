@@ -16,6 +16,17 @@ import 'shared/providers/connectivity_provider.dart';
 import 'shared/providers/firebase_provider.dart';
 import 'features/catalog/data/repositories/product_repository.dart';
 
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Widget buildScrollbar(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return child; // Removes Flutter's overlay scrollbar on Web
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -119,6 +130,7 @@ class AppWatchHub extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
+      scrollBehavior: MyCustomScrollBehavior(),
       routerConfig: router,
       builder: (context, child) {
         return Consumer(

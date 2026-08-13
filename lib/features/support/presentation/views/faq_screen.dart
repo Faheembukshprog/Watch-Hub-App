@@ -30,51 +30,57 @@ class FAQScreen extends ConsumerWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: firestore.collection('faqs').orderBy('order').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.goldAccent),
-            );
-          }
-          if (snapshot.hasError) {
-            debugPrint('FAQ Error: ${snapshot.error}');
-            return Center(
-              child: Text(
-                'Error loading FAQs: ${snapshot.error}',
-                style: GoogleFonts.outfit(color: Colors.red),
-              ),
-            );
-          }
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          child: StreamBuilder<QuerySnapshot>(
+            stream: firestore.collection('faqs').orderBy('order').snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.goldAccent),
+                );
+              }
+              if (snapshot.hasError) {
+                debugPrint('FAQ Error: ${snapshot.error}');
+                return Center(
+                  child: Text(
+                    'Error loading FAQs: ${snapshot.error}',
+                    style: GoogleFonts.outfit(color: Colors.red),
+                  ),
+                );
+              }
 
-          final faqs = snapshot.data?.docs ?? [];
-          if (faqs.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  'No FAQs available',
-                  style: GoogleFonts.outfit(fontSize: 16),
-                ),
-              ),
-            );
-          }
+              final faqs = snapshot.data?.docs ?? [];
+              if (faqs.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      'No FAQs available currently.',
+                      style: GoogleFonts.outfit(fontSize: 16, color: AppColors.neutral),
+                    ),
+                  ),
+                );
+              }
 
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            physics: const BouncingScrollPhysics(),
-            itemCount: faqs.length,
-            itemBuilder: (context, index) {
-              final faqData = faqs[index].data() as Map<String, dynamic>;
-              return _FAQTile(
-                question: faqData['question'] ?? 'Question',
-                answer: faqData['answer'] ?? 'Answer',
-                isDark: isDark,
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                physics: const BouncingScrollPhysics(),
+                itemCount: faqs.length,
+                itemBuilder: (context, index) {
+                  final faqData = faqs[index].data() as Map<String, dynamic>;
+                  return _FAQTile(
+                    question: faqData['question'] ?? 'Question',
+                    answer: faqData['answer'] ?? 'Answer',
+                    isDark: isDark,
+                  );
+                },
               );
             },
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -94,7 +100,7 @@ class _FAQTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -111,7 +117,7 @@ class _FAQTile extends StatelessWidget {
                 question,
                 style: GoogleFonts.outfit(
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
+                  fontSize: 15,
                   color: isDark ? Colors.white : AppColors.lightTextPrimary,
                 ),
               ),
@@ -122,15 +128,15 @@ class _FAQTile extends StatelessWidget {
               children: [
                 const Divider(color: AppColors.goldAccent, height: 1),
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: Text(
                     answer,
                     style: GoogleFonts.inter(
                       color: isDark
                           ? AppColors.darkTextSecondary
                           : AppColors.lightTextSecondary,
-                      fontSize: 13,
-                      height: 1.5,
+                      fontSize: 14,
+                      height: 1.6,
                     ),
                   ),
                 ),

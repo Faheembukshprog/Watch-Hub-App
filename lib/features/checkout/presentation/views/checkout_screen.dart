@@ -93,8 +93,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 foregroundColor: isDark
                     ? AppColors.darkBg
                     : Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               onPressed: () {
@@ -123,8 +124,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     }
 
     final cartItems = ref.watch(cartProvider);
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final subtotal = cartItems.fold<double>(
       0.0,
@@ -140,7 +140,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           : AppColors.lightBg,
       appBar: AppBar(
         title: Text(
-          'CHECKOUT',
+          'SECURE CHECKOUT',
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.bold,
             letterSpacing: 2.0,
@@ -152,22 +152,23 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Center(
+      body: Align(
+        alignment: Alignment.topCenter,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 800),
+          constraints: const BoxConstraints(maxWidth: 1000),
           child: cartItems.isEmpty
               ? Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: const EdgeInsets.all(32.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(
                           Icons.shopping_bag_outlined,
-                          size: 64,
+                          size: 80,
                           color: AppColors.neutral,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
                         Text(
                           'Your cart is empty',
                           style: GoogleFonts.outfit(
@@ -175,15 +176,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         const Text(
-                          'Please add items to your shopping bag before proceeding to checkout.',
+                          'Please select a timepiece from our collection before proceeding to checkout.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColors.neutral),
+                          style: TextStyle(color: AppColors.neutral, fontSize: 15),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                         ElevatedButton(
                           onPressed: () => context.go(AppRoutes.catalog),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.goldAccent,
+                            foregroundColor: isDark ? AppColors.darkBg : Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                          ),
                           child: const Text('BACK TO BOUTIQUE'),
                         ),
                       ],
@@ -191,7 +197,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   ),
                 )
               : SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                   physics: const BouncingScrollPhysics(),
                   child: Form(
                     key: _formKey,
@@ -200,72 +206,56 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // --- Custom Luxury Stepper Progress Indicator ---
-                        const _CheckoutProgressIndicator(),
-                        const SizedBox(height: 32),
+                        const Center(child: _CheckoutProgressIndicator()),
+                        const SizedBox(height: 48),
 
                         // --- Shipping Section ---
-                        Text(
-                          'SHIPPING INFORMATION',
-                          style: GoogleFonts.outfit(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
-                            color: AppColors.goldAccent,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+                        _buildSectionHeader('SHIPPING DESTINATION'),
+                        const SizedBox(height: 20),
                         TextFormField(
                           controller: _nameController,
                           decoration: const InputDecoration(
-                            labelText: 'Full Name',
+                            labelText: 'Full Collector Name',
                             prefixIcon: Icon(Icons.person_outline),
                           ),
                           validator: (value) =>
                               value == null || value.trim().isEmpty
-                              ? 'Please enter your name'
+                              ? 'Identification name required'
                               : null,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: _addressController,
                           decoration: const InputDecoration(
-                            labelText: 'Shipping Address',
+                            labelText: 'Delivery Address',
                             prefixIcon: Icon(Icons.location_on_outlined),
                           ),
                           maxLines: 2,
                           validator: (value) =>
                               value == null || value.trim().isEmpty
-                              ? 'Please enter your address'
+                              ? 'Delivery destination required'
                               : null,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: _phoneController,
                           keyboardType: TextInputType.phone,
                           decoration: const InputDecoration(
-                            labelText: 'Phone Number',
+                            labelText: 'Secure Contact Number',
                             prefixIcon: Icon(Icons.phone_outlined),
                           ),
                           validator: (value) =>
                               value == null || value.trim().isEmpty
-                              ? 'Please enter your phone number'
+                              ? 'Contact number required'
                               : null,
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 40),
 
                         // --- Payment Method ---
-                        Text(
-                          'PAYMENT METHOD',
-                          style: GoogleFonts.outfit(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
-                            color: AppColors.goldAccent,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+                        _buildSectionHeader('PAYMENT PROTOCOL'),
+                        const SizedBox(height: 20),
 
-                        // Standard Flutter 3.32+ RadioGroup / custom list tile setup
+                        // Standard Flutter 3.32+ RadioGroup
                         RadioGroup<String>(
                           groupValue: _selectedPaymentMethod,
                           onChanged: (value) {
@@ -278,12 +268,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                               color: isDark
                                   ? AppColors.darkSurface
                                   : Colors.white,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isDark
                                     ? AppColors.darkBorder
                                     : AppColors.lightBorder,
                               ),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))
+                              ],
                             ),
                             child: Column(
                               children: [
@@ -291,57 +284,59 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                   title: Text(
                                     'Cash on Delivery',
                                     style: GoogleFonts.outfit(
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
+                                  subtitle: const Text('Pay upon personalized hand-delivery', style: TextStyle(fontSize: 12)),
                                   value: 'Cash on Delivery',
                                   activeColor: AppColors.goldAccent,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                 ),
                                 Divider(
                                   height: 1,
+                                  indent: 16,
+                                  endIndent: 16,
                                   color: isDark
                                       ? AppColors.darkBorder
                                       : AppColors.lightBorder,
                                 ),
                                 RadioListTile<String>(
                                   title: Text(
-                                    'Credit / Debit Card',
+                                    'Vault Card / Wire',
                                     style: GoogleFonts.outfit(
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
+                                  subtitle: const Text('Encrypted digital transaction', style: TextStyle(fontSize: 12)),
                                   value: 'Card',
                                   activeColor: AppColors.goldAccent,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 40),
 
                         // --- Order Summary ---
-                        Text(
-                          'ORDER SUMMARY',
-                          style: GoogleFonts.outfit(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
-                            color: AppColors.goldAccent,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+                        _buildSectionHeader('TRANSACTION SUMMARY'),
+                        const SizedBox(height: 20),
                         Card(
                           color: isDark ? AppColors.darkSurface : Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                          ),
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(24.0),
                             child: Column(
                               children: [
                                 ...cartItems.map(
                                   (item) => Padding(
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 6.0,
+                                      vertical: 8.0,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
@@ -351,7 +346,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                           child: Text(
                                             '${item.product.name} (x${item.quantity})',
                                             style: GoogleFonts.inter(
-                                              fontSize: 13,
+                                              fontSize: 14,
                                               fontWeight: FontWeight.w500,
                                             ),
                                             overflow: TextOverflow.ellipsis,
@@ -360,102 +355,43 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                         Text(
                                           '\$${(item.product.price * item.quantity).toStringAsFixed(0)}',
                                           style: GoogleFonts.outfit(
-                                            fontSize: 13,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold,
-                                            color: isDark
-                                                ? Colors.white
-                                                : AppColors.lightTextPrimary,
+                                            color: AppColors.goldAccent,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
-                                const Divider(height: 24),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Subtotal',
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.lightTextSecondary,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    Text(
-                                      '\$${subtotal.toStringAsFixed(2)}',
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 20),
+                                  child: Divider(height: 1),
                                 ),
-                                const SizedBox(height: 6),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Express Shipping',
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.lightTextSecondary,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    const Text(
-                                      'FREE',
-                                      style: TextStyle(
-                                        color: AppColors.success,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
+                                _buildSummaryRow('Subtotal', '\$${subtotal.toStringAsFixed(2)}', isDark),
+                                const SizedBox(height: 12),
+                                _buildSummaryRow('Express Courier', 'INCLUDED', isDark, isSuccess: true),
+                                const SizedBox(height: 12),
+                                _buildSummaryRow('Sales Tax', '\$${tax.toStringAsFixed(2)}', isDark),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 20),
+                                  child: Divider(height: 1),
                                 ),
-                                const SizedBox(height: 6),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Estimated Tax (8%)',
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.lightTextSecondary,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    Text(
-                                      '\$${tax.toStringAsFixed(2)}',
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(height: 24),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Total',
+                                      'TOTAL',
                                       style: GoogleFonts.outfit(
-                                        fontSize: 15,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: isDark
-                                            ? Colors.white
-                                            : AppColors.lightTextPrimary,
+                                        letterSpacing: 1.0,
                                       ),
                                     ),
                                     Text(
                                       '\$${totalAmount.toStringAsFixed(2)}',
                                       style: GoogleFonts.outfit(
-                                        fontSize: 16,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.goldAccent,
                                       ),
@@ -466,7 +402,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 48),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -476,24 +412,64 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                               foregroundColor: isDark
                                   ? AppColors.darkBg
                                   : Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              elevation: 4,
                             ),
                             child: Text(
-                              'CONFIRM & PLACE ORDER',
+                              'AUTHORIZE & PLACE ORDER',
                               style: GoogleFonts.outfit(
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 1.0,
+                                letterSpacing: 1.5,
                               ),
                             ),
                           ),
                         ),
+                        const SizedBox(height: 60),
                       ],
                     ),
                   ),
                 ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.outfit(
+        fontSize: 11,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 2.0,
+        color: AppColors.goldAccent,
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(String label, String value, bool isDark, {bool isSuccess = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.lightTextSecondary,
+            fontSize: 14,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: isSuccess ? AppColors.success : (isDark ? Colors.white : Colors.black87),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -506,6 +482,7 @@ class _CheckoutProgressIndicator extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildStep(
@@ -526,7 +503,7 @@ class _CheckoutProgressIndicator extends StatelessWidget {
         _buildLine(isCompleted: false),
         _buildStep(
           stepNumber: '3',
-          label: 'Review',
+          label: 'Success',
           isCompleted: false,
           isActive: false,
           isDark: isDark,
@@ -555,14 +532,14 @@ class _CheckoutProgressIndicator extends StatelessWidget {
     } else if (isActive) {
       circleColor = AppColors.goldAccent;
       borderCol = AppColors.goldAccent;
-      textCol = AppColors.goldAccent;
+      textCol = isDark ? Colors.black87 : Colors.white;
     }
 
     return Column(
       children: [
         Container(
-          width: 32,
-          height: 32,
+          width: 36,
+          height: 36,
           decoration: BoxDecoration(
             color: circleColor,
             shape: BoxShape.circle,
@@ -572,27 +549,27 @@ class _CheckoutProgressIndicator extends StatelessWidget {
             child: isCompleted
                 ? const Icon(
                     Icons.check_rounded,
-                    size: 16,
+                    size: 18,
                     color: AppColors.goldAccent,
                   )
                 : Text(
                     stepNumber,
                     style: GoogleFonts.outfit(
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: isActive ? Colors.black87 : textCol,
+                      color: textCol,
                     ),
                   ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         Text(
           label,
           style: GoogleFonts.outfit(
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
-            color: textCol,
+            color: isActive || isCompleted ? AppColors.goldAccent : AppColors.neutral,
           ),
         ),
       ],
@@ -601,9 +578,9 @@ class _CheckoutProgressIndicator extends StatelessWidget {
 
   Widget _buildLine({required bool isCompleted}) {
     return Container(
-      width: 48,
+      width: 60,
       height: 2,
-      margin: const EdgeInsets.only(bottom: 18),
+      margin: const EdgeInsets.only(bottom: 24, left: 8, right: 8),
       color: isCompleted
           ? AppColors.goldAccent
           : AppColors.neutral.withValues(alpha: 0.3),

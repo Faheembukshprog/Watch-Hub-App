@@ -55,76 +55,87 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'MANAGEMENT DASHBOARD',
-              style: GoogleFonts.outfit(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: AppColors.goldAccent,
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 24),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.05,
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _AdminDashboardCard(
-                  icon: Icons.inventory_2_outlined,
-                  title: 'Inventory',
-                  subtitle: 'Vault Control',
-                  accentColor: Colors.blueAccent,
-                  onTap: () => _showManagementView(context, 'products'),
+                Text(
+                  'MANAGEMENT DASHBOARD',
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.goldAccent,
+                    letterSpacing: 1.5,
+                  ),
                 ),
-                _AdminDashboardCard(
-                  icon: Icons.receipt_long_rounded,
-                  title: 'Orders',
-                  subtitle: 'Fulfillment',
-                  accentColor: Colors.orangeAccent,
-                  onTap: () => _showManagementView(context, 'orders'),
+                const SizedBox(height: 24),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossAxisCount = constraints.maxWidth > 800 ? 4 : (constraints.maxWidth > 500 ? 2 : 2);
+                    return GridView.count(
+                      crossAxisCount: crossAxisCount,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      childAspectRatio: 1.1,
+                      children: [
+                        _AdminDashboardCard(
+                          icon: Icons.inventory_2_outlined,
+                          title: 'Inventory',
+                          subtitle: 'Vault Control',
+                          accentColor: Colors.blueAccent,
+                          onTap: () => _showManagementView(context, 'products'),
+                        ),
+                        _AdminDashboardCard(
+                          icon: Icons.receipt_long_rounded,
+                          title: 'Orders',
+                          subtitle: 'Fulfillment',
+                          accentColor: Colors.orangeAccent,
+                          onTap: () => _showManagementView(context, 'orders'),
+                        ),
+                        _AdminDashboardCard(
+                          icon: Icons.support_agent_rounded,
+                          title: 'Support',
+                          subtitle: 'Concierge',
+                          accentColor: AppColors.success,
+                          onTap: () => _showManagementView(context, 'tickets'),
+                        ),
+                        _AdminDashboardCard(
+                          icon: Icons.analytics_outlined,
+                          title: 'Intelligence',
+                          subtitle: 'Metrics',
+                          accentColor: Colors.purpleAccent,
+                          onTap: () => _showBIView(context),
+                        ),
+                      ],
+                    );
+                  },
                 ),
-                _AdminDashboardCard(
-                  icon: Icons.support_agent_rounded,
-                  title: 'Support',
-                  subtitle: 'Concierge',
-                  accentColor: AppColors.success,
-                  onTap: () => _showManagementView(context, 'tickets'),
+                const SizedBox(height: 40),
+                Text(
+                  'OPERATIONAL STATUS',
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.goldAccent,
+                    letterSpacing: 1.5,
+                  ),
                 ),
-                _AdminDashboardCard(
-                  icon: Icons.analytics_outlined,
-                  title: 'Intelligence',
-                  subtitle: 'Metrics',
-                  accentColor: Colors.purpleAccent,
-                  onTap: () => _showBIView(context),
-                ),
+                const SizedBox(height: 16),
+                const _SystemStatusRow(label: 'Global Database', status: 'SYNCHRONIZED'),
+                const _SystemStatusRow(label: 'Auth Services', status: 'ENCRYPTED'),
+                const _SystemStatusRow(label: 'Payment Bridge', status: 'READY'),
+                const SizedBox(height: 40),
               ],
             ),
-            const SizedBox(height: 32),
-            Text(
-              'OPERATIONAL STATUS',
-              style: GoogleFonts.outfit(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: AppColors.goldAccent,
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 16),
-            const _SystemStatusRow(label: 'Global Database', status: 'SYNCHRONIZED'),
-            const _SystemStatusRow(label: 'Auth Services', status: 'ENCRYPTED'),
-            const _SystemStatusRow(label: 'Payment Bridge', status: 'READY'),
-            const SizedBox(height: 40),
-          ],
+          ),
         ),
       ),
     );
@@ -294,63 +305,69 @@ class _AdminListView extends ConsumerWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         border: Border.all(color: AppColors.goldAccent.withValues(alpha: 0.3), width: 1.5),
       ),
-      child: Column(
-        children: [
-          const SizedBox(height: 12),
-          Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2))),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(title.toUpperCase(), style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.0, color: AppColors.goldAccent)),
-                IconButton(icon: const Icon(Icons.close_rounded, color: AppColors.goldAccent), onPressed: () => Navigator.pop(context)),
-              ],
-            ),
-          ),
-          const Divider(height: 1),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: query.snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator(color: AppColors.goldAccent));
-
-                final docs = snapshot.data!.docs;
-                if (docs.isEmpty) return Center(child: Text('No records found in this category', style: GoogleFonts.outfit(color: AppColors.neutral)));
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(20),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: docs.length,
-                  itemBuilder: (context, index) {
-                    final doc = docs[index];
-                    final data = doc.data() as Map<String, dynamic>;
-                    return _AdminListItem(doc: doc, data: data, type: type);
-                  },
-                );
-              },
-            ),
-          ),
-          if (type == 'products')
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () => _showProductDialog(context, ref),
-                  icon: const Icon(Icons.add_rounded),
-                  label: const Text('ADD NEW MASTERPIECE'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.goldAccent,
-                    foregroundColor: isDark ? AppColors.darkBg : Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2))),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(title.toUpperCase(), style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.0, color: AppColors.goldAccent)),
+                    IconButton(icon: const Icon(Icons.close_rounded, color: AppColors.goldAccent), onPressed: () => Navigator.pop(context)),
+                  ],
                 ),
               ),
-            ),
-        ],
+              const Divider(height: 1),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: query.snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+                    if (!snapshot.hasData) return const Center(child: CircularProgressIndicator(color: AppColors.goldAccent));
+
+                    final docs = snapshot.data!.docs;
+                    if (docs.isEmpty) return Center(child: Text('No records found in this category', style: GoogleFonts.outfit(color: AppColors.neutral)));
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(24),
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: docs.length,
+                      itemBuilder: (context, index) {
+                        final doc = docs[index];
+                        final data = doc.data() as Map<String, dynamic>;
+                        return _AdminListItem(doc: doc, data: data, type: type);
+                      },
+                    );
+                  },
+                ),
+              ),
+              if (type == 'products')
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showProductDialog(context, ref),
+                      icon: const Icon(Icons.add_rounded),
+                      label: const Text('ADD NEW MASTERPIECE'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.goldAccent,
+                        foregroundColor: isDark ? AppColors.darkBg : Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -480,13 +497,13 @@ class _AdminListItem extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
-        boxShadow: [if (!isDark) BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [if (!isDark) BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -495,23 +512,23 @@ class _AdminListItem extends ConsumerWidget {
             Row(
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(color: AppColors.goldAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14)),
-                  child: const Icon(Icons.watch_rounded, color: AppColors.goldAccent, size: 28),
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(color: AppColors.goldAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16)),
+                  child: const Icon(Icons.watch_rounded, color: AppColors.goldAccent, size: 32),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 20),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(data['name'] ?? 'Unknown Timepiece', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15)),
-                      const SizedBox(height: 2),
+                      Text(data['name'] ?? 'Unknown Timepiece', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16)),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
-                          Text('\$${data['price']}', style: const TextStyle(color: AppColors.goldAccent, fontWeight: FontWeight.bold, fontSize: 13)),
-                          const SizedBox(width: 12),
-                          Text('Stock: ${data['stock'] ?? data['stockCount'] ?? 0}', style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 12)),
+                          Text('\$${data['price']}', style: const TextStyle(color: AppColors.goldAccent, fontWeight: FontWeight.bold, fontSize: 14)),
+                          const SizedBox(width: 16),
+                          Text('Stock: ${data['stock'] ?? data['stockCount'] ?? 0}', style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 13)),
                         ],
                       ),
                     ],
@@ -520,11 +537,11 @@ class _AdminListItem extends ConsumerWidget {
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit_note_rounded, color: Colors.blueAccent, size: 26),
+                      icon: const Icon(Icons.edit_note_rounded, color: Colors.blueAccent, size: 28),
                       onPressed: () => _showEditProduct(context, ref),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete_sweep_rounded, color: AppColors.error, size: 26),
+                      icon: const Icon(Icons.delete_sweep_rounded, color: AppColors.error, size: 28),
                       onPressed: () => _deleteProduct(context, ref),
                     ),
                   ],
@@ -539,14 +556,14 @@ class _AdminListItem extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('ORDER #${data['id']?.toString().toUpperCase() ?? doc.id.substring(0, 8)}', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.5)),
-                      const SizedBox(height: 4),
+                      Text('ORDER #${data['id']?.toString().toUpperCase() ?? doc.id.substring(0, 8)}', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 0.5)),
+                      const SizedBox(height: 6),
                       Text('Amount: \$${data['totalAmount']}', style: const TextStyle(color: AppColors.goldAccent, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     color: isDark ? AppColors.darkBg : Colors.grey[100],
                     borderRadius: BorderRadius.circular(12),
@@ -556,7 +573,7 @@ class _AdminListItem extends ConsumerWidget {
                     child: DropdownButton<String>(
                       value: data['status'] ?? 'pending',
                       dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
-                      style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.goldAccent),
+                      style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.goldAccent),
                       items: ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
                           .map((s) => DropdownMenuItem(value: s, child: Text(s.toUpperCase())))
                           .toList(),
@@ -574,19 +591,19 @@ class _AdminListItem extends ConsumerWidget {
           ] else ...[
             Row(
               children: [
-                const Icon(Icons.support_agent_rounded, color: AppColors.goldAccent, size: 20),
-                const SizedBox(width: 12),
-                Expanded(child: Text(data['subject'] ?? 'No Subject', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14))),
+                const Icon(Icons.support_agent_rounded, color: AppColors.goldAccent, size: 24),
+                const SizedBox(width: 16),
+                Expanded(child: Text(data['subject'] ?? 'No Subject', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15))),
               ],
             ),
-            const SizedBox(height: 8),
-            Text('From: ${data['userEmail']}', style: TextStyle(fontSize: 11, color: isDark ? Colors.white54 : Colors.black54)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+            Text('From: ${data['userEmail']}', style: TextStyle(fontSize: 12, color: isDark ? Colors.white54 : Colors.black54)),
+            const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               width: double.infinity,
               decoration: BoxDecoration(color: isDark ? AppColors.darkBg : Colors.grey[50], borderRadius: BorderRadius.circular(12)),
-              child: Text(data['message'] ?? '', style: const TextStyle(fontSize: 12, height: 1.4)),
+              child: Text(data['message'] ?? '', style: const TextStyle(fontSize: 13, height: 1.5)),
             ),
           ],
         ],
@@ -674,71 +691,82 @@ class _BusinessIntelligenceView extends ConsumerWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         border: Border.all(color: AppColors.goldAccent.withValues(alpha: 0.3), width: 1.5),
       ),
-      child: Column(
-        children: [
-          const SizedBox(height: 12),
-          Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2))),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('BUSINESS INTEL', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.goldAccent, letterSpacing: 1.5)),
-                IconButton(icon: const Icon(Icons.close_rounded, color: AppColors.goldAccent), onPressed: () => Navigator.pop(context)),
-              ],
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<Map<String, dynamic>>(
-              future: _calculateMetrics(firestore),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: AppColors.goldAccent));
-                if (!snapshot.hasData) return const Center(child: Text('Data error'));
-                final metrics = snapshot.data!;
-
-                return ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  physics: const BouncingScrollPhysics(),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2))),
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                      childAspectRatio: 1.3,
-                      children: [
-                        _BIMetricTile(label: 'Total Revenue', value: '\$${metrics['revenue'].toStringAsFixed(0)}', icon: Icons.monetization_on_rounded, color: Colors.green),
-                        _BIMetricTile(label: 'Total Orders', value: '${metrics['orders']}', icon: Icons.shopping_bag_rounded, color: Colors.orangeAccent),
-                        _BIMetricTile(label: 'Vault Value', value: '\$${metrics['inventoryValue'].toStringAsFixed(0)}', icon: Icons.account_balance_rounded, color: Colors.blueAccent),
-                        _BIMetricTile(label: 'Unit Stock', value: '${metrics['totalStock']}', icon: Icons.warehouse_rounded, color: Colors.purpleAccent),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    Text('LOW STOCK WARNINGS', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.error, letterSpacing: 1.0)),
-                    const SizedBox(height: 16),
-                    if (metrics['lowStock'].isEmpty)
-                      Center(child: Text('All masterpieces are well-stocked.', style: TextStyle(color: AppColors.success, fontSize: 12, fontStyle: FontStyle.italic)))
-                    else
-                      ...metrics['lowStock'].map((name) => Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.error.withValues(alpha: 0.2))),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 20),
-                            const SizedBox(width: 12),
-                            Expanded(child: Text(name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.error))),
-                          ],
-                        ),
-                      )),
-                    const SizedBox(height: 40),
+                    Text('BUSINESS INTEL', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.goldAccent, letterSpacing: 1.5)),
+                    IconButton(icon: const Icon(Icons.close_rounded, color: AppColors.goldAccent), onPressed: () => Navigator.pop(context)),
                   ],
-                );
-              },
-            ),
+                ),
+              ),
+              Expanded(
+                child: FutureBuilder<Map<String, dynamic>>(
+                  future: _calculateMetrics(firestore),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: AppColors.goldAccent));
+                    if (!snapshot.hasData) return const Center(child: Text('Data error'));
+                    final metrics = snapshot.data!;
+
+                    return ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
+                            return GridView.count(
+                              crossAxisCount: crossAxisCount,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: constraints.maxWidth > 600 ? 1.5 : 1.3,
+                              children: [
+                                _BIMetricTile(label: 'Total Revenue', value: '\$${metrics['revenue'].toStringAsFixed(0)}', icon: Icons.monetization_on_rounded, color: Colors.green),
+                                _BIMetricTile(label: 'Total Orders', value: '${metrics['orders']}', icon: Icons.shopping_bag_rounded, color: Colors.orangeAccent),
+                                _BIMetricTile(label: 'Vault Value', value: '\$${metrics['inventoryValue'].toStringAsFixed(0)}', icon: Icons.account_balance_rounded, color: Colors.blueAccent),
+                                _BIMetricTile(label: 'Unit Stock', value: '${metrics['totalStock']}', icon: Icons.warehouse_rounded, color: Colors.purpleAccent),
+                              ],
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 32),
+                        Text('LOW STOCK WARNINGS', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.error, letterSpacing: 1.0)),
+                        const SizedBox(height: 16),
+                        if (metrics['lowStock'].isEmpty)
+                          Center(child: Text('All masterpieces are well-stocked.', style: TextStyle(color: AppColors.success, fontSize: 12, fontStyle: FontStyle.italic)))
+                        else
+                          ...metrics['lowStock'].map((name) => Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.error.withValues(alpha: 0.2))),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 20),
+                                const SizedBox(width: 12),
+                                Expanded(child: Text(name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.error))),
+                              ],
+                            ),
+                          )),
+                        const SizedBox(height: 40),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

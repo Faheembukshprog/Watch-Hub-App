@@ -17,11 +17,34 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    // Helper for validating incoming data
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() > 0 &&
+             data.brand is string && data.brand.size() > 0 &&
+             data.price is number && data.price >= 0 &&
+             data.stock is int && data.stock >= 0 &&
+             data.imageUrl is string &&
+             data.isAvailable is bool;
+    }
+
+    function isValidReview(data) {
+      return data.productId is string &&
+             data.userId == request.auth.uid &&
+             data.rating is int && data.rating >= 1 && data.rating <= 5 &&
+             data.status == 'pending';
+    }
+
+    function isValidOrder(data) {
+      return data.userId == request.auth.uid &&
+             data.totalAmount is number && data.totalAmount >= 0 &&
+             data.items is list && data.items.size() > 0;
+    }
+
     // --- Collections ---
 
     match /products/{productId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAdmin() && isValidProduct(request.resource.data);
     }
 
     match /faqs/{faqId} {
@@ -31,14 +54,19 @@ service cloud.firestore {
 
     match /reviews/{reviewId} {
       allow read: if true;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAdmin();
+      allow create: if isAuthenticated() && isValidReview(request.resource.data);
+      // Admin moderates by updating 'status'
+      allow update: if isAdmin() &&
+                    request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'moderatedAt', 'moderatedBy']);
+      allow delete: if isAdmin();
     }
 
     match /support_tickets/{ticketId} {
       allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAdmin();
+      // Users can't update tickets once submitted, only admin can respond/close
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /feedback/{feedbackId} {
@@ -48,10 +76,15 @@ service cloud.firestore {
     }
     
     match /users/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
+      // Users can read and write their own data, but CANNOT change their 'role' field
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && (!('role' in request.resource.data) || request.resource.data.role != 'admin');
+      allow update: if (isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin();
+      allow delete: if isAdmin();
       
       match /orders/{orderId} {
-        allow read, create: if isOwner(userId) || isAdmin();
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) && isValidOrder(request.resource.data);
         allow update, delete: if isAdmin();
       }
       

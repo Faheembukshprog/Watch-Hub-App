@@ -1,1 +1,32 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"app-watchhub-08","appId":"1:262205640310:android:ce9fa44a31ce65e6ad5957","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"app-watchhub-08","configurations":{"android":"1:262205640310:android:ce9fa44a31ce65e6ad5957","ios":"1:262205640310:ios:ad3a3390b2078451ad5957","macos":"1:262205640310:ios:f0835c8fdc0bff4bad5957","web":"1:262205640310:web:346a10a2f78b4eb7ad5957","windows":"1:262205640310:web:6512555f5fc92d48ad5957"}}}}}}
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "app-watchhub-08",
+          "appId": "1:262205640310:android:ce9fa44a31ce65e6ad5957",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "app-watchhub-08",
+          "configurations": {
+            "android": "1:262205640310:android:ce9fa44a31ce65e6ad5957",
+            "ios": "1:262205640310:ios:ad3a3390b2078451ad5957",
+            "macos": "1:262205640310:ios:f0835c8fdc0bff4bad5957",
+            "web": "1:262205640310:web:346a10a2f78b4eb7ad5957",
+            "windows": "1:262205640310:web:6512555f5fc92d48ad5957"
+          }
+        }
+      }
+    }
+  }
+}

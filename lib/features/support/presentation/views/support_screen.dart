@@ -109,241 +109,287 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- VIP Agent Status Header Card ---
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurface : Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Stack(
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // --- VIP Agent Status Header Card ---
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkSurface : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                    ),
+                  ),
+                  child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: AppColors.goldAccent.withValues(
-                          alpha: 0.15,
-                        ),
-                        child: const Icon(
-                          Icons.support_agent_rounded,
-                          color: AppColors.goldAccent,
-                          size: 28,
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: AppColors.success,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isDark
-                                  ? AppColors.darkSurface
-                                  : Colors.white,
-                              width: 2,
+                      Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 28,
+                            backgroundColor: AppColors.goldAccent.withValues(
+                              alpha: 0.15,
+                            ),
+                            child: const Icon(
+                              Icons.support_agent_rounded,
+                              color: AppColors.goldAccent,
+                              size: 32,
                             ),
                           ),
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 14,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: AppColors.success,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: isDark
+                                      ? AppColors.darkSurface
+                                      : Colors.white,
+                                  width: 2.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Concierge Desk Active',
+                              style: GoogleFonts.outfit(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: isDark
+                                    ? Colors.white
+                                    : AppColors.lightTextPrimary,
+                              ),
+                            ),
+                            Text(
+                              'Average response: < 5 minutes',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Concierge Desk Active',
-                          style: GoogleFonts.outfit(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: isDark
-                                ? Colors.white
-                                : AppColors.lightTextPrimary,
-                          ),
-                        ),
-                        Text(
-                          'Average response: < 5 minutes',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
-                          ),
-                        ),
-                      ],
+                ),
+                const SizedBox(height: 32),
+
+                // --- Contact Channels ---
+                Text(
+                  'DIRECT CHANNELS',
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.neutral,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _SupportContactCard(
+                        icon: Icons.email_outlined,
+                        title: 'Email Us',
+                        subtitle: 'concierge@watchhub.com',
+                        onTap: () {},
+                        isDark: isDark,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _SupportContactCard(
+                        icon: Icons.phone_outlined,
+                        title: 'Premium Call',
+                        subtitle: '+1 (888) WATCH-HUB',
+                        onTap: () {},
+                        isDark: isDark,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // --- Message Form ---
+                Text(
+                  'SECURE CONCIERGE TICKET',
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.neutral,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _subjectController,
+                  decoration: const InputDecoration(
+                    labelText: 'Subject of Inquiry',
+                    prefixIcon: Icon(Icons.title_rounded),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _messageController,
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    labelText: 'Detailed Message',
+                    alignLabelWithHint: true,
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.only(bottom: 80.0),
+                      child: Icon(Icons.message_outlined),
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // --- Contact Channels ---
-            Text(
-              'DIRECT CONTACT',
-              style: GoogleFonts.outfit(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: AppColors.neutral,
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _SupportContactCard(
-              icon: Icons.email_outlined,
-              title: 'Email Luxury Concierge',
-              subtitle: 'concierge@watchhub.com',
-              onTap: () {},
-              isDark: isDark,
-            ),
-            _SupportContactCard(
-              icon: Icons.phone_outlined,
-              title: 'Hotline Assistance',
-              subtitle: '+1 (888) WATCH-HUB',
-              onTap: () {},
-              isDark: isDark,
-            ),
-            const SizedBox(height: 24),
-
-            // --- Message Form ---
-            Text(
-              'SUBMIT SECURE SUPPORT TICKET',
-              style: GoogleFonts.outfit(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: AppColors.neutral,
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _subjectController,
-              decoration: const InputDecoration(
-                labelText: 'Subject',
-                prefixIcon: Icon(Icons.title_rounded),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _messageController,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'Message details...',
-                alignLabelWithHint: true,
-                prefixIcon: Padding(
-                  padding: EdgeInsets.only(bottom: 80.0),
-                  child: Icon(Icons.message_outlined),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isSubmitting ? null : _submitTicket,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.goldAccent,
-                  foregroundColor: isDark ? AppColors.darkBg : Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isSubmitting ? null : _submitTicket,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.goldAccent,
+                      foregroundColor: isDark ? AppColors.darkBg : Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : Text(
+                            'SUBMIT CONCIERGE TICKET',
+                            style: GoogleFonts.outfit(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                  ),
                 ),
-                child: _isSubmitting
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(
-                        'SUBMIT CONCIERGE TICKET',
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-              ),
-            ),
-            const SizedBox(height: 24),
+                const SizedBox(height: 40),
 
-            // --- My Tickets ---
-            Text(
-              'MY RECENT TICKETS',
-              style: GoogleFonts.outfit(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: AppColors.neutral,
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 12),
-            StreamBuilder<QuerySnapshot>(
-              stream: ref.watch(firebaseFirestoreProvider)
-                  .collection('support_tickets')
-                  .where('userId', isEqualTo: ref.watch(firebaseAuthProvider).currentUser?.uid ?? 'anonymous')
-                  .orderBy('timestamp', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) return const Text('Sync error');
-                if (!snapshot.hasData) return const CircularProgressIndicator();
-                
-                final docs = snapshot.data!.docs;
-                if (docs.isEmpty) {
-                  return const Text(
-                    'No active concierge tickets found.',
-                    style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.grey),
-                  );
-                }
+                // --- My Tickets ---
+                Text(
+                  'ACTIVE TICKETS',
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.neutral,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                StreamBuilder<QuerySnapshot>(
+                  stream: ref.watch(firebaseFirestoreProvider)
+                      .collection('support_tickets')
+                      .where('userId', isEqualTo: ref.watch(firebaseAuthProvider).currentUser?.uid ?? 'anonymous')
+                      .orderBy('timestamp', descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) return const Text('Sync error');
+                    if (!snapshot.hasData) return const Center(child: CircularProgressIndicator(color: AppColors.goldAccent));
+                    
+                    final docs = snapshot.data!.docs;
+                    if (docs.isEmpty) {
+                      return Text(
+                        'No active concierge tickets found in your history.',
+                        style: GoogleFonts.inter(fontSize: 13, fontStyle: FontStyle.italic, color: AppColors.neutral),
+                      );
+                    }
 
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: docs.length,
-                  itemBuilder: (context, index) {
-                    final data = docs[index].data() as Map<String, dynamic>;
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkSurface : Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: docs.length,
+                      itemBuilder: (context, index) {
+                        final data = docs[index].data() as Map<String, dynamic>;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.darkSurface : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(data['subject'] ?? 'No Subject', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      data['subject'] ?? 'No Subject', 
+                                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: (data['status'] == 'open' ? Colors.orange : Colors.green).withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      data['status']?.toString().toUpperCase() ?? 'OPEN',
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                        color: (data['status'] == 'open') ? Colors.orange : Colors.green,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
                               Text(
-                                data['status']?.toString().toUpperCase() ?? 'OPEN',
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                  color: (data['status'] == 'open') ? Colors.orange : Colors.green,
-                                ),
+                                data['message'] ?? '', 
+                                maxLines: 2, 
+                                overflow: TextOverflow.ellipsis, 
+                                style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : Colors.black54, height: 1.4),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(data['message'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                        ],
-                      ),
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+                const SizedBox(height: 40),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -368,7 +414,6 @@ class _SupportContactCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -377,13 +422,14 @@ class _SupportContactCard extends StatelessWidget {
         ),
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: AppColors.goldAccent.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: AppColors.goldAccent),
+          child: Icon(icon, color: AppColors.goldAccent, size: 24),
         ),
         title: Text(
           title,
@@ -401,10 +447,8 @@ class _SupportContactCard extends StatelessWidget {
                 ? AppColors.darkTextSecondary
                 : AppColors.lightTextSecondary,
           ),
-        ),
-        trailing: const Icon(
-          Icons.chevron_right_rounded,
-          color: AppColors.neutral,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         onTap: onTap,
       ),

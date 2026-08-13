@@ -100,157 +100,163 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
               ),
             ),
             padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Refine Collection',
-                      style: GoogleFonts.outfit(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : AppColors.lightTextPrimary,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const SizedBox(height: 16),
-                        // Sort By
                         Text(
-                          'Sort By',
+                          'Refine Collection',
                           style: GoogleFonts.outfit(
-                            fontSize: 14,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.goldAccent,
+                            color: isDark ? Colors.white : AppColors.lightTextPrimary,
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 8,
-                          children: _sortOptions.map((sort) {
-                            final isSelected = _sortBy == sort;
-                            return ChoiceChip(
-                              label: Text(sort),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                if (selected) {
-                                  setModalState(() => _sortBy = sort);
-                                  setState(() {});
-                                }
-                              },
-                            );
-                          }).toList(),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded),
+                          onPressed: () => Navigator.pop(context),
                         ),
-
-                        const SizedBox(height: 24),
-                        // Product Type
-                        Text(
-                          'Watch Type',
-                          style: GoogleFonts.outfit(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.goldAccent,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 8,
-                          children: _productTypes.map((type) {
-                            final isSelected = _selectedType == type;
-                            return ChoiceChip(
-                              label: Text(type),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                if (selected) {
-                                  setModalState(() => _selectedType = type);
-                                  setState(() {});
-                                }
-                              },
-                            );
-                          }).toList(),
-                        ),
-
-                        const SizedBox(height: 24),
-                        // Price Range
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      ],
+                    ),
+                    const Divider(),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            const SizedBox(height: 16),
+                            // Sort By
                             Text(
-                              'Price Range',
+                              'Sort By',
                               style: GoogleFonts.outfit(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.goldAccent,
                               ),
                             ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              children: _sortOptions.map((sort) {
+                                final isSelected = _sortBy == sort;
+                                return ChoiceChip(
+                                  label: Text(sort),
+                                  selected: isSelected,
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      setModalState(() => _sortBy = sort);
+                                      setState(() {});
+                                    }
+                                  },
+                                );
+                              }).toList(),
+                            ),
+
+                            const SizedBox(height: 24),
+                            // Product Type
                             Text(
-                              '\$${_minPrice.toInt()} - \$${_maxPrice.toInt()}',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              'Watch Type',
+                              style: GoogleFonts.outfit(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.goldAccent,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              children: _productTypes.map((type) {
+                                final isSelected = _selectedType == type;
+                                return ChoiceChip(
+                                  label: Text(type),
+                                  selected: isSelected,
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      setModalState(() => _selectedType = type);
+                                      setState(() {});
+                                    }
+                                  },
+                                );
+                              }).toList(),
+                            ),
+
+                            const SizedBox(height: 24),
+                            // Price Range
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Price Range',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.goldAccent,
+                                  ),
+                                ),
+                                Text(
+                                  '\$${_minPrice.toInt()} - \$${_maxPrice.toInt()}',
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            RangeSlider(
+                              values: RangeValues(_minPrice, _maxPrice),
+                              min: 0,
+                              max: 20000,
+                              divisions: 20,
+                              activeColor: AppColors.goldAccent,
+                              onChanged: (values) {
+                                setModalState(() {
+                                  _minPrice = values.start;
+                                  _maxPrice = values.end;
+                                });
+                                setState(() {});
+                              },
                             ),
                           ],
                         ),
-                        RangeSlider(
-                          values: RangeValues(_minPrice, _maxPrice),
-                          min: 0,
-                          max: 20000,
-                          divisions: 20,
-                          activeColor: AppColors.goldAccent,
-                          onChanged: (values) {
-                            setModalState(() {
-                              _minPrice = values.start;
-                              _maxPrice = values.end;
-                            });
-                            setState(() {});
-                          },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setModalState(() {
+                            _selectedBrand = 'All';
+                            _selectedType = 'All';
+                            _sortBy = 'Default';
+                            _minPrice = 0;
+                            _maxPrice = 20000;
+                            _searchQuery = '';
+                            _searchController.clear();
+                          });
+                          setState(() {});
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isDark ? Colors.white10 : Colors.grey[200],
+                          foregroundColor: isDark ? Colors.white : Colors.black,
                         ),
-                      ],
+                        child: const Text('RESET ALL FILTERS'),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setModalState(() {
-                        _selectedBrand = 'All';
-                        _selectedType = 'All';
-                        _sortBy = 'Default';
-                        _minPrice = 0;
-                        _maxPrice = 20000;
-                        _searchQuery = '';
-                        _searchController.clear();
-                      });
-                      setState(() {});
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isDark ? Colors.white10 : Colors.grey[200],
-                      foregroundColor: isDark ? Colors.white : Colors.black,
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('SHOW RESULTS'),
+                      ),
                     ),
-                    child: const Text('RESET ALL FILTERS'),
-                  ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('SHOW RESULTS'),
-                  ),
-                ),
-              ],
+              ),
             ),
           );
         },
@@ -261,7 +267,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   @override
   void initState() {
     super.initState();
-    _bannerPageController = PageController(viewportFraction: 0.92);
+    _bannerPageController = PageController(viewportFraction: 1.0);
   }
 
   @override
@@ -277,8 +283,13 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     final authUser = ref.watch(authStateProvider).value;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Calculate dynamic horizontal padding to center content on wide screens
+    final horizontalPadding = screenWidth > 1400 ? (screenWidth - 1400) / 2 + 24 : 24.0;
 
     return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
       body: SafeArea(
         child: catalogAsync.when(
           data: (products) {
@@ -333,13 +344,15 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                 SliverAppBar(
                   pinned: true,
                   floating: true,
-                  expandedHeight: 60,
-                  backgroundColor: theme.scaffoldBackgroundColor,
+                  centerTitle: true,
+                  expandedHeight: 70,
+                  backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
                   title: Text(
                     'WATCHHUB',
                     style: GoogleFonts.outfit(
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 4.0,
+                      letterSpacing: 8.0,
+                      fontSize: 24,
                       color: isDark ? Colors.white : AppColors.lightTextPrimary,
                     ),
                   ),
@@ -367,119 +380,135 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
 
                 // --- Hero Promo Banner Carousel ---
                 SliverToBoxAdapter(
-                  child: Container(
-                    height: 180,
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: PageView.builder(
-                      itemCount: _promoBanners.length,
-                      controller: _bannerPageController,
-                      itemBuilder: (context, index) {
-                        final banner = _promoBanners[index];
-                        return Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            image: DecorationImage(
-                              image: CachedNetworkImageProvider(
-                                banner['image']!,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1400),
+                      child: Container(
+                        height: 220,
+                        margin: const EdgeInsets.symmetric(vertical: 16),
+                        child: PageView.builder(
+                          itemCount: _promoBanners.length,
+                          controller: _bannerPageController,
+                          clipBehavior: Clip.antiAlias,
+                          itemBuilder: (context, index) {
+                            final banner = _promoBanners[index];
+                            return Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
                               ),
-                              fit: BoxFit.cover,
-                              colorFilter: ColorFilter.mode(
-                                Colors.black.withValues(alpha: 0.45),
-                                BlendMode.darken,
-                              ),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  banner['title']!.toUpperCase(),
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    letterSpacing: 1.5,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24),
+                                image: DecorationImage(
+                                  image: CachedNetworkImageProvider(
+                                    banner['image']!,
+                                  ),
+                                  fit: BoxFit.cover,
+                                  colorFilter: ColorFilter.mode(
+                                    Colors.black.withValues(alpha: 0.5),
+                                    BlendMode.darken,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  banner['subtitle']!,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: Colors.white70,
-                                  ),
+                                border: Border.all(color: AppColors.goldAccent.withValues(alpha: 0.3)),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(32.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      banner['title']!.toUpperCase(),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        letterSpacing: 2.0,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      banner['subtitle']!,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 14,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),
 
                 // --- Sleek Glass Search Bar ---
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkSurface : Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isDark
-                              ? AppColors.darkBorder
-                              : AppColors.lightBorder,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1000),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 12.0,
                         ),
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: (val) {
-                          setState(() {
-                            _searchQuery = val;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Search collection, complication, brand...',
-                          prefixIcon: Icon(
-                            Icons.search_rounded,
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
-                          ),
-                          suffixIcon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (_searchQuery.isNotEmpty)
-                                IconButton(
-                                  icon: const Icon(Icons.clear_rounded),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    setState(() {
-                                      _searchQuery = '';
-                                    });
-                                  },
-                                ),
-                              IconButton(
-                                icon: const Icon(Icons.tune_rounded),
-                                onPressed: () => _showFilterModal(context),
-                              ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.darkSurface : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
+                            ),
+                            boxShadow: [
+                              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)
                             ],
                           ),
-                          filled: false,
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (val) {
+                              setState(() {
+                                _searchQuery = val;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Search collection, complication, brand...',
+                              prefixIcon: Icon(
+                                Icons.search_rounded,
+                                color: isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
+                              ),
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (_searchQuery.isNotEmpty)
+                                    IconButton(
+                                      icon: const Icon(Icons.clear_rounded),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        setState(() {
+                                          _searchQuery = '';
+                                        });
+                                      },
+                                    ),
+                                  IconButton(
+                                    icon: const Icon(Icons.tune_rounded),
+                                    onPressed: () => _showFilterModal(context),
+                                  ),
+                                ],
+                              ),
+                              filled: false,
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -488,57 +517,64 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
 
                 // --- Luxury Brand Filter Chips ---
                 SliverToBoxAdapter(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 12.0,
-                    ),
-                    child: Row(
-                      children: _brands.map((brand) {
-                        final isSelected = _selectedBrand == brand;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: ChoiceChip(
-                            label: Text(
-                              brand.toUpperCase(),
-                              style: GoogleFonts.outfit(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.8,
-                                color: isSelected
-                                    ? (isDark ? AppColors.darkBg : Colors.white)
-                                    : (isDark
-                                          ? AppColors.darkTextSecondary
-                                          : AppColors.lightTextSecondary),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1000),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 16.0,
+                        ),
+                        child: Row(
+                          children: _brands.map((brand) {
+                            final isSelected = _selectedBrand == brand;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: ChoiceChip(
+                                label: Text(
+                                  brand.toUpperCase(),
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.0,
+                                    color: isSelected
+                                        ? (isDark ? AppColors.darkBg : Colors.white)
+                                        : (isDark
+                                              ? AppColors.darkTextSecondary
+                                              : AppColors.lightTextSecondary),
+                                  ),
+                                ),
+                                selected: isSelected,
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    setState(() {
+                                      _selectedBrand = brand;
+                                    });
+                                  }
+                                },
+                                selectedColor: AppColors.goldAccent,
+                                backgroundColor: isDark
+                                    ? AppColors.darkSurface
+                                    : Colors.white,
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? AppColors.goldAccent
+                                      : (isDark
+                                            ? AppColors.darkBorder
+                                            : AppColors.lightBorder),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                showCheckmark: false,
+                                elevation: isSelected ? 2 : 0,
                               ),
-                            ),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              if (selected) {
-                                setState(() {
-                                  _selectedBrand = brand;
-                                });
-                              }
-                            },
-                            selectedColor: AppColors.goldAccent,
-                            backgroundColor: isDark
-                                ? AppColors.darkSurface
-                                : Colors.white,
-                            side: BorderSide(
-                              color: isSelected
-                                  ? AppColors.goldAccent
-                                  : (isDark
-                                        ? AppColors.darkBorder
-                                        : AppColors.lightBorder),
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            showCheckmark: false,
-                          ),
-                        );
-                      }).toList(),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -558,17 +594,17 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                   )
                 else
                   SliverPadding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                      vertical: 16.0,
                     ),
                     sliver: SliverGrid(
                       gridDelegate:
-                          SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 220,
-                            childAspectRatio: 0.68,
-                            crossAxisSpacing: 14,
-                            mainAxisSpacing: 14,
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 280.0,
+                            childAspectRatio: 0.72,
+                            crossAxisSpacing: 20,
+                            mainAxisSpacing: 20,
                           ),
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final watch = filteredProducts[index];
@@ -576,6 +612,11 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                       }, childCount: filteredProducts.length),
                     ),
                   ),
+
+                // --- Bottom Padding for Adaptive Nav ---
+                const SliverPadding(
+                  padding: EdgeInsets.only(bottom: 120),
+                ),
               ],
             );
           },
@@ -604,19 +645,18 @@ class _ProductCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final wishlist = ref.watch(wishlistProvider);
     final isInWish = wishlist.contains(watch.id);
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => context.go('/product/${watch.id}'),
       child: Card(
-        elevation: 2,
-        shadowColor: Colors.black26,
+        elevation: 4,
+        shadowColor: Colors.black12,
         clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color: isDark
             ? AppColors.darkSurface
-            : Theme.of(context).colorScheme.surface,
+            : Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -626,12 +666,12 @@ class _ProductCard extends ConsumerWidget {
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(12),
+                      top: Radius.circular(16),
                     ),
                     child: Container(
                       width: double.infinity,
                       color: isDark ? AppColors.darkBg : Colors.grey[100],
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(16),
                       child: Hero(
                         tag: 'watch_image_${watch.id}',
                         child: watch.imageUrl.isNotEmpty
@@ -647,14 +687,12 @@ class _ProductCard extends ConsumerWidget {
                                           ? Colors.grey[700]!
                                           : Colors.grey[100]!,
                                       child: Container(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.surface,
+                                        color: isDark ? AppColors.darkSurface : Colors.white,
                                       ),
                                     ),
                                 errorWidget: (context, url, error) => Icon(
                                   Icons.watch_rounded,
-                                  size: 48,
+                                  size: 64,
                                   color: isDark
                                       ? Colors.white30
                                       : Colors.black26,
@@ -662,7 +700,7 @@ class _ProductCard extends ConsumerWidget {
                               )
                             : Icon(
                                 Icons.watch_rounded,
-                                size: 48,
+                                size: 64,
                                 color: isDark ? Colors.white30 : Colors.black26,
                               ),
                       ),
@@ -671,8 +709,8 @@ class _ProductCard extends ConsumerWidget {
 
                   // Wishlist Toggle Circle Button
                   Positioned(
-                    top: 8,
-                    right: 8,
+                    top: 12,
+                    right: 12,
                     child: GestureDetector(
                       onTap: () {
                         ref
@@ -692,7 +730,7 @@ class _ProductCard extends ConsumerWidget {
                         );
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(6),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: isDark
                               ? AppColors.darkSurfaceCard
@@ -701,14 +739,14 @@ class _ProductCard extends ConsumerWidget {
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
                             ),
                           ],
                         ),
                         child: Icon(
                           isInWish ? Icons.favorite : Icons.favorite_border,
-                          size: 18,
+                          size: 20,
                           color: AppColors.goldAccent,
                         ),
                       ),
@@ -718,23 +756,24 @@ class _ProductCard extends ConsumerWidget {
                   // Out of Stock Badge
                   if (watch.stock <= 0)
                     Positioned(
-                      top: 8,
-                      left: 8,
+                      top: 12,
+                      left: 12,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                          horizontal: 10,
+                          vertical: 6,
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.error,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(
                           'OUT OF STOCK',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 8,
+                            fontSize: 9,
                             fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ),
@@ -745,38 +784,38 @@ class _ProductCard extends ConsumerWidget {
 
             // Text Meta Layer
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     watch.brand.toUpperCase(),
                     style: GoogleFonts.outfit(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: AppColors.goldAccent,
-                      letterSpacing: 1.2,
+                      letterSpacing: 1.5,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     watch.name,
                     style: GoogleFonts.outfit(
-                      fontSize: 13,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: isDark ? Colors.white : AppColors.lightTextPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Text(
                     '\$${watch.price.toStringAsFixed(0)}',
                     style: GoogleFonts.outfit(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
                       color: AppColors.goldAccent,
                     ),
                   ),
@@ -806,26 +845,26 @@ class _CatalogShimmerLoader extends StatelessWidget {
         slivers: [
           SliverAppBar(
             backgroundColor: Colors.transparent,
-            title: Container(height: 20, width: 120, color: Colors.white),
+            title: Container(height: 24, width: 150, color: Colors.white),
           ),
           SliverToBoxAdapter(
             child: Container(
-              height: 180,
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              height: 220,
+              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(24),
               ),
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(24),
             sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.68,
-                crossAxisSpacing: 14,
-                mainAxisSpacing: 14,
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 250.0,
+                childAspectRatio: 0.72,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) => Container(
@@ -834,7 +873,7 @@ class _CatalogShimmerLoader extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                childCount: 4,
+                childCount: 8,
               ),
             ),
           ),
