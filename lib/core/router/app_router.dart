@@ -63,7 +63,7 @@ String? resolveAuthRedirect({
   required bool hasError,
   required bool isLoggedIn,
   required bool isGuest,
-  required bool isAdmin,
+  required String? role,
   required String location,
   required String? redirectParam,
 }) {
@@ -72,17 +72,15 @@ String? resolveAuthRedirect({
     return (location == AppRoutes.splash) ? null : AppRoutes.splash;
   }
 
-  final isRealUser = isLoggedIn && !isGuest;
-
   // 2. GUESTS & UNAUTHENTICATED USERS
-  if (!isRealUser) {
+  if (!isLoggedIn || isGuest) {
     final targetPathNeedsAccount = isProtectedRoute(location);
 
     if (targetPathNeedsAccount) {
       return '${AppRoutes.login}?redirect=${Uri.encodeComponent(location)}';
     }
 
-    // If on login, allow them to stay. DO NOT process redirect params for non-real users.
+    // If on login, allow them to stay.
     if (location == AppRoutes.login) return null;
 
     // Splash to catalog, other unauth routes to login
@@ -92,22 +90,24 @@ String? resolveAuthRedirect({
     return null;
   }
 
-  // 3. REAL AUTHENTICATED USERS
-  if (location == AppRoutes.login || location == AppRoutes.splash) {
-    // Admin landing logic
-    if (isAdmin) return AppRoutes.admin;
+  // 3. AUTHENTICATED REAL USERS (NON-GUEST)
+  
+  // A. STRICT ADMIN REDIRECTION
+  if (role == 'admin') {
+    // If Admin is anywhere EXCEPT /admin, force them back to the Command Center
+    if (location != AppRoutes.admin) {
+      return AppRoutes.admin;
+    }
+    return null; // Already on Admin, stay there
+  }
 
-    // Standard user redirect logic
+  // B. STANDARD USER REDIRECTION
+  if (location == AppRoutes.login || location == AppRoutes.splash || location == AppRoutes.admin) {
     if (redirectParam != null &&
         redirectParam.isNotEmpty &&
         isAllowedRedirect(redirectParam)) {
       return redirectParam;
     }
-    return AppRoutes.catalog;
-  }
-
-  // Prevent standard users from camping on the Admin Dashboard
-  if (location == AppRoutes.admin && !isAdmin) {
     return AppRoutes.catalog;
   }
 
@@ -150,14 +150,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       final user = authState.value;
       final isLoggedIn = user != null;
       final isGuest = user?.isAnonymous ?? false;
-      final isAdmin = profileState.value?['isAdmin'] == true;
+      final role = profileState.value?['role']?.toString();
 
       return resolveAuthRedirect(
         isLoading: authState.isLoading,
         hasError: authState.hasError,
         isLoggedIn: isLoggedIn,
         isGuest: isGuest,
-        isAdmin: isAdmin,
+        role: role,
         location: state.matchedLocation,
         redirectParam: state.uri.queryParameters['redirect'],
       );
