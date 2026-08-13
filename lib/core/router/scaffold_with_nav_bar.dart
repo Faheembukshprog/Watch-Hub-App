@@ -20,8 +20,16 @@ class ScaffoldWithNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: navigationShell,
-      bottomNavigationBar: NavigationBar(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: navigationShell,
+        ),
+      ),
+      bottomNavigationBar: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: _onItemTapped,
         destinations: const [
@@ -47,6 +55,8 @@ class ScaffoldWithNavBar extends StatelessWidget {
           ),
         ],
       ),
+    ),
+    ),
     );
   }
 }
