@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:app_watchhub/core/constants/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:app_watchhub/core/router/app_router.dart';
+import 'package:app_watchhub/shared/providers/firebase_provider.dart';
 import '../../../cart/presentation/providers/cart_provider.dart';
 import '../../../orders/domain/models/order_model.dart';
 import '../../../orders/presentation/providers/order_history_provider.dart';
@@ -108,6 +111,17 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authStateProvider);
+    final user = authState.value;
+    
+    if (user == null) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.goldAccent),
+        ),
+      );
+    }
+
     final cartItems = ref.watch(cartProvider);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -139,10 +153,38 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ),
       ),
       body: cartItems.isEmpty
-          ? const Center(
-              child: Text(
-                'Your cart is empty. Please add items to proceed.',
-                style: TextStyle(fontSize: 16),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.shopping_bag_outlined,
+                      size: 64,
+                      color: AppColors.neutral,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Your cart is empty',
+                      style: GoogleFonts.outfit(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Please add items to your shopping bag before proceeding to checkout.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.neutral),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () => context.go(AppRoutes.catalog),
+                      child: const Text('BACK TO BOUTIQUE'),
+                    ),
+                  ],
+                ),
               ),
             )
           : SingleChildScrollView(

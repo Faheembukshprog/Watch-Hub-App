@@ -62,44 +62,52 @@ String? resolveAuthRedirect({
   required bool isLoading,
   required bool hasError,
   required bool isLoggedIn,
+  required bool isGuest,
   required bool isAdmin,
   required String location,
   required String? redirectParam,
 }) {
-  if (isLoading) {
-    return location == AppRoutes.splash ? null : AppRoutes.splash;
+  // 1. Handle Initialization States
+  if (isLoading || hasError) {
+    return (location == AppRoutes.splash) ? null : AppRoutes.splash;
   }
 
-  if (hasError) {
-    return location == AppRoutes.splash ? null : AppRoutes.splash;
-  }
+  final isRealUser = isLoggedIn && !isGuest;
 
-  if (!isLoggedIn) {
-    if (location == AppRoutes.login) return null;
-    if (location == AppRoutes.catalog) return null;
-    if (location == AppRoutes.splash) return AppRoutes.catalog;
+  // 2. GUESTS & UNAUTHENTICATED USERS
+  if (!isRealUser) {
+    final targetPathNeedsAccount = isProtectedRoute(location);
 
-    if (isProtectedRoute(location)) {
+    if (targetPathNeedsAccount) {
       return '${AppRoutes.login}?redirect=${Uri.encodeComponent(location)}';
     }
 
-    return AppRoutes.login;
-  }
+    // If on login, allow them to stay. DO NOT process redirect params for non-real users.
+    if (location == AppRoutes.login) return null;
 
-  // Admin Redirection Logic - Force to Admin Panel ONLY on login/splash
-  if (isAdmin) {
-    if (location == AppRoutes.login || location == AppRoutes.splash) {
-      return AppRoutes.admin;
-    }
+    // Splash to catalog, other unauth routes to login
+    if (location == AppRoutes.splash) return AppRoutes.catalog;
+    if (!isLoggedIn && location != AppRoutes.catalog) return AppRoutes.login;
+
     return null;
   }
 
-  if (location == AppRoutes.login || location == AppRoutes.splash || location == AppRoutes.admin) {
+  // 3. REAL AUTHENTICATED USERS
+  if (location == AppRoutes.login || location == AppRoutes.splash) {
+    // Admin landing logic
+    if (isAdmin) return AppRoutes.admin;
+
+    // Standard user redirect logic
     if (redirectParam != null &&
         redirectParam.isNotEmpty &&
         isAllowedRedirect(redirectParam)) {
       return redirectParam;
     }
+    return AppRoutes.catalog;
+  }
+
+  // Prevent standard users from camping on the Admin Dashboard
+  if (location == AppRoutes.admin && !isAdmin) {
     return AppRoutes.catalog;
   }
 
@@ -139,12 +147,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       final authState = ref.read(authStateProvider);
       final profileState = ref.read(userProfileProvider);
       
+      final user = authState.value;
+      final isLoggedIn = user != null;
+      final isGuest = user?.isAnonymous ?? false;
       final isAdmin = profileState.value?['isAdmin'] == true;
 
       return resolveAuthRedirect(
         isLoading: authState.isLoading,
         hasError: authState.hasError,
-        isLoggedIn: authState.value != null,
+        isLoggedIn: isLoggedIn,
+        isGuest: isGuest,
         isAdmin: isAdmin,
         location: state.matchedLocation,
         redirectParam: state.uri.queryParameters['redirect'],
